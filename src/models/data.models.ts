@@ -1,9 +1,11 @@
-export type blogsFieldsType = {
-  id: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-};
+export type blogsFieldsType = [
+  {
+    id: string;
+    name: string;
+    description: string;
+    websiteUrl: string;
+  }
+];
 
 export type postsFieldsType = {
   id: string;

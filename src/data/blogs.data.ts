@@ -1,7 +1,7 @@
 // @ts-ignore
 import { blogsFieldsType } from '../models/data.models';
 
-export let BLOGS: Array<blogsFieldsType> = [
+export let BLOGS: blogsFieldsType = [
   {
     id: '1',
     name: 'Blogger1',
