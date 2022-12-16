@@ -23,7 +23,7 @@ blogsRouterPublic.get(
     if (result) {
       res.json(result).sendStatus(ERRORS_CODE.OK_200);
     } else {
-      res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+      res.json('Not Found').sendStatus(ERRORS_CODE.NOT_FOUND_404);
     }
   }
 );
