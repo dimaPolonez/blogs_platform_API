@@ -13,7 +13,7 @@ export type postsFieldsType = {
     content: string;
     blogId: string;
     blogName: string;
-};
+}
 
 export type errorsFieldsType = [
     { message: string; field: string }
