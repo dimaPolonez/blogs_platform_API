@@ -23,10 +23,13 @@ blogsRouterPublic.get(
 
         let result = returnByID(req.params.id);
 
-        if (result) {
-            res.json(result).sendStatus(ERRORS_CODE.OK_200);
+        if (result.length > 0) {
+            res.
+            json(result).
+            sendStatus(ERRORS_CODE.OK_200);
         } else {
-            res.json(ERRORS_TEXT.NOT_FOUND_404).sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            res.
+            sendStatus(ERRORS_CODE.NOT_FOUND_404);
         }
     }
 );
