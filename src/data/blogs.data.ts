@@ -1,9 +1,8 @@
 // @ts-ignore
 import { blogsFieldsType } from '../models/data.models';
 
-export let BLOGS: blogsFieldsType = [
-  {
-    id: '1',
+export let BLOGS: blogsFieldsType[] = [
+{   id: '1',
     name: 'Blogger1',
     description:
       '111 Listening to videos like these is easy English practice. ' +
@@ -37,5 +36,5 @@ export let BLOGS: blogsFieldsType = [
       'focuses on teaching groups of English words together. This is the best way ' +
       'to learn new language.',
     websiteUrl: '333 https://Blogger1.com',
-  },
+  }
 ];

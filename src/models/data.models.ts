@@ -1,21 +1,21 @@
-export type blogsFieldsType = [
-  {
-    id: string;
-    name: string;
-    description: string;
-    websiteUrl: string;
-  }
-];
+export type blogsFieldsType = {
+        id: string;
+        name: string;
+        description: string;
+        websiteUrl: string;
+    }
+
 
 export type postsFieldsType = {
-  id: string;
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;
-  blogName: string;
+    id: string;
+    title: string;
+    shortDescription: string;
+    content: string;
+    blogId: string;
+    blogName: string;
 };
 
-export type errorsFieldsType = { message: string; field: string };
+export type errorsFieldsType = [
+    { message: string; field: string }
+];
 
-export type arrayErrorsFieldsType = [errorsFieldsType];
