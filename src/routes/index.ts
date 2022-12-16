@@ -1,22 +1,31 @@
-import {Request, Response} from 'express'
+import { app } from './server';
 
-import {app} from "./server";
-import {indexMiddleware} from "../middleware/index.middleware";
+import { Request, Response } from 'express';
+import { indexMiddleware } from '../middleware/index.middleware';
+import { BLOGS } from '../data/blogs.data';
+import { POSTS } from '../data/posts.data';
+import { blogsRouterPublic } from './public/blogsRouterPublic';
+import { postsRouterPublic } from './public/postsRouterPublic';
+import { postsRouterAdmin } from './admin/postsRouterAdmin';
+import { blogsRouterAdmin } from './admin/blogsRouterAdmin';
 
 app.use(indexMiddleware.JSON_PARSER);
 
-
-
-
 app.get('/', (req: Request, res: Response) => {
-    res.json('Hello, server start!')
-})
+  res.json('Hello, server start!');
+});
 
+app.use('/blogs', blogsRouterPublic);
+app.use('/posts', postsRouterPublic);
+app.use('/posts', postsRouterAdmin);
+app.use('/blogs', blogsRouterAdmin);
 
+app.delete('/testing/all-data', (req: Request, res: Response) => {
+  BLOGS.length = 0;
+  POSTS.length = 0;
 
-
-
-
+  res.sendStatus(204);
+});
 
 /*
 app.post('/hometask_01/api/videos', (req: Request, res: Response) => {
@@ -152,9 +161,4 @@ app.delete('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
     res.sendStatus(204)
 })
 
-app.delete('/hometask_01/api/testing/all-data', (req: Request, res: Response) => {
-    bdVideos = []
-
-    res.sendStatus(204)
-})*/
-
+*/
