@@ -513,6 +513,11 @@ minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
+module-name@^0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/module-name/-/module-name-0.0.1-security.tgz#69e165948f0420f9d388df6c8dc59d47250b45ff"
+  integrity sha512-yuuTU5MhBuxtUPjTIqBz3AR2z3yrBr7yjPvpHbKLu5N3iWBRji2RnNAysonzft26mMUO+vA2tB3uiAqbZ6jXAQ==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"

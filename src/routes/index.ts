@@ -2,17 +2,20 @@ import { app } from './server';
 
 import { Request, Response } from 'express';
 import { indexMiddleware } from '../middleware/index.middleware';
+import { ResponseBody } from '../models/response.models';
+import { ResponseJson } from '../models/response.models';
+import { ERRORS_CODE } from '../data/errors.data';
+import { blogsRouterPublic } from '../controllers/public/blogsControllerPublic';
+import { postsRouterPublic } from '../controllers/public/postsControllerPublic';
+import { postsRouterAdmin } from '../controllers/admin/postsControllerAdmin';
+import { blogsRouterAdmin } from '../controllers/admin/blogsControllerAdmin';
 import { BLOGS } from '../data/blogs.data';
 import { POSTS } from '../data/posts.data';
-import { blogsRouterPublic } from './public/blogsRouterPublic';
-import { postsRouterPublic } from './public/postsRouterPublic';
-import { postsRouterAdmin } from './admin/postsRouterAdmin';
-import { blogsRouterAdmin } from './admin/blogsRouterAdmin';
 
 app.use(indexMiddleware.JSON_PARSER);
 
-app.get('/', (req: Request, res: Response) => {
-  res.json('Hello, server start!');
+app.get('/', (req: Request, res: ResponseBody<ResponseJson>) => {
+  res.json('Hello, server start!').sendStatus(ERRORS_CODE.OK_200);
 });
 
 app.use('/blogs', blogsRouterPublic);
@@ -20,12 +23,15 @@ app.use('/posts', postsRouterPublic);
 app.use('/posts', postsRouterAdmin);
 app.use('/blogs', blogsRouterAdmin);
 
-app.delete('/testing/all-data', (req: Request, res: Response) => {
-  BLOGS.length = 0;
-  POSTS.length = 0;
+app.delete(
+  '/testing/all-data',
+  (req: Request, res: ResponseBody<ResponseJson>) => {
+    BLOGS.length = 0;
+    POSTS.length = 0;
 
-  res.sendStatus(204);
-});
+    res.json('All data is deleted').sendStatus(ERRORS_CODE.NO_CONTENT_204);
+  }
+);
 
 /*
 app.post('/hometask_01/api/videos', (req: Request, res: Response) => {
