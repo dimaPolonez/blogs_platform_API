@@ -6,7 +6,7 @@ export function postBlogFunc(blogBody: requestBodyPost) {
 
     let newBlog =
         {
-            id: String(BLOGS.length + 1),
+            id: String(new Date()),
             name: blogBody.name,
             description: blogBody.description,
             websiteUrl: blogBody.websiteUrl

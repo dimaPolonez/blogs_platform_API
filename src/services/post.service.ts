@@ -6,7 +6,7 @@ export function postPostFunc(postBody: newBodyPost) {
 
     let newPost =
         {
-            id: String(POSTS.length + 1),
+            id: String(new Date()),
             title: postBody.title,
             shortDescription: postBody.shortDescription,
             content: postBody.content,
