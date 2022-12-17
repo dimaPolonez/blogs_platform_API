@@ -1,7 +1,6 @@
 import {newBodyPost, requestBodyPost} from "../models/request.models";
 import {POSTS} from "../data/posts.data";
-import {returnByBlogName, returnByID} from "./index.service";
-import {BLOGS} from "../data/blogs.data";
+import {returnByBlogName} from "./index.service";
 
 export function postPostFunc(postBody: newBodyPost) {
 

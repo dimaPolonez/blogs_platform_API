@@ -38,3 +38,9 @@ export let BLOGS: blogsFieldsType[] = [
     websiteUrl: '333 https://Blogger1.com',
   }
 ];
+
+export function blogsDeleteById(bodyId: string) {
+
+  BLOGS = BLOGS.filter(fields => fields.id !== bodyId)
+
+}

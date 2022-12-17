@@ -82,3 +82,10 @@ export let POSTS: postsFieldsType [] = [
     }
 ]
 
+
+export function postsDeleteById(bodyId: string) {
+
+    POSTS = POSTS.filter(fields => fields.id !== bodyId)
+
+}
+

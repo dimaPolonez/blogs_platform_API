@@ -1,4 +1,11 @@
 import {BLOGS} from "../data/blogs.data";
+import {POSTS} from "../data/posts.data";
+
+
+export function allDeleteBase() {
+    BLOGS.length = 0
+    POSTS.length = 0
+}
 
 export function returnByAll(bd: Array<object>) {
     return bd;
@@ -19,3 +26,4 @@ export function returnByBlogName(blogId: String) {
 
     return  String(result);
 }
+

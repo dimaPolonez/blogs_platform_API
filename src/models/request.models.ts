@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import {BLOGS} from "../data/blogs.data";
 
 
 export type RequestBody<T> = Request<{}, {}, T>;
