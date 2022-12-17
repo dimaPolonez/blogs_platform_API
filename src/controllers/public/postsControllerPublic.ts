@@ -21,7 +21,7 @@ postsRouterPublic.get(
 
       if (result.length > 0) {
         res.
-        json(result).
+        json(result[0]).
         sendStatus(ERRORS_CODE.OK_200);
       } else {
         res.

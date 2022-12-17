@@ -14,7 +14,7 @@ blogsRouterAdmin.post(
     '/',indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: Request, res: Response) => {
 
-        let result: object = postBlogFunc(req.body);
+        let result = postBlogFunc(req.body);
 
         res
             .json(result)
