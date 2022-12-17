@@ -14,7 +14,7 @@ import {allDeleteBase} from "../services/index.service";
 app.use(indexMiddleware.JSON_PARSER);
 
 app.get('/', (req: Request, res: ResponseBody<ResponseJson>) => {
-  res.json('Hello, server start!').sendStatus(ERRORS_CODE.OK_200);
+  res.sendStatus(ERRORS_CODE.OK_200);
 });
 
 app.use('/blogs', blogsRouterPublic);
@@ -27,7 +27,7 @@ app.delete(
   (req: Request, res: ResponseBody<ResponseJson>) => {
 
     allDeleteBase()
-    res.json('All data is deleted').sendStatus(ERRORS_CODE.NO_CONTENT_204);
+    res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
   }
 );
 
