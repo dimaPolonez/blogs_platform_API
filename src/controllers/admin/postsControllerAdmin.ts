@@ -1,29 +1,29 @@
 import { Router, Request, Response } from 'express';
 import {postPostFunc, putPostFunc} from "../../services/post.service";
 import {ERRORS_CODE} from "../../data/errors.data";
-import {postsRouterPublic} from "../public/postsControllerPublic";
 import {requestId, RequestParams} from "../../models/request.models";
 import {returnByID} from "../../services/index.service";
 import {POSTS, postsDeleteById} from "../../data/posts.data";
+import {indexMiddleware} from "../../middleware/index.middleware";
 
 
 export const postsRouterAdmin = Router({});
 
-postsRouterPublic.post(
-    '/',
+postsRouterAdmin.post(
+    '/',indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: Request, res: Response) => {
 
         let result = postPostFunc(req.body);
 
         res.
         json(result).
-        sendStatus(ERRORS_CODE.OK_200);
+        sendStatus(ERRORS_CODE.CREATED_201);
 
     }
 );
 
-postsRouterPublic.put(
-    '/:id',
+postsRouterAdmin.put(
+    '/:id',indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: RequestParams<requestId>, res: Response) => {
 
         let resultID = returnByID(req.params.id, POSTS);
@@ -31,18 +31,22 @@ postsRouterPublic.put(
         putPostFunc(resultID[0], req.body)
 
         res.
-        sendStatus(ERRORS_CODE.OK_200);
+        sendStatus(ERRORS_CODE.NO_CONTENT_204);
 
     }
 );
 
-postsRouterPublic.delete(
+postsRouterAdmin.delete(
     '/:id',
     (req: RequestParams<requestId>, res: Response) => {
 
-        postsDeleteById(req.params.id)
+        let result = postsDeleteById(req.params.id)
 
-        res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        if(result != true) {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        } else {
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        }
     }
 );
 

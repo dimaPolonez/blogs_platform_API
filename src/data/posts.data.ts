@@ -1,4 +1,5 @@
 import {postsFieldsType} from "../models/data.models";
+import {BLOGS} from "./blogs.data";
 
 
 export let POSTS: postsFieldsType [] = [
@@ -85,7 +86,14 @@ export let POSTS: postsFieldsType [] = [
 
 export function postsDeleteById(bodyId: string) {
 
+    const lenghtPosts = POSTS.length;
+
     POSTS = POSTS.filter(fields => fields.id !== bodyId)
 
+    if (lenghtPosts !== POSTS.length) {
+        return true
+    } else {
+        return false
+    }
 }
 

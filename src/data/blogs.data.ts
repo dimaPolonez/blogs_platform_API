@@ -41,6 +41,14 @@ export let BLOGS: blogsFieldsType[] = [
 
 export function blogsDeleteById(bodyId: string) {
 
+  const lenghtBlogs = BLOGS.length;
+
   BLOGS = BLOGS.filter(fields => fields.id !== bodyId)
+
+  if (lenghtBlogs !== BLOGS.length) {
+    return true
+  } else {
+    return false
+  }
 
 }
