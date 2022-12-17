@@ -1,12 +1,12 @@
 import {newBodyPost, requestBodyPost} from "../models/request.models";
 import {POSTS} from "../data/posts.data";
-import {returnByBlogName} from "./index.service";
+import {byId, returnByBlogName} from "./index.service";
 
 export function postPostFunc(postBody: newBodyPost) {
 
     let newPost =
         {
-            id: String(new Date()),
+            id: String(byId + 1),
             title: postBody.title,
             shortDescription: postBody.shortDescription,
             content: postBody.content,

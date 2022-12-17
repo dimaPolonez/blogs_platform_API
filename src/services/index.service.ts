@@ -2,6 +2,8 @@ import {BLOGS} from "../data/blogs.data";
 import {POSTS} from "../data/posts.data";
 
 
+export let byId = 4;
+
 export function allDeleteBase() {
     BLOGS.length = 0
     POSTS.length = 0
