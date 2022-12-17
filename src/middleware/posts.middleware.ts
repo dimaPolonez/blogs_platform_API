@@ -1,9 +1,9 @@
 import {body} from "express-validator";
 
 export const postsValidator = [
-    body('title').isString().trim().notEmpty().isLength({ max: 30}).withMessage('Field title incorrect'),
-    body('shortDescription').isString().trim().notEmpty().isLength({ max: 100}).withMessage('Field shortDescription incorrect'),
-    body('content').isString().trim().notEmpty().isLength({ max: 1000}).isURL().withMessage('Field content incorrect'),
-    body('blogId').isString().trim().notEmpty().withMessage('Field blogId incorrect')
+    body('title').isString().bail().trim().bail().notEmpty().bail().isLength({ max: 30}).bail().withMessage('Field title incorrect'),
+    body('shortDescription').isString().bail().trim().bail().notEmpty().bail().isLength({ max: 100}).bail().withMessage('Field shortDescription incorrect'),
+    body('content').isString().bail().trim().bail().notEmpty().bail().isLength({ max: 1000}).bail().isURL().bail().withMessage('Field content incorrect'),
+    body('blogId').isString().bail().trim().bail().notEmpty().bail().withMessage('Field blogId incorrect')
 ]
 
