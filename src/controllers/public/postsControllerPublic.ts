@@ -2,14 +2,14 @@ import { Router, Request, Response } from 'express';
 import { POSTS } from '../../data/posts.data';
 import {ERRORS_CODE} from "../../data/errors.data";
 import {requestId, RequestParams} from "../../models/request.models";
-import {returnByID} from "../../services/index.service";
+import {returnByAll, returnByID} from "../../services/index.service";
 
 export const postsRouterPublic = Router({});
 
 postsRouterPublic.get(
     '/',
     (req: Request, res: Response) => {
-      res.json(POSTS).sendStatus(ERRORS_CODE.OK_200);
+      res.json(returnByAll(POSTS)).sendStatus(ERRORS_CODE.OK_200);
     }
 );
 

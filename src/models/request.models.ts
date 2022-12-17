@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import {BLOGS} from "../data/blogs.data";
 
 
 export type RequestBody<T> = Request<{}, {}, T>;
@@ -14,4 +15,12 @@ export type requestBodyPost = {
   name: string,
   description: string,
   websiteUrl: string
+};
+
+export type newBodyPost = {
+  title: string,
+  shortDescription: string,
+  content: string,
+  blogId: string,
+  blogName: string
 };
