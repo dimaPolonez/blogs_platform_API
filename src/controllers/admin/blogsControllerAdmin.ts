@@ -28,10 +28,12 @@ blogsRouterAdmin.put(
 
         let resultID = returnByID(req.params.id, BLOGS);
 
-        putBlogFunc(resultID[0], req.body)
-
-        res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-
+        if (resultID.length > 0) {
+            putBlogFunc(resultID[0], req.body)
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } else {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        }
     }
 );
 

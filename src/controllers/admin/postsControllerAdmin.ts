@@ -5,6 +5,7 @@ import {requestId, RequestParams} from "../../models/request.models";
 import {returnByID} from "../../services/index.service";
 import {POSTS, postsDeleteById} from "../../data/posts.data";
 import {indexMiddleware} from "../../middleware/index.middleware";
+import {putBlogFunc} from "../../services/blogs.service";
 
 
 export const postsRouterAdmin = Router({});
@@ -28,10 +29,12 @@ postsRouterAdmin.put(
 
         let resultID = returnByID(req.params.id, POSTS);
 
-        putPostFunc(resultID[0], req.body)
-
-        res.
-        sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        if (resultID.length > 0) {
+            putPostFunc(resultID[0], req.body)
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } else {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        }
 
     }
 );
