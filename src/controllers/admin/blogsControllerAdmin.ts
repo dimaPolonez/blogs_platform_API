@@ -14,9 +14,11 @@ blogsRouterAdmin.post(
     '/',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: Request, res: Response) => {
 
-        postBlogFunc(req.body);
+        let result = postBlogFunc(req.body);
 
-        res.sendStatus(ERRORS_CODE.CREATED_201);
+        res
+            .json(result)
+            .sendStatus(ERRORS_CODE.CREATED_201);
     }
 );
 
