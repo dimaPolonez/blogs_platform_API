@@ -18,7 +18,7 @@ postsRouterAdmin.post(
 
         res
             .json(result)
-            .sendStatus(ERRORS_CODE.CREATED_201);
+            .sendStatus(201);
 
     }
 );
