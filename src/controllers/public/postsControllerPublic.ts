@@ -22,7 +22,7 @@ postsRouterPublic.get(
       if (result.length > 0) {
         res.
         json(result[0]).
-        sendStatus(ERRORS_CODE.OK_200);
+        sendStatus(ERRORS_CODE.CREATED_201);
       } else {
         res.
         sendStatus(ERRORS_CODE.NOT_FOUND_404);
