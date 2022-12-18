@@ -8,18 +8,14 @@ import {USERS} from "../data/users.data";
 
 export const basicAuthorization = (req: Request, res: Response, next: NextFunction) => {
 
-    if (req.headers.authorization !== (`Basic: ${USERS[0].logPass}`)) {
+    if (req.headers.authorization === (`Basic ${USERS[0].logPass}`)) {
+        next()
+    } else {
         res
             .status(401).
         json('Unauthorized')
-    } else {
-        next()
     }
-
 }
-
-
-
 
 export const errorsValidator = (req: Request, res: Response, next: NextFunction) => {
 
