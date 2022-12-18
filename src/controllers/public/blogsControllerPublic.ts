@@ -20,9 +20,9 @@ blogsRouterPublic.get(
         let result = returnByID(req.params.id, BLOGS);
 
         if (result.length > 0) {
-            res.
-            json(result[0]).
-            sendStatus(ERRORS_CODE.OK_200);
+            res
+                .json(result[0])
+                .sendStatus(ERRORS_CODE.OK_200);
         } else {
             res.
             sendStatus(ERRORS_CODE.NOT_FOUND_404);
