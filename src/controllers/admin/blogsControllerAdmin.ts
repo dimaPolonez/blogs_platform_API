@@ -16,10 +16,7 @@ blogsRouterAdmin.post(
 
         let result = postBlogFunc(req.body);
 
-        res
-            .json(result)
-            .sendStatus(201);
-
+        res.send(result).send(ERRORS_CODE.CREATED_201)
     }
 );
 
