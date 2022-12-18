@@ -1,19 +1,23 @@
 import {parserMiddleware} from "./json.middlware";
 import {blogsValidator} from "./blogs.middleware";
 import {NextFunction, Request, Response} from "express";
-import {param, validationResult} from "express-validator";
+import {body, header, param, validationResult} from "express-validator";
 import {postsValidator} from "./posts.middleware";
 import {USERS} from "../data/users.data";
 
 
 export const basicAuthorization = (req: Request, res: Response, next: NextFunction) => {
 
-    if (req.headers.authorization === (`Basic ${USERS[0].logPass}`)) {
-        next()
-    } else {
+    const errors = validationResult(req);
+    header('authorization').isString().bail().trim().bail().notEmpty().bail().withMessage('Field authorization incorrect')
+
+
+    if (req.headers.authorization !== (`Basic ${USERS[0].logPass}`) || (!errors.isEmpty())) {
         res
             .status(401).
         json('Unauthorized')
+    } else {
+        next()
     }
 }
 

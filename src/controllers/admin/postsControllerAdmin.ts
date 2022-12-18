@@ -10,7 +10,7 @@ import {indexMiddleware} from "../../middleware/index.middleware";
 export const postsRouterAdmin = Router({});
 
 postsRouterAdmin.post(
-    '/',indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,indexMiddleware.BASIC_AUTHORIZATION,
+    '/',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: Request, res: Response) => {
 
         let result = postPostFunc(req.body);
@@ -23,7 +23,7 @@ postsRouterAdmin.post(
 );
 
 postsRouterAdmin.put(
-    '/:id',indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,indexMiddleware.BASIC_AUTHORIZATION,
+    '/:id',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.POSTS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: RequestParams<requestId>, res: Response) => {
 
         let resultID = returnByID(req.params.id, POSTS);
