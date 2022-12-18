@@ -11,7 +11,7 @@ export const blogsRouterAdmin = Router({});
 
 
 blogsRouterAdmin.post(
-    '/',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
+    '/',indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,indexMiddleware.BASIC_AUTHORIZATION,
     (req: Request, res: Response) => {
 
         let result = postBlogFunc(req.body);
@@ -23,7 +23,7 @@ blogsRouterAdmin.post(
 );
 
 blogsRouterAdmin.put(
-    '/:id',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
+    '/:id',indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,indexMiddleware.BASIC_AUTHORIZATION,
     (req: RequestParams<requestId>, res: Response) => {
 
         let resultID = returnByID(req.params.id, BLOGS);
