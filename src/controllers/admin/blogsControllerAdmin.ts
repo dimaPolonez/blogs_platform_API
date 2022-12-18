@@ -11,7 +11,7 @@ export const blogsRouterAdmin = Router({});
 
 
 blogsRouterAdmin.post(
-    '/',indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
+    '/',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: Request, res: Response) => {
 
         let result = postBlogFunc(req.body);
@@ -23,7 +23,7 @@ blogsRouterAdmin.post(
 );
 
 blogsRouterAdmin.put(
-    '/:id',indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
+    '/:id',indexMiddleware.BASIC_AUTHORIZATION,indexMiddleware.BLOGS_VALIDATOR,indexMiddleware.ERRORS_VALIDATOR,
     (req: RequestParams<requestId>, res: Response) => {
 
         let resultID = returnByID(req.params.id, BLOGS);
@@ -36,8 +36,7 @@ blogsRouterAdmin.put(
 );
 
 blogsRouterAdmin.delete(
-    '/:id',
-    (req: RequestParams<requestId>, res: Response) => {
+    '/:id',indexMiddleware.BASIC_AUTHORIZATION,(req: RequestParams<requestId>, res: Response) => {
 
         let result = blogsDeleteById(req.params.id)
 

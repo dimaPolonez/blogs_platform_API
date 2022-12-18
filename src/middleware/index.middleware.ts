@@ -3,6 +3,21 @@ import {blogsValidator} from "./blogs.middleware";
 import {NextFunction, Request, Response} from "express";
 import {param, validationResult} from "express-validator";
 import {postsValidator} from "./posts.middleware";
+import {USERS} from "../data/users.data";
+
+
+export const basicAuthorization = (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.headers.authorization !== (`Basic: ${USERS[0].logPass}`)) {
+        res
+            .status(401).
+        json('Unauthorized')
+    } else {
+        next()
+    }
+
+}
+
 
 
 
@@ -24,6 +39,7 @@ export const errorsValidator = (req: Request, res: Response, next: NextFunction)
 
 export const  indexMiddleware = {
     JSON_PARSER : parserMiddleware,
+    BASIC_AUTHORIZATION: basicAuthorization,
     BLOGS_VALIDATOR: blogsValidator,
     POSTS_VALIDATOR: postsValidator,
     ERRORS_VALIDATOR: errorsValidator

@@ -6,3 +6,4 @@ export const blogsValidator = [
     body('description').isString().bail().trim().bail().notEmpty().bail().isLength({ max: 500}).bail().withMessage('Field description incorrect'),
     body('websiteUrl').isString().bail().trim().bail().notEmpty().bail().isLength({ max: 100}).bail().isURL().bail().withMessage('Field websiteUrl incorrect')
 ]
+
