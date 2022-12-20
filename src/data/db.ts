@@ -9,7 +9,7 @@ export async function startBD () {
   try {
       await client.connect();
       await client.db("blogs_platform_API").command({ ping: 1});
-      console.log("Connected successfully to mongo server";)
+      console.log("Connected successfully to mongo server");
   } catch {
       await client.close();
   }

@@ -13,4 +13,6 @@ testingRouter.delete(
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
   }
-);
+)
+
+export default testingRouter;
