@@ -10,4 +10,5 @@ export const ERRORS_CODE = {
   INTERNAL_SERVER_ERROR_500: 500,
 };
 
+
 export let errorsMassages: { errorsMassages: errorsFieldsType };
