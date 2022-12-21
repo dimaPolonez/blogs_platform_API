@@ -6,6 +6,7 @@
   "author": "dimaPolonez <dima-barxat@yandex.ru>",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^6.14.2",
     "module-name": "^0.0.1-security",
