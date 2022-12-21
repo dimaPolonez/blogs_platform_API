@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { ERRORS_CODE } from '../data/errors.data';
+import blogService from '../services/blog.service';
 
 class blogController {
   async getAll(req: Request, res: Response) {

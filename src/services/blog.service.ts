@@ -1,25 +1,32 @@
-import {BLOGS} from '../data/blogs.data';
-import {requestBodyPost} from "../models/request.models";
-import {byId} from "./index.service";
+import { BLOGS } from '../data/blogs.data';
+import { requestBodyPost } from '../models/request.models';
+import { byId } from './index.service';
 
-export function postBlogFunc(blogBody: requestBodyPost) {
+class blogService {
+  async getAll() {
+    try {
+    } catch (e) {}
+  }
 
-    let newBlog =
-        {
-            id: String(byId + 1),
-            name: blogBody.name,
-            description: blogBody.description,
-            websiteUrl: blogBody.websiteUrl
-        }
+  async getOne(bodyID: any) {
+    try {
+    } catch (e) {}
+  }
 
-    BLOGS.push(newBlog);
+  async create(body: any) {
+    try {
+    } catch (e) {}
+  }
 
-    return newBlog
+  async update(body: any) {
+    try {
+    } catch (e) {}
+  }
+
+  async delete(bodyID: any) {
+    try {
+    } catch (e) {}
+  }
 }
 
-export function putBlogFunc(idObject: any, blogBody: any) {
-
-    idObject.name = blogBody.name
-    idObject.description = blogBody.description
-    idObject.websiteUrl = blogBody.websiteUrl
-}
+export default new blogService();
