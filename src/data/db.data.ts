@@ -1,8 +1,8 @@
 import { MongoClient } from 'mongodb';
 import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import blogsFieldsType from '../models/data.models';
-import postsFieldsType from '../models/data.models';
+import { blogsFieldsType } from '../models/data.models';
+import { postsFieldsType } from '../models/data.models';
 
 dotenv.config();
 
