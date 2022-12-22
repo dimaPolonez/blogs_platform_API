@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import { startBD } from './data/db.data';
 import blogRouter from './routes/blog.router';
 import postRouter from './routes/post.router';
-import { allDeleteBase } from './services/index.service';
 import { ERRORS_CODE } from './data/errors.data';
 
 const PORT = process.env.PORT || 5000;
@@ -32,6 +31,5 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
-  allDeleteBase();
   res.status(ERRORS_CODE.NO_CONTENT_204);
 });

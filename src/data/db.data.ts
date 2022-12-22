@@ -23,4 +23,4 @@ export async function startBD() {
 
 const db: mongoDB.Db = client.db(process.env.DB_NAME);
 export const BLOGS = db.collection<blogsFieldsType>('blogs');
-export const POSTS = db.collection<postsFieldsType>('posts');
+export const POSTS = db.collection('posts');

@@ -10,31 +10,31 @@ class blogService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const blog = await BLOGS.findById(bodyID);
-    return blog;
+/*    const blog = await BLOGS.findById(bodyID);
+    return blog;*/
   }
 
   async create(body: any) {
-    const createdBlog = await BLOGS.create(BLOGS);
-    return createdBlog;
+/*    const createdBlog = await BLOGS.create(body);
+    return createdBlog;*/
   }
 
   async update(body: any) {
     if (!body) {
       throw new Error('не указан ID');
     }
-    const updatedBlog = await BLOGS.findByIdAndUpdate(BLOGS._id, BLOGS, {
+/*    const updatedBlog = await BLOGS.findByIdAndUpdate(BLOGS._id, BLOGS, {
       new: true,
     });
-    return updatedBlog;
+    return updatedBlog;*/
   }
 
   async delete(bodyID: any) {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const blog = await BLOGS.findByIdAndDelete(bodyID);
-    return blog;
+/*    const blog = await BLOGS.findByIdAndDelete(bodyID);
+    return blog;*/
   }
 }
 
