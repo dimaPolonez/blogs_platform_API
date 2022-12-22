@@ -1,4 +1,6 @@
 import { BLOGS } from '../data/db.data';
+import { blogsFieldsType } from '../models/data.models';
+import {requestBodyPost} from "../models/request.models";
 
 class blogService {
   async getAll() {
@@ -6,17 +8,22 @@ class blogService {
     return blogs;
   }
 
-  async getOne(bodyID: any) {
+  async getOne(bodyID: string) {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-/*    const blog = await BLOGS.findById(bodyID);
-    return blog;*/
+    const blog = await BLOGS.find({id: bodyID});
+    return blog;
   }
 
-  async create(body: any) {
-/*    const createdBlog = await BLOGS.create(body);
-    return createdBlog;*/
+  async create(body: requestBodyPost) {
+    const createdBlog = await BLOGS.insertOne({
+      id: String(new Date()),
+      name: body.name,
+      description: body.description,
+      websiteUrl: body.websiteUrl,
+    });
+    return createdBlog;
   }
 
   async update(body: any) {
