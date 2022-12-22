@@ -6,7 +6,7 @@ import { db } from '../data/db.data';
 
 class blogService {
   async getAll() {
-    const blogs = await db.collection('blogs').find();
+    const blogs = await db.collection('blogs').find({}).toArray();
     return blogs;
   }
 
