@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export type blogsFieldsType = {
         id: string;
         name: string;
@@ -18,4 +20,3 @@ export type postsFieldsType = {
 export type errorsFieldsType = [
     { message: string; field: string }
 ];
-

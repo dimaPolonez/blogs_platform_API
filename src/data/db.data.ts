@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,3 +18,5 @@ export async function startBD() {
     await client.close();
   }
 }
+
+export const db: mongoDB.Db = client.db(process.env.DB_NAME);
