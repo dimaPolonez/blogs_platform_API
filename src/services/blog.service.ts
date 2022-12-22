@@ -12,18 +12,18 @@ class blogService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const blog = await BLOGS.find({id: bodyID});
-    return blog;
+/*    const blog = await BLOGS.find({id: bodyID});
+    return blog;*/
   }
 
   async create(body: requestBodyPost) {
     const createdBlog = await BLOGS.insertOne({
-      id: String(new Date()),
-      name: body.name,
-      description: body.description,
-      websiteUrl: body.websiteUrl,
+      "id": Math.floor(Date.now() + Math.random()),
+      "name": body.name,
+      "description": body.description,
+      "websiteUrl": body.websiteUrl
     });
-    return createdBlog;
+    return BLOGS.find({_id: createdBlog.insertedId}).toArray();
   }
 
   async update(body: any) {

@@ -11,6 +11,7 @@ export type requestId = {
 };
 
 export type requestBodyPost = {
+  id: string,
   name: string,
   description: string,
   websiteUrl: string
