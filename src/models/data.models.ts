@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb';
 
-export interface blogsFieldsType {
+export type blogsFieldsType = {
   id: string;
   name: string;
   description: string;
   websiteUrl: string;
 }
 
-export interface postsFieldsType {
+export type postsFieldsType = {
   id: string;
   title: string;
   shortDescription: string;
