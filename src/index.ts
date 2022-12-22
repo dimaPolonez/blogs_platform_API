@@ -1,12 +1,19 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import startBD from '';
+
+const PORT = process.env.PORT || 5000;
 
 export const app = express();
-const port = process.env.PORT || 5000;
 
-app.get('/', (req: Request, res: Response) => {
-  res.json('Server start!');
-});
+async function startApp() {
+  try {
+    await startBD();
+    app.listen(PORT, () => {
+      console.log(`Example app listening on port ${PORT}`);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+startApp();
