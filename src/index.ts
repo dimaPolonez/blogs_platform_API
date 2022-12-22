@@ -1,7 +1,7 @@
 import express from 'express';
 import { startBD } from './data/db';
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 export const app = express();
 
