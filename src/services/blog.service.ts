@@ -5,6 +5,7 @@ import { byId } from './index.service';
 class blogService {
   async getAll() {
     try {
+      return 'Hello world';
     } catch (e) {}
   }
 
