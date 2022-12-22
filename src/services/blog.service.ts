@@ -22,7 +22,7 @@ class blogService {
       "name": body.name,
       "description": body.description,
       "websiteUrl": body.websiteUrl
-    });
+    }); //ddd
     return BLOGS.find({_id: createdBlog.insertedId}).toArray();
   }
 
