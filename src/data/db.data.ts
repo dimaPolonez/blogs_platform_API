@@ -10,9 +10,6 @@ const DB_URL = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
 //mongodb://0.0.0.0:27017
 
 export const client = new MongoClient(DB_URL);
-const db: mongoDB.Db = client.db(process.env.DB_NAME);
-export const BLOGS = db.collection<blogsFieldsType>('blogs');
-export const POSTS = db.collection<postsFieldsType>('posts');
 
 export async function startBD() {
   try {
@@ -23,3 +20,7 @@ export async function startBD() {
     await client.close();
   }
 }
+
+const db: mongoDB.Db = client.db(process.env.DB_NAME);
+export const BLOGS = db.collection<blogsFieldsType>('blogs');
+export const POSTS = db.collection<postsFieldsType>('posts');
