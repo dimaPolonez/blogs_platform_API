@@ -8,6 +8,9 @@ const DB_URL = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
 //mongodb://0.0.0.0:27017
 
 export const client = new MongoClient(DB_URL);
+const db: mongoDB.Db = client.db(process.env.DB_NAME);
+export const BLOGS = db.collection('blogs');
+export const POSTS = db.collection('posts');
 
 export async function startBD() {
   try {
@@ -18,5 +21,3 @@ export async function startBD() {
     await client.close();
   }
 }
-
-export const db: mongoDB.Db = client.db(process.env.DB_NAME);
