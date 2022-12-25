@@ -16,8 +16,8 @@ class postService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const post = await POSTS.find({id: bodyID}, optionsBlog).toArray();
-    return post;
+    const post: Array<object> = await POSTS.find({id: bodyID}, optionsBlog).toArray();
+    return post[0];
   }
 
   async create(body: requestBodyPost) {
@@ -36,7 +36,9 @@ class postService {
       createdAt: newDateCreated
     });
 
-    return POSTS.find({_id: createdPost.insertedId}, optionsBlog).toArray();
+    let result: Array<object> = await POSTS.find({_id: createdPost.insertedId}, optionsBlog).toArray();
+
+    return result[0]
   }
 
   async update(bodyID: typeBodyID, body: requestBodyPost) {

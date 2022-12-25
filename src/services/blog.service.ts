@@ -1,4 +1,4 @@
-import {BLOGS} from '../data/db.data';
+import {BLOGS, POSTS} from '../data/db.data';
 import {requestBodyBlog, typeBodyID} from "../models/request.models";
 
 const optionsBlog = {
@@ -9,7 +9,6 @@ const optionsBlog = {
 
 class blogService {
   async getAll() {
-    // @ts-ignore
     const blogs = await BLOGS.find({},optionsBlog).toArray();
     return blogs;
   }
@@ -18,8 +17,9 @@ class blogService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const blog = await BLOGS.find({id: bodyID},optionsBlog).toArray();
-    return blog;
+    const blog: Array<object> = await BLOGS.find({id: bodyID},optionsBlog).toArray();
+
+    return blog[0];
   }
 
   async create(body: requestBodyBlog) {
@@ -33,7 +33,10 @@ class blogService {
       websiteUrl: body.websiteUrl,
       createdAt: newDateCreated
     });
-    return BLOGS.find({_id: createdBlog.insertedId},optionsBlog).toArray();
+
+    let result: Array<object> = await BLOGS.find({_id: createdBlog.insertedId},optionsBlog).toArray();
+
+    return result[0]
   }
 
   async update(bodyID: typeBodyID, body: requestBodyBlog) {
