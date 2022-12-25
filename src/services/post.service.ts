@@ -48,7 +48,7 @@ class postService {
 
     const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
 
-    if (result) {
+    if (!result) {
       return false;
     }
 
@@ -73,7 +73,7 @@ class postService {
 
     const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
 
-    if (result) {
+    if (!result) {
       return false;
     }
 
