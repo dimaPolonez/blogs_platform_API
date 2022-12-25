@@ -15,7 +15,12 @@ class postController {
   async getOne(req: Request, res: Response) {
     try {
       const post = await postService.getOne(req.params.id);
-      res.status(ERRORS_CODE.OK_200).json(post);
+
+      if (post) {
+        res.status(ERRORS_CODE.OK_200).json(post);
+      } else {
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+      }
     } catch (e) {
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
@@ -24,7 +29,13 @@ class postController {
   async create(req: Request, res: Response) {
     try {
       const post = await postService.create(req.body);
-      res.status(ERRORS_CODE.CREATED_201).json(post);
+
+
+      if (post) {
+        res.status(ERRORS_CODE.CREATED_201).json(post);
+      } else {
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+      }
     } catch (e) {
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
