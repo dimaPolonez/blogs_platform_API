@@ -1,9 +1,14 @@
 import {BLOGS, POSTS} from "../data/db.data";
 import {requestBodyPost, typeBodyID} from "../models/request.models";
 
+const optionsBlog = {
+  projection: {
+    _id: 0
+  }
+}
 class postService {
   async getAll() {
-    const posts = await POSTS.find({}).toArray();
+    const posts = await POSTS.find({}, optionsBlog).toArray();
     return posts;
   }
 
@@ -11,7 +16,7 @@ class postService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const post = await POSTS.find({id: bodyID}).toArray();
+    const post = await POSTS.find({id: bodyID}, optionsBlog).toArray();
     return post;
   }
 
@@ -31,7 +36,7 @@ class postService {
       createdAt: newDateCreated
     });
 
-    return POSTS.find({_id: createdPost.insertedId}).toArray();
+    return POSTS.find({_id: createdPost.insertedId}, optionsBlog).toArray();
   }
 
   async update(bodyID: typeBodyID, body: requestBodyPost) {
