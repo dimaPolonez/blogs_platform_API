@@ -46,7 +46,7 @@ class blogService {
 
         const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
 
-        if (!result) {
+        if (result.length === 0) {
             return false;
         }
 
@@ -67,7 +67,7 @@ class blogService {
         }
         const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
 
-        if (!result) {
+        if (result.length === 0) {
             return false;
         }
 
