@@ -45,6 +45,13 @@ class postService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
+
+    const result = POSTS.find({id: bodyID}).toArray()
+
+    if (!result) {
+      return false;
+    }
+
     let blogName = await BLOGS.find({id: body.blogId}).toArray();
 
     await POSTS.updateOne({id: bodyID}, {
@@ -55,13 +62,24 @@ class postService {
         blogId: body.blogId,
         blogName: String(blogName.map((field) => {return field.name}))
       }});
+
+    return true;
   }
 
   async delete(bodyID: typeBodyID) {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
+
+    const result = POSTS.find({id: bodyID}).toArray()
+
+    if (!result) {
+      return false;
+    }
+
     await POSTS.deleteOne({id: bodyID});
+    
+    return true;
   }
 }
 
