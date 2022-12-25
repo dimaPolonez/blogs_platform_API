@@ -44,9 +44,9 @@ class blogService {
             throw new Error('не указан ID');
         }
 
-        const result = BLOGS.find({id: bodyID}).toArray()
+        const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
 
-        if (!result) {
+        if (result) {
             return false;
         }
 
@@ -65,9 +65,9 @@ class blogService {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
-        const result = BLOGS.find({id: bodyID}).toArray()
+        const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
 
-        if (!result) {
+        if (result) {
             return false;
         }
 

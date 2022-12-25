@@ -46,9 +46,9 @@ class postService {
       throw new Error('не указан ID');
     }
 
-    const result = POSTS.find({id: bodyID}).toArray()
+    const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
 
-    if (!result) {
+    if (result) {
       return false;
     }
 
@@ -71,14 +71,14 @@ class postService {
       throw new Error('не указан ID');
     }
 
-    const result = POSTS.find({id: bodyID}).toArray()
+    const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
 
-    if (!result) {
+    if (result) {
       return false;
     }
 
     await POSTS.deleteOne({id: bodyID});
-    
+
     return true;
   }
 }
