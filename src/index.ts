@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express';
-import { startBD } from './data/db.data';
+import {BLOGS, ERRORS_CODE, POSTS, startBD} from './data/db.data';
 import blogRouter from './routes/blog.router';
 import postRouter from './routes/post.router';
-import { ERRORS_CODE } from './data/errors.data';
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,7 +18,7 @@ async function startApp() {
   }
 }
 
-startApp();
+startApp()
 
 app.use(express.json());
 
@@ -30,6 +29,12 @@ app.get('/', (req: Request, res: Response) => {
   res.json('Server start!');
 });
 
-app.delete('/testing/all-data', (req: Request, res: Response) => {
-  res.status(ERRORS_CODE.NO_CONTENT_204);
+app.delete('/testing/all-data',async (req: Request, res: Response) => {
+  try {
+    await BLOGS.deleteMany({ });
+    await POSTS.deleteMany({ });
+    res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+  } catch (e) {
+    res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+  }
 });

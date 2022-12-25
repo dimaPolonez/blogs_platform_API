@@ -1,26 +1,14 @@
-import { Request } from 'express';
-
-
-export type RequestBody<T> = Request<{}, {}, T>;
-export type RequestQuery<T> = Request<{}, {}, {}, T>;
-export type RequestParams<T> = Request<T>;
-export type RequestParamsAndBody<P, B> = Request<P, B>;
-
-export type requestId = {
-  id: string;
-};
-
-export type requestBodyPost = {
-  id: string,
+export type requestBodyBlog = {
   name: string,
   description: string,
   websiteUrl: string
 };
 
-export type newBodyPost = {
+export type requestBodyPost = {
   title: string,
   shortDescription: string,
   content: string,
-  blogId: string,
-  blogName: string
+  blogId: string
 };
+
+export type typeBodyID = string;

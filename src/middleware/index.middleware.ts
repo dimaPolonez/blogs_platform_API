@@ -1,6 +1,6 @@
 import { blogValidator } from './blog.middleware';
 import { NextFunction, Request, Response } from 'express';
-import { body, header, param, validationResult } from 'express-validator';
+import { header, validationResult } from 'express-validator';
 import { postValidator } from './post.middleware';
 import { USERS } from '../data/users.data';
 

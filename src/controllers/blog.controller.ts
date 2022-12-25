@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ERRORS_CODE } from '../data/errors.data';
 import blogService from '../services/blog.service';
+import {ERRORS_CODE} from "../data/db.data";
 
 class blogController {
   async getAll(req: Request, res: Response) {
@@ -31,9 +31,9 @@ class blogController {
   }
 
   async update(req: Request, res: Response) {
-    try {
-      const updatedBlog = await blogService.update(req.body);
-      res.status(ERRORS_CODE.NO_CONTENT_204).json(updatedBlog);
+      try {
+      await blogService.update(req.params.id,req.body);
+      res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
     } catch (e) {
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
@@ -41,8 +41,8 @@ class blogController {
 
   async delete(req: Request, res: Response) {
     try {
-      const blog = await blogService.delete(req.params.id);
-      res.status(ERRORS_CODE.NO_CONTENT_204);
+      await blogService.delete(req.params.id);
+      res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
     } catch (e) {
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }

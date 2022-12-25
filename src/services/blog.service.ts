@@ -1,6 +1,5 @@
-import { BLOGS } from '../data/db.data';
-import { blogsFieldsType } from '../models/data.models';
-import {requestBodyPost} from "../models/request.models";
+import {BLOGS} from '../data/db.data';
+import {requestBodyBlog, typeBodyID} from "../models/request.models";
 
 class blogService {
   async getAll() {
@@ -8,40 +7,45 @@ class blogService {
     return blogs;
   }
 
-  async getOne(bodyID: string) {
+  async getOne(bodyID: typeBodyID) {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-/*    const blog = await BLOGS.find({id: bodyID});
-    return blog;*/
+    const blog = await BLOGS.find({id: bodyID}).toArray();
+    return blog;
   }
 
-  async create(body: requestBodyPost) {
+  async create(body: requestBodyBlog) {
+    let idDate = Math.floor(Date.now() + Math.random());
+    let newDateCreated = new Date().toISOString();
+
     const createdBlog = await BLOGS.insertOne({
-      "id": Math.floor(Date.now() + Math.random()),
-      "name": body.name,
-      "description": body.description,
-      "websiteUrl": body.websiteUrl
-    }); //ddd
+      id: String(idDate),
+      name: body.name,
+      description: body.description,
+      websiteUrl: body.websiteUrl,
+      createdAt: newDateCreated
+    });
     return BLOGS.find({_id: createdBlog.insertedId}).toArray();
   }
 
-  async update(body: any) {
-    if (!body) {
-      throw new Error('не указан ID');
-    }
-/*    const updatedBlog = await BLOGS.findByIdAndUpdate(BLOGS._id, BLOGS, {
-      new: true,
-    });
-    return updatedBlog;*/
-  }
-
-  async delete(bodyID: any) {
+  async update(bodyID: typeBodyID, body: requestBodyBlog) {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-/*    const blog = await BLOGS.findByIdAndDelete(bodyID);
-    return blog;*/
+    await BLOGS.updateOne({id: bodyID}, {
+      $set: {
+      name: body.name,
+      description: body.description,
+      websiteUrl: body.websiteUrl
+    }});
+  }
+
+  async delete(bodyID: typeBodyID) {
+    if (!bodyID) {
+      throw new Error('не указан ID');
+    }
+    await BLOGS.deleteOne({id: bodyID});
   }
 }
 

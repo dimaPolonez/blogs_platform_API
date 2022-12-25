@@ -27,6 +27,6 @@
     "watch": "tsc -w",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "test": "jest"
+    "test": "jest --watchAll -o"
   }
 }

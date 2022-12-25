@@ -11,7 +11,7 @@ postRouter.get('/:id', postController.getOne);
 postRouter.post(
   '/',
   indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
+  indexMiddleware.POSTS_VALIDATOR,
   indexMiddleware.ERRORS_VALIDATOR,
   postController.create
 );
@@ -19,7 +19,7 @@ postRouter.post(
 postRouter.put(
   '/:id',
   indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
+  indexMiddleware.POSTS_VALIDATOR,
   indexMiddleware.ERRORS_VALIDATOR,
   postController.update
 );
