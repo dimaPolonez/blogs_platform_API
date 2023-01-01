@@ -15,3 +15,13 @@ export type postsFieldsType = {
   blogName: string,
   createdAt: string
 }
+
+export type responseBlogsType = {
+  _id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string,
+  createdAt: string
+}

@@ -11,4 +11,10 @@ export type requestBodyPost = {
   blogId: string
 };
 
+export type requestBodyPostOfBlog = {
+  title: string,
+  shortDescription: string,
+  content: string
+};
+
 export type typeBodyID = string;

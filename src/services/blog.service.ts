@@ -1,5 +1,7 @@
 import {BLOGS, POSTS} from '../data/db.data';
 import {requestBodyBlog, typeBodyID} from "../models/request.models";
+import {ObjectId} from "mongodb";
+import {responseBlogsType} from "../models/data.models";
 
 const optionsBlog = {
     projection: {
@@ -9,7 +11,7 @@ const optionsBlog = {
 
 class blogService {
     async getAll() {
-        const blogs = await BLOGS.find({}, optionsBlog).toArray();
+        const blogs = await BLOGS.find({}).toArray();
         return blogs;
     }
 
@@ -17,10 +19,17 @@ class blogService {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
-        const blog: Array<object> = await BLOGS.find({id: bodyID}, optionsBlog).toArray();
+        const blog: Array<object> = await BLOGS.find({id: bodyID}).toArray();
 
-        return blog[0];
+        return blog[0]
     }
+
+    /*        return blog.map((responseBlogsType) => {
+                return {
+
+                }
+            })*/
+
 
     async create(body: requestBodyBlog) {
         let idDate = Math.floor(Date.now() + Math.random());

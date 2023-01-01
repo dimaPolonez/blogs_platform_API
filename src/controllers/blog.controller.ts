@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import blogService from '../services/blog.service';
 import {ERRORS_CODE} from "../data/db.data";
+import postService from "../services/post.service";
 
 class blogController {
     async getAll(req: Request, res: Response) {
@@ -60,6 +61,34 @@ class blogController {
 
             if (blog) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+            } else {
+                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            }
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
+    async getAllPostsOfBlog(req: Request, res: Response) {
+        try {
+            const post: object = await postService.getAllPostsOfBlog(req.params.id);
+
+            if (post) {
+                res.status(ERRORS_CODE.OK_200).json(post);
+            } else {
+                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            }
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
+    async createOnePostOfBlog(req: Request, res: Response) {
+        try {
+            const post = await postService.createOnePostOfBlog(req.params.id, req.body);
+
+            if (post) {
+                res.status(ERRORS_CODE.CREATED_201).json(post);
             } else {
                 res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
             }
