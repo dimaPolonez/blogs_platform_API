@@ -1,13 +1,11 @@
-import { Router } from 'express';
+import {Request, Response, Router} from 'express';
 import blogController from '../controllers/blog.controller';
 import { indexMiddleware } from '../middleware/index.middleware';
-import {postsOfBlogValidator} from "../middleware/post.middleware";
+import {requestQueryAll} from "../models/request.models";
+import queryService from "../services/query.service";
+import {ERRORS_CODE} from "../data/db.data";
 
 const blogRouter = Router({});
-
-blogRouter.get('/', blogController.getAll);
-
-blogRouter.get('/:id', blogController.getOne);
 
 blogRouter.post(
   '/',
@@ -31,8 +29,6 @@ blogRouter.delete(
   blogController.delete
 );
 
-blogRouter.get('/:id/posts', blogController.getAllPostsOfBlog);
-
 blogRouter.post(
     '/:id/posts',
     indexMiddleware.BASIC_AUTHORIZATION,
@@ -40,5 +36,41 @@ blogRouter.post(
     indexMiddleware.ERRORS_VALIDATOR,
     blogController.createOnePostOfBlog
 );
+
+
+blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQueryAll>, res: Response) => {
+    try {
+        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
+        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
+        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
+        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+
+        const post = await queryService.getAllPostsOfBlog(req.params.id, pageNumber,
+            pageSize, sortBy, sortDirection);
+
+        if (post) {
+            res.status(ERRORS_CODE.OK_200).json(post);
+        } else {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        }
+    } catch (e) {
+        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+    }
+})
+
+blogRouter.get('/', async (req: Request<[],[],[],requestQueryAll>, res: Response) => {
+    try {
+        let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : 'null'
+        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
+        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
+        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
+        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+
+        const blogs = await queryService.getAllBlogs(searchNameTerm, pageNumber, pageSize, sortBy, sortDirection);
+        res.status(ERRORS_CODE.OK_200).json(blogs);
+    } catch (e) {
+        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+    }
+})
 
 export default blogRouter;

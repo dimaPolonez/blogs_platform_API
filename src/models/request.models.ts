@@ -17,4 +17,14 @@ export type requestBodyPostOfBlog = {
   content: string
 };
 
+export type requestQuery = string;
+
+export type requestQueryAll = {
+  searchNameTerm: string,
+  pageNumber: string,
+  pageSize: string,
+  sortBy: string,
+  sortDirection:string
+};
+
 export type typeBodyID = string;

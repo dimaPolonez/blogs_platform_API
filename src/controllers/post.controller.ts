@@ -3,14 +3,6 @@ import postService from '../services/post.service';
 import {ERRORS_CODE} from "../data/db.data";
 
 class postController {
-  async getAll(req: Request, res: Response) {
-    try {
-      const posts = await postService.getAll();
-      res.status(ERRORS_CODE.OK_200).json(posts);
-    } catch (e) {
-      res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
-    }
-  }
 
   async getOne(req: Request, res: Response) {
     try {

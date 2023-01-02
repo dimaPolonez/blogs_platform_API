@@ -1,19 +1,7 @@
 import {BLOGS, POSTS} from '../data/db.data';
 import {requestBodyBlog, typeBodyID} from "../models/request.models";
-import {ObjectId} from "mongodb";
-import {responseBlogsType} from "../models/data.models";
-
-const optionsBlog = {
-    projection: {
-        _id: 0
-    }
-}
 
 class blogService {
-    async getAll() {
-        const blogs = await BLOGS.find({}).toArray();
-        return blogs;
-    }
 
     async getOne(bodyID: typeBodyID) {
         if (!bodyID) {
@@ -23,13 +11,6 @@ class blogService {
 
         return blog[0]
     }
-
-    /*        return blog.map((responseBlogsType) => {
-                return {
-
-                }
-            })*/
-
 
     async create(body: requestBodyBlog) {
         let idDate = Math.floor(Date.now() + Math.random());
@@ -43,7 +24,7 @@ class blogService {
             createdAt: newDateCreated
         });
 
-        let result: Array<object> = await BLOGS.find({_id: createdBlog.insertedId}, optionsBlog).toArray();
+        let result: Array<object> = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
 
         return result[0]
     }
