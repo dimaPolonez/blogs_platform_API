@@ -29,13 +29,15 @@ class queryService {
             }
         });
 
-        const pagesCount = +blogs.length / +pageSize
+        const allCount = await BLOGS.find({}).toArray();
+
+        const pagesCount = Math.ceil(+allCount.length / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: blogs.length,
+            totalCount: allCount.length,
             items: allMaps
         }
 
@@ -59,13 +61,14 @@ class queryService {
             }
         });
 
-        const pagesCount = +posts.length / +pageSize
+        const allCount = await BLOGS.find({}).toArray();
+        const pagesCount = Math.ceil(+allCount.length / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: posts.length,
+            totalCount: allCount.length,
             items: allMaps
         }
 
@@ -92,14 +95,14 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-
-        const pagesCount = +posts.length / +pageSize
+        const allCount = await BLOGS.find({}).toArray();
+        const pagesCount = Math.ceil(+allCount.length / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: posts.length,
+            totalCount: allCount.length,
             items: allMaps
         }
 
