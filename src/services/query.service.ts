@@ -8,16 +8,18 @@ function sort(sortDir: string) {
 function skipped(pageNum: string, pageSize: string): number {
     return (+pageNum - 1) * (+pageSize);
 }
+
 class queryService {
 
     async getAllBlogs(
         searchNameTerm: requestQuery, pageNum: requestQuery,
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const blogs = await BLOGS.find({}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
-            .sort(( { sortBy : sort(sortDir) } )).toArray();
+        const blogs = await BLOGS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+            .sort(({sortBy: sort(sortDir)})).toArray();
 
-        return blogs.map((field) => {
+
+        const allMaps = blogs.map((field) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -26,14 +28,26 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
+
+        const pagesCount = +blogs.length / +pageSize
+
+        const resultObject = {
+            pagesCount: pagesCount,
+            page: +pageNum,
+            pageSize: +pageSize,
+            totalCount: blogs.length,
+            items: allMaps
+        }
+
+        return resultObject
     }
 
     async getAllPosts(pageNum: requestQuery, pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const posts = await POSTS.find({}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
-            .sort(( { sortBy : sort(sortDir) } )).toArray();
+        const posts = await POSTS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+            .sort(({sortBy: sort(sortDir)})).toArray();
 
-        return posts.map((field) => {
+        const allMaps = posts.map((field) => {
             return {
                 id: field._id,
                 title: field.title,
@@ -44,6 +58,18 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
+
+        const pagesCount = +posts.length / +pageSize
+
+        const resultObject = {
+            pagesCount: pagesCount,
+            page: +pageNum,
+            pageSize: +pageSize,
+            totalCount: posts.length,
+            items: allMaps
+        }
+
+        return resultObject
     }
 
     async getAllPostsOfBlog(bodyID: typeBodyID, pageNum: requestQuery, pageSize: requestQuery,
@@ -52,10 +78,10 @@ class queryService {
             throw new Error('не указан ID');
         }
 
-        const posts = await POSTS.find({ blogId: bodyID}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
-            .sort(( { sortBy : sort(sortDir) } )).toArray();
+        const posts = await POSTS.find({blogId: bodyID}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+            .sort(({sortBy: sort(sortDir)})).toArray();
 
-        return posts.map((field) => {
+        const allMaps = posts.map((field) => {
             return {
                 id: field._id,
                 title: field.title,
@@ -66,6 +92,18 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
+
+        const pagesCount = +posts.length / +pageSize
+
+        const resultObject = {
+            pagesCount: pagesCount,
+            page: +pageNum,
+            pageSize: +pageSize,
+            totalCount: posts.length,
+            items: allMaps
+        }
+
+        return resultObject
 
     }
 
