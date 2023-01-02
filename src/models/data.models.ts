@@ -1,5 +1,7 @@
+import {ObjectId} from "mongodb";
+
 export type blogsFieldsType = {
-  id: string;
+  _id: ObjectId,
   name: string;
   description: string;
   websiteUrl: string,
@@ -7,17 +9,16 @@ export type blogsFieldsType = {
 }
 
 export type postsFieldsType = {
-  id: string;
+  _id: ObjectId,
   title: string;
   shortDescription: string;
   content: string;
-  blogId: string;
+  blogId: ObjectId;
   blogName: string,
   createdAt: string
 }
 
 export type responseBlogsType = {
-  _id: string;
   title: string;
   shortDescription: string;
   content: string;

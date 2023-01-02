@@ -4,8 +4,12 @@ import { indexMiddleware } from '../middleware/index.middleware';
 import {requestQueryAll} from "../models/request.models";
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
+import {ObjectId} from "mongodb";
 
 const blogRouter = Router({});
+
+blogRouter.get(
+    '/:id',blogController.getOne);
 
 blogRouter.post(
   '/',
@@ -44,8 +48,9 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQuery
         let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
         let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
         let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+        const bodyId: ObjectId = new ObjectId(req.params.id);
 
-        const post = await queryService.getAllPostsOfBlog(req.params.id, pageNumber,
+        const post = await queryService.getAllPostsOfBlog(bodyId, pageNumber,
             pageSize, sortBy, sortDirection);
 
         if (post) {

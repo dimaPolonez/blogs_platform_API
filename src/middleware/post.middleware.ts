@@ -38,7 +38,7 @@ export const postValidator = [
     .bail()
     .notEmpty()
     .bail()
-    .isLength({ max: 15 })
+    .isLength({ max: 25 })
     .bail()
     .withMessage('Field blogId incorrect'),
 ];

@@ -1,5 +1,6 @@
 import {BLOGS, POSTS} from "../data/db.data";
 import {requestBodyPost, requestBodyPostOfBlog, typeBodyID} from "../models/request.models";
+import {ObjectId} from "mongodb";
 
 class postService {
 
@@ -7,29 +8,51 @@ class postService {
     if (!bodyID) {
       throw new Error('не указан ID');
     }
-    const post: Array<object> = await POSTS.find({id: bodyID}).toArray();
-    return post[0];
+    const post = await POSTS.find({ _id: bodyID }).toArray();
+
+    return post.map((field) => {
+      return {
+        id: field._id,
+        title: field.title,
+        shortDescription: field.shortDescription,
+        content: field.content,
+        blogId: field.blogId,
+        blogName: field.blogName,
+        createdAt: field.createdAt
+      }
+    });
   }
 
   async create(body: requestBodyPost) {
-    let idDate = Math.floor(Date.now() + Math.random());
     let newDateCreated = new Date().toISOString();
+    const blogBodyId: ObjectId = new ObjectId(body.blogId);
 
-    let blogName = await BLOGS.find({id: body.blogId}).toArray();
+    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
+    const blogName = String(blogFind.map((field) => {return field.name}))
 
     const createdPost = await POSTS.insertOne({
-      id: String(idDate),
+      _id: new ObjectId(),
       title: body.title,
       shortDescription: body.shortDescription,
       content: body.content,
-      blogId: body.blogId,
-      blogName: String(blogName.map((field) => {return field.name})),
+      blogId: blogBodyId,
+      blogName: blogName,
       createdAt: newDateCreated
     });
 
-    let result: Array<object> = await POSTS.find({_id: createdPost.insertedId}).toArray();
+    let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
 
-    return result[0]
+    return result.map((field) => {
+      return {
+        id: field._id,
+        title: field.title,
+        shortDescription: field.shortDescription,
+        content: field.content,
+        blogId: field.blogId,
+        blogName: field.blogName,
+        createdAt: field.createdAt
+      }
+    });
   }
 
   async update(bodyID: typeBodyID, body: requestBodyPost) {
@@ -37,21 +60,23 @@ class postService {
       throw new Error('не указан ID');
     }
 
-    const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
+    const result = await POSTS.find({_id: bodyID}).toArray()
 
     if (result.length === 0) {
       return false;
     }
+    const blogBodyId: ObjectId = new ObjectId(body.blogId);
 
-    let blogName = await BLOGS.find({id: body.blogId}).toArray();
+    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
+    const blogName = String(blogFind.map((field) => {return field.name}))
 
-    await POSTS.updateOne({id: bodyID}, {
+    await POSTS.updateOne({_id: bodyID}, {
       $set: {
         title: body.title,
         shortDescription: body.shortDescription,
         content: body.content,
-        blogId: body.blogId,
-        blogName: String(blogName.map((field) => {return field.name}))
+        blogId: blogBodyId,
+        blogName: blogName
       }});
 
     return true;
@@ -62,38 +87,48 @@ class postService {
       throw new Error('не указан ID');
     }
 
-    const result: Array<object> = await POSTS.find({id: bodyID}).toArray()
+    const result = await POSTS.find({_id: bodyID}).toArray()
 
     if (result.length === 0) {
       return false;
     }
 
-    await POSTS.deleteOne({id: bodyID});
+    await POSTS.deleteOne({_id: bodyID});
 
     return true;
   }
 
   async createOnePostOfBlog(bodyID: typeBodyID, body: requestBodyPostOfBlog) {
 
-    let idDate = Math.floor(Date.now() + Math.random());
-
     let newDateCreated = new Date().toISOString();
+    const blogBodyId: ObjectId = new ObjectId(bodyID);
 
-    let blogName = await BLOGS.find({id: bodyID}).toArray();
+    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
+    const blogName = String(blogFind.map((field) => {return field.name}))
 
     const createdPost = await POSTS.insertOne({
-      id: String(idDate),
+      _id: new ObjectId(),
       title: body.title,
       shortDescription: body.shortDescription,
       content: body.content,
-      blogId: bodyID,
-      blogName: String(blogName.map((field) => {return field.name})),
+      blogId: blogBodyId,
+      blogName: blogName,
       createdAt: newDateCreated
     });
 
-    let result: Array<object> = await POSTS.find({_id: createdPost.insertedId}).toArray();
+    let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
 
-    return result[0]
+    return result.map((field) => {
+      return {
+        id: field._id,
+        title: field.title,
+        shortDescription: field.shortDescription,
+        content: field.content,
+        blogId: field.blogId,
+        blogName: field.blogName,
+        createdAt: field.createdAt
+      }
+    });
   }
 
 }

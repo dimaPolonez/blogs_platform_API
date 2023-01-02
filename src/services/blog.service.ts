@@ -1,5 +1,6 @@
-import {BLOGS, POSTS} from '../data/db.data';
+import {BLOGS} from '../data/db.data';
 import {requestBodyBlog, typeBodyID} from "../models/request.models";
+import {ObjectId} from "mongodb";
 
 class blogService {
 
@@ -7,26 +8,41 @@ class blogService {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
-        const blog: Array<object> = await BLOGS.find({id: bodyID}).toArray();
+        const blog = await BLOGS.find({ _id: bodyID }).toArray();
 
-        return blog[0]
+        return blog.map((field) => {
+            return {
+                id: field._id,
+                name: field.name,
+                description: field.description,
+                websiteUrl: field.websiteUrl,
+                createdAt: field.createdAt
+            }
+        });
     }
 
     async create(body: requestBodyBlog) {
-        let idDate = Math.floor(Date.now() + Math.random());
         let newDateCreated = new Date().toISOString();
 
         const createdBlog = await BLOGS.insertOne({
-            id: String(idDate),
+            _id: new ObjectId(),
             name: body.name,
             description: body.description,
             websiteUrl: body.websiteUrl,
             createdAt: newDateCreated
         });
 
-        let result: Array<object> = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
+        let result = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
 
-        return result[0]
+        return result.map((field) => {
+            return {
+                id: field._id,
+                name: field.name,
+                description: field.description,
+                websiteUrl: field.websiteUrl,
+                createdAt: field.createdAt
+            }
+        });
     }
 
     async update(bodyID: typeBodyID, body: requestBodyBlog) {
@@ -34,13 +50,13 @@ class blogService {
             throw new Error('не указан ID');
         }
 
-        const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
+        const result = await BLOGS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
             return false;
         }
 
-        await BLOGS.updateOne({id: bodyID}, {
+        await BLOGS.updateOne({_id: bodyID}, {
             $set: {
                 name: body.name,
                 description: body.description,
@@ -55,13 +71,13 @@ class blogService {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
-        const result: Array<object> = await BLOGS.find({id: bodyID}).toArray()
+        const result = await BLOGS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
             return false;
         }
 
-        await BLOGS.deleteOne({id: bodyID});
+        await BLOGS.deleteOne({_id: bodyID});
 
         return true;
     }

@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 export type requestBodyBlog = {
   name: string,
   description: string,
@@ -8,7 +10,7 @@ export type requestBodyPost = {
   title: string,
   shortDescription: string,
   content: string,
-  blogId: string
+  blogId: ObjectId
 };
 
 export type requestBodyPostOfBlog = {
@@ -27,4 +29,4 @@ export type requestQueryAll = {
   sortDirection:string
 };
 
-export type typeBodyID = string;
+export type typeBodyID = ObjectId;

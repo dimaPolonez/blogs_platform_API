@@ -7,6 +7,9 @@ import {ERRORS_CODE} from "../data/db.data";
 
 const postRouter = Router({});
 
+postRouter.get(
+    '/:id',postController.getOne);
+
 postRouter.post(
   '/',
   indexMiddleware.BASIC_AUTHORIZATION,

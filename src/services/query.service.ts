@@ -1,27 +1,49 @@
 import {BLOGS, POSTS} from "../data/db.data";
 import {requestQuery, typeBodyID} from "../models/request.models";
 
+function sort(sortDir: string) {
+    return (sortDir === 'desc') ? -1 : 1;
+}
+
+function skipped(pageNum: string, pageSize: string): number {
+    return (+pageNum - 1) * (+pageSize);
+}
 class queryService {
+
     async getAllBlogs(
         searchNameTerm: requestQuery, pageNum: requestQuery,
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const sort = (sortDir === 'desc') ? -1 : 1
+        const blogs = await BLOGS.find({}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
+            .sort(( { sortBy : sort(sortDir) } )).toArray();
 
-        const skipped = (+pageNum - 1) * (+pageSize);
-
-        const blogs = await BLOGS.find({}).skip(skipped).limit(+pageSize).sort(( { sortBy : sort } )).toArray();
-        return blogs;
+        return blogs.map((field) => {
+            return {
+                id: field._id,
+                name: field.name,
+                description: field.description,
+                websiteUrl: field.websiteUrl,
+                createdAt: field.createdAt
+            }
+        });
     }
 
     async getAllPosts(pageNum: requestQuery, pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const sort = (sortDir === 'desc') ? -1 : 1
+        const posts = await POSTS.find({}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
+            .sort(( { sortBy : sort(sortDir) } )).toArray();
 
-        const skipped = (+pageNum - 1) * (+pageSize);
-
-        const posts = await POSTS.find({}).skip(skipped).limit(+pageSize).sort(( { sortBy : sort } )).toArray();
-        return posts;
+        return posts.map((field) => {
+            return {
+                id: field._id,
+                title: field.title,
+                shortDescription: field.shortDescription,
+                content: field.content,
+                blogId: field.blogId,
+                blogName: field.blogName,
+                createdAt: field.createdAt
+            }
+        });
     }
 
     async getAllPostsOfBlog(bodyID: typeBodyID, pageNum: requestQuery, pageSize: requestQuery,
@@ -30,12 +52,20 @@ class queryService {
             throw new Error('не указан ID');
         }
 
-        const sort = (sortDir === 'desc') ? -1 : 1
+        const posts = await POSTS.find({ blogId: bodyID}).skip(skipped(pageNum,pageSize)).limit(+pageSize)
+            .sort(( { sortBy : sort(sortDir) } )).toArray();
 
-        const skipped = (+pageNum - 1) * (+pageSize);
-
-        const posts = await POSTS.find({}).skip(skipped).limit(+pageSize).sort(( { sortBy : sort } )).toArray();
-        return posts;
+        return posts.map((field) => {
+            return {
+                id: field._id,
+                title: field.title,
+                shortDescription: field.shortDescription,
+                content: field.content,
+                blogId: bodyID,
+                blogName: field.blogName,
+                createdAt: field.createdAt
+            }
+        });
 
     }
 
