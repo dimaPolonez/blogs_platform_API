@@ -2,6 +2,8 @@ import {BLOGS, POSTS} from "../data/db.data";
 import {requestBodyPost, requestBodyPostOfBlog, typeBodyID} from "../models/request.models";
 import {ObjectId} from "mongodb";
 
+const newDateCreated = new Date().toISOString();
+
 class postService {
 
   async getOne(bodyID: typeBodyID) {
@@ -26,7 +28,7 @@ class postService {
   }
 
   async create(body: requestBodyPost) {
-    let newDateCreated = new Date().toISOString();
+
     const blogBodyId: ObjectId = new ObjectId(body.blogId);
 
     const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();

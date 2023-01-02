@@ -61,7 +61,7 @@ class queryService {
             }
         });
 
-        const allCount = await BLOGS.find({}).toArray();
+        const allCount = await POSTS.find({}).toArray();
         const pagesCount = Math.ceil(+allCount.length / +pageSize)
 
         const resultObject = {
@@ -81,6 +81,12 @@ class queryService {
             throw new Error('не указан ID');
         }
 
+        const result = await BLOGS.find({_id: bodyID}).toArray()
+
+        if (result.length === 0) {
+            return false;
+        }
+
         const posts = await POSTS.find({blogId: bodyID}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort(({sortBy: sort(sortDir)})).toArray();
 
@@ -95,7 +101,7 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-        const allCount = await BLOGS.find({}).toArray();
+        const allCount = await POSTS.find({}).toArray();
         const pagesCount = Math.ceil(+allCount.length / +pageSize)
 
         const resultObject = {
