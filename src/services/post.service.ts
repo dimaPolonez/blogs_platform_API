@@ -10,7 +10,7 @@ class postService {
     }
     const post = await POSTS.find({ _id: bodyID }).toArray();
 
-    return post.map((field) => {
+    const objResult = post.map((field) => {
       return {
         id: field._id,
         title: field.title,
@@ -21,6 +21,8 @@ class postService {
         createdAt: field.createdAt
       }
     });
+
+    return objResult[0]
   }
 
   async create(body: requestBodyPost) {
@@ -42,7 +44,7 @@ class postService {
 
     let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
 
-    return result.map((field) => {
+    const objResult = result.map((field) => {
       return {
         id: field._id,
         title: field.title,
@@ -53,6 +55,8 @@ class postService {
         createdAt: field.createdAt
       }
     });
+
+    return objResult[0]
   }
 
   async update(bodyID: typeBodyID, body: requestBodyPost) {
@@ -118,7 +122,7 @@ class postService {
 
     let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
 
-    return result.map((field) => {
+    const objResult = result.map((field) => {
       return {
         id: field._id,
         title: field.title,
@@ -129,6 +133,8 @@ class postService {
         createdAt: field.createdAt
       }
     });
+
+    return objResult[0]
   }
 
 }

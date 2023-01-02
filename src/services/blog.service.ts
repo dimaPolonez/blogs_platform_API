@@ -10,7 +10,7 @@ class blogService {
         }
         const blog = await BLOGS.find({ _id: bodyID }).toArray();
 
-        return blog.map((field) => {
+        const objResult = blog.map((field) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -19,6 +19,8 @@ class blogService {
                 createdAt: field.createdAt
             }
         });
+
+        return objResult[0]
     }
 
     async create(body: requestBodyBlog) {
@@ -34,7 +36,7 @@ class blogService {
 
         let result = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
 
-        return result.map((field) => {
+        const objResult = result.map((field) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -43,6 +45,8 @@ class blogService {
                 createdAt: field.createdAt
             }
         });
+
+        return objResult[0]
     }
 
     async update(bodyID: typeBodyID, body: requestBodyBlog) {
