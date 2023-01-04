@@ -34,10 +34,10 @@ postRouter.delete(
 
 postRouter.get('/', async (req: Request<[],[],[],requestQueryAll>, res: Response) => {
     try {
-        let pageNumber =  req.query.pageNumber || '' ? req.query.pageNumber : '1'
-        let pageSize =  req.query.pageSize || '' ? req.query.pageSize : '10'
-        let sortBy =  req.query.sortBy || '' ? req.query.sortBy : 'createdAt'
-        let sortDirection =  req.query.sortDirection || '' ? req.query.sortDirection : 'desc'
+        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
+        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
+        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
+        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
 
         const posts = await queryService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
         res.status(ERRORS_CODE.OK_200).json(posts);
