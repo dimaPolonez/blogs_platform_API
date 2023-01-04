@@ -44,10 +44,10 @@ blogRouter.post(
 
 blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQueryAll>, res: Response) => {
     try {
-        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
-        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
-        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
-        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+        let pageNumber =  req.query.pageNumber || '' ? req.query.pageNumber : '1'
+        let pageSize =  req.query.pageSize || '' ? req.query.pageSize : '10'
+        let sortBy =  req.query.sortBy || '' ? req.query.sortBy : 'createdAt'
+        let sortDirection =  req.query.sortDirection || '' ? req.query.sortDirection : 'desc'
 
         const bodyId: ObjectId = new ObjectId(req.params.id);
 
@@ -66,11 +66,11 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQuery
 
 blogRouter.get('/', async (req: Request<[],[], {},requestQueryAll>, res: Response) => {
     try {
-        let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : {}
-        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
-        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
-        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
-        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+        let searchNameTerm =  req.query.searchNameTerm || '' ? req.query.searchNameTerm : {}
+        let pageNumber =  req.query.pageNumber || '' ? req.query.pageNumber : '1'
+        let pageSize =  req.query.pageSize || '' ? req.query.pageSize : '10'
+        let sortBy =  req.query.sortBy || '' ? req.query.sortBy : 'createdAt'
+        let sortDirection =  req.query.sortDirection || '' ? req.query.sortDirection : 'desc'
 
         const blogs = await queryService.getAllBlogs(searchNameTerm, pageNumber, pageSize, sortBy, sortDirection);
         res.status(ERRORS_CODE.OK_200).json(blogs);
