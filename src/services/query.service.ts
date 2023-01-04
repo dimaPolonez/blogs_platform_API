@@ -1,5 +1,5 @@
 import {BLOGS, POSTS} from "../data/db.data";
-import {requestQuery, typeBodyID} from "../models/request.models";
+import {requestQuery, requestQueryAll, requestQuerySearch, typeBodyID} from "../models/request.models";
 
 function sort(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
@@ -12,10 +12,10 @@ function skipped(pageNum: string, pageSize: string): number {
 class queryService {
 
     async getAllBlogs(
-        searchNameTerm: requestQuery, pageNum: requestQuery,
+        searchNameTerm: requestQuerySearch, pageNum: requestQuery,
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const blogs = await BLOGS.find({ name: {$regex: searchNameTerm}}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+        const blogs = await BLOGS.find({name: { $regex: `(?i)${searchNameTerm}` }}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort({[sortBy]: sort(sortDir)}).toArray();
 
         const allMaps = blogs.map((field) => {

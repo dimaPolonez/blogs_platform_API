@@ -21,8 +21,10 @@ export type requestBodyPostOfBlog = {
 
 export type requestQuery = string;
 
+export type requestQuerySearch = string | object;
+
 export type requestQueryAll = {
-  searchNameTerm: string,
+  searchNameTerm: string | object,
   pageNumber: string,
   pageSize: string,
   sortBy: string,
