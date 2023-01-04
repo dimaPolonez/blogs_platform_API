@@ -63,7 +63,7 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQuery
     }
 })
 
-blogRouter.get('/', async (req: Request<[],[],[],requestQueryAll>, res: Response) => {
+blogRouter.get('/', async (req: Request<[],[], {},requestQueryAll>, res: Response) => {
     try {
         let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : 'null'
         let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'

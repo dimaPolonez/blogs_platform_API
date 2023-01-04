@@ -16,7 +16,7 @@ class queryService {
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
         const blogs = await BLOGS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort(({sortBy: sort(sortDir)})).toArray();
+            .sort({[sortBy]: sort(sortDir)}).toArray();
 
 
         const allMaps = blogs.map((field) => {
@@ -29,15 +29,14 @@ class queryService {
             }
         });
 
-        const allCount = await BLOGS.find({}).toArray();
-
-        const pagesCount = Math.ceil(+allCount.length / +pageSize)
+        const allCount = await BLOGS.countDocuments({});
+        const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: allCount.length,
+            totalCount: allCount,
             items: allMaps
         }
 
@@ -47,7 +46,7 @@ class queryService {
     async getAllPosts(pageNum: requestQuery, pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
         const posts = await POSTS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort(({sortBy: sort(sortDir)})).toArray();
+            .sort(({[sortBy]: sort(sortDir)})).toArray();
 
         const allMaps = posts.map((field) => {
             return {
@@ -61,14 +60,14 @@ class queryService {
             }
         });
 
-        const allCount = await POSTS.find({}).toArray();
-        const pagesCount = Math.ceil(+allCount.length / +pageSize)
+        const allCount = await POSTS.countDocuments({});
+        const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: allCount.length,
+            totalCount: allCount,
             items: allMaps
         }
 
@@ -88,7 +87,7 @@ class queryService {
         }
 
         const posts = await POSTS.find({blogId: bodyID}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort(({sortBy: sort(sortDir)})).toArray();
+            .sort(({[sortBy]: sort(sortDir)})).toArray();
 
         const allMaps = posts.map((field) => {
             return {
@@ -101,14 +100,14 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-        const allCount = await POSTS.find({}).toArray();
-        const pagesCount = Math.ceil(+allCount.length / +pageSize)
+        const allCount = await POSTS.countDocuments({});
+        const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {
             pagesCount: pagesCount,
             page: +pageNum,
             pageSize: +pageSize,
-            totalCount: allCount.length,
+            totalCount: +allCount,
             items: allMaps
         }
 
