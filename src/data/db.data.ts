@@ -33,3 +33,5 @@ export const ERRORS_CODE = {
   NOT_FOUND_404: 404,
   INTERNAL_SERVER_ERROR_500: 500,
 };
+
+export let newDateCreated = new Date().toISOString();
