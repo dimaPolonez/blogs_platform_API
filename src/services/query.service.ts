@@ -15,9 +15,8 @@ class queryService {
         searchNameTerm: requestQuery, pageNum: requestQuery,
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const blogs = await BLOGS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+        const blogs = await BLOGS.find({ name: /searchNameTerm/i }).skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort({[sortBy]: sort(sortDir)}).toArray();
-
 
         const allMaps = blogs.map((field) => {
             return {
