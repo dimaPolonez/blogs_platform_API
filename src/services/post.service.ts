@@ -107,9 +107,13 @@ class postService {
   async createOnePostOfBlog(bodyID: typeBodyID, body: requestBodyPostOfBlog) {
 
     let newDateCreated = new Date().toISOString();
-    const blogBodyId: ObjectId = new ObjectId(bodyID);
 
-    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
+    const blogFind = await BLOGS.find({ _id: bodyID}).toArray();
+
+    if (blogFind.length === 0) {
+      return false;
+    }
+
     const blogName = String(blogFind.map((field) => {return field.name}))
 
     const createdPost = await POSTS.insertOne({
@@ -117,7 +121,7 @@ class postService {
       title: body.title,
       shortDescription: body.shortDescription,
       content: body.content,
-      blogId: blogBodyId,
+      blogId: bodyID,
       blogName: blogName,
       createdAt: newDateCreated
     });

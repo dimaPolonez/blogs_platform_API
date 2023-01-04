@@ -48,6 +48,7 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQuery
         let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
         let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
         let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+
         const bodyId: ObjectId = new ObjectId(req.params.id);
 
         const post = await queryService.getAllPostsOfBlog(bodyId, pageNumber,
