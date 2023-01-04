@@ -1,4 +1,4 @@
-import {BLOGS, newDateCreated} from '../data/db.data';
+import {BLOGS} from '../data/db.data';
 import {requestBodyBlog, typeBodyID} from "../models/request.models";
 import {ObjectId} from "mongodb";
 
@@ -24,6 +24,8 @@ class blogService {
     }
 
     async create(body: requestBodyBlog) {
+
+        const newDateCreated = new Date().toISOString();
 
         const createdBlog = await BLOGS.insertOne({
             _id: new ObjectId(),
