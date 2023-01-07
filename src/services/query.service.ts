@@ -15,8 +15,12 @@ class queryService {
         searchNameTerm: requestQuerySearch, pageNum: requestQuery,
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
-        const blogs = await BLOGS.find({name: { $regex: `(?i)${searchNameTerm}` }}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
+        const blogs = await BLOGS
+            .find({name: new RegExp(searchNameTerm,'gi')})
+/*            .find({name: { $regex: `(?i)${searchNameTerm}` }})*/
+            .skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort({[sortBy]: sort(sortDir)}).toArray();
+
 
         const allMaps = blogs.map((field) => {
             return {
@@ -99,7 +103,7 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-        const allCount = await POSTS.countDocuments({});
+        const allCount = await POSTS.countDocuments({blogId: bodyID});
         const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {

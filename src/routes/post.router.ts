@@ -32,7 +32,7 @@ postRouter.delete(
   postController.delete
 );
 
-postRouter.get('/', async (req: Request<[],[],[],requestQueryAll>, res: Response) => {
+postRouter.get('/', async (req: Request<{},{},{},requestQueryAll>, res: Response) => {
     try {
         let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
         let pageSize =  req.query.pageSize ? req.query.pageSize : '10'

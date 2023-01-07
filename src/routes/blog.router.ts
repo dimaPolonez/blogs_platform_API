@@ -42,7 +42,7 @@ blogRouter.post(
 );
 
 
-blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQueryAll>, res: Response) => {
+blogRouter.get('/:id/posts', async (req: Request<{id: string},{},{},requestQueryAll>, res: Response) => {
     try {
         let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
         let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
@@ -64,9 +64,9 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},[],[],requestQuery
     }
 })
 
-blogRouter.get('/', async (req: Request<[],[], {},requestQueryAll>, res: Response) => {
+blogRouter.get('/', async (req: Request<{},{}, {},requestQueryAll>, res: Response) => {
     try {
-        let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : {}
+        let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : ''
         let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
         let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
         let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
