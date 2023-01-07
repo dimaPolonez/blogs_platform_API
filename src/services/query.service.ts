@@ -32,7 +32,7 @@ class queryService {
             }
         });
 
-        const allCount = await BLOGS.countDocuments({});
+        const allCount = await BLOGS.countDocuments({name: new RegExp(searchNameTerm,'gi')});
         const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {
