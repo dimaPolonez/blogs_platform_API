@@ -1,11 +1,12 @@
-import {BLOGS, POSTS} from "../data/db.data";
-import {requestQuery, requestQueryAll, requestQuerySearch, typeBodyID} from "../models/request.models";
+import {BLOGS, POSTS, USERS} from "../data/db.data";
+import {queryAllUser, requestQuery, requestQueryAll, requestQuerySearch, typeBodyID} from "../models/request.models";
+import {usersFieldsType} from "../models/data.models";
 
 function sort(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
 }
 
-function skipped(pageNum: string, pageSize: string): number {
+function skipped(pageNum: string | number, pageSize: string | number): number {
     return (+pageNum - 1) * (+pageSize);
 }
 
@@ -17,7 +18,6 @@ class queryService {
 
         const blogs = await BLOGS
             .find({name: new RegExp(searchNameTerm,'gi')})
-/*            .find({name: { $regex: `(?i)${searchNameTerm}` }})*/
             .skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort({[sortBy]: sort(sortDir)}).toArray();
 
@@ -116,6 +116,44 @@ class queryService {
 
         return resultObject
 
+    }
+
+    async getAllUsers(queryAll: queryAllUser) {
+
+        const users = await USERS
+            .find({$and:[
+                {login: new RegExp(queryAll.searchLoginTerm,'gi')},
+                {email: new RegExp(queryAll.searchEmailTerm,'gi')}
+                ]})
+            .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
+
+        const allMaps = users.map((field:usersFieldsType) => {
+            return {
+                id: field._id,
+                login: field.login,
+                email: field.email,
+                createdAt: field.createdAt
+            }
+        });
+
+        const allCount = await USERS.countDocuments(
+            {$and:[
+                    {login: new RegExp(queryAll.searchLoginTerm,'gi')},
+                    {email: new RegExp(queryAll.searchEmailTerm,'gi')}
+                ]});
+        const pagesCount = Math.ceil(allCount / queryAll.pageSize)
+
+        const resultObject = {
+            pagesCount: pagesCount,
+            page: queryAll.pageNumber,
+            pageSize: queryAll.pageSize,
+            totalCount: allCount,
+            items: allMaps
+        }
+
+        return resultObject
     }
 
 }

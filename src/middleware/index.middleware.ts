@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { header, validationResult } from 'express-validator';
 import {postsOfBlogValidator, postValidator} from './post.middleware';
 import { USERS } from '../data/users.data';
+import {userAuthValidator, usersValidator} from "./user.middleware";
 
 export const basicAuthorization = (
   req: Request,
@@ -53,5 +54,7 @@ export const indexMiddleware = {
   BLOGS_VALIDATOR: blogValidator,
   POSTS_VALIDATOR: postValidator,
   POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
+  USERS_VALIDATOR: usersValidator,
+  USER_AUTH: userAuthValidator,
   ERRORS_VALIDATOR: errorsValidator,
 };

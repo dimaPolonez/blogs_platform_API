@@ -6,6 +6,12 @@ export type requestBodyBlog = {
   websiteUrl: string
 };
 
+export type requestBodyUser = {
+  login: string,
+  password: string,
+  email: string
+};
+
 export type requestBodyPost = {
   title: string,
   shortDescription: string,
@@ -32,3 +38,27 @@ export type requestQueryAll = {
 };
 
 export type typeBodyID = ObjectId;
+
+export type requestQueryUser = {
+  sortBy: string,
+  sortDirection: string,
+  pageNumber: string,
+  pageSize: string,
+  searchLoginTerm: string,
+  searchEmailTerm: string
+}
+
+export type queryAllUser = {
+  sortBy: string,
+  sortDirection: string,
+  pageNumber: number,
+  pageSize: number,
+  searchLoginTerm: string,
+  searchEmailTerm: string
+}
+
+
+export type queryAuthUser = {
+  loginOrEmail: string,
+  password: string
+}

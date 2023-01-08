@@ -18,6 +18,15 @@ export type postsFieldsType = {
   createdAt: string
 }
 
+export type usersFieldsType = {
+  _id: ObjectId,
+  login: string;
+  email: string;
+  saltPass: string;
+  hushPass: string;
+  createdAt: string
+}
+
 export type responseBlogsType = {
   title: string;
   shortDescription: string;
