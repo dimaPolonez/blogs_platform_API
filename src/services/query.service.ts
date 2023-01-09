@@ -133,9 +133,6 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
 
-/*        {login: new RegExp(queryAll.searchLoginTerm,'gi'),
-            email: new RegExp(queryAll.searchEmailTerm,'gi')}*/
-
         const allMaps = users.map((field: usersFieldsType) => {
             return {
                 id: field._id,
@@ -147,8 +144,10 @@ class queryService {
 
         const allCount = await USERS.countDocuments(
             {
-                login: new RegExp(queryAll.searchLoginTerm, 'gi'),
-                email: new RegExp(queryAll.searchEmailTerm, 'gi')
+                $or: [
+                    {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
+                    {email: new RegExp(queryAll.searchEmailTerm, 'gi')}
+                ]
             });
 
         const pagesCount = Math.ceil(allCount / queryAll.pageSize)

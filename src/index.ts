@@ -43,7 +43,7 @@ app.post('/auth/login',
             if (auth) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
             } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
