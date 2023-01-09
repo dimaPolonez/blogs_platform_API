@@ -123,7 +123,7 @@ class queryService {
         const users = await USERS
             .find(
                 {
-                    $and: [
+                    $or: [
                         {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
                         {email: new RegExp(queryAll.searchEmailTerm, 'gi')}
                     ]
