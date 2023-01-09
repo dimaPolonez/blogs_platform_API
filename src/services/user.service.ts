@@ -2,11 +2,30 @@ import {queryAuthUser, requestBodyUser, typeBodyID} from "../models/request.mode
 import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcrypt from "bcrypt";
-import {usersFieldsType} from "../models/data.models";
+
+
+
+async function saltPassGenerate(password: string) {
+
+    const salt = await bcrypt.genSalt(10);
+
+    const hush = await hashPassGenerate(password, salt);
+
+    return hush
+}
 
 async function hashPassGenerate(password: string, saltPass: string) {
+
     const hush = await bcrypt.hash(password, saltPass);
+
     return hush
+}
+
+async function hashPassCompare(password: string, hush: string) {
+
+    const result = await bcrypt.compare(password, hush);
+
+    return result
 }
 
 class userService {
@@ -15,14 +34,12 @@ class userService {
 
         const newDateCreated = new Date().toISOString();
 
-        const saltPass = await bcrypt.genSalt(100);
-        const hushPass = await hashPassGenerate(body.password, saltPass);
+        const hushPass = await saltPassGenerate(body.password)
 
         const createdUser = await USERS.insertOne({
             _id: new ObjectId(),
             login: body.login,
             email: body.email,
-            saltPass: saltPass,
             hushPass: hushPass,
             createdAt: newDateCreated
         });
@@ -59,22 +76,21 @@ class userService {
 
     async auth(body: queryAuthUser) {
 
-        const findName = await USERS.find({
-            $or: [
-                {name: body.loginOrEmail},
-                {email: body.loginOrEmail}
-            ]
-        }).toArray();
+        const findName = await USERS.find(
+            {
+                login: new RegExp(body.loginOrEmail,'gi'),
+                email: new RegExp(body.loginOrEmail,'gi')})
+                .toArray();
 
         if (findName.length === 0) {
             return false
         }
 
         const hushPassDB = findName.map((f) => f.hushPass);
-        const saltPass = findName.map((f) => f.saltPass);
-        const hushPassUser = await hashPassGenerate(body.password,saltPass[0])
 
-        if (hushPassUser != hushPassDB[0]) {
+        const result = await hashPassCompare(body.password,hushPassDB[0]);
+
+        if (!result) {
             return false
         }
 

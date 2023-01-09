@@ -1,5 +1,5 @@
 import {BLOGS, POSTS, USERS} from "../data/db.data";
-import {queryAllUser, requestQuery, requestQueryAll, requestQuerySearch, typeBodyID} from "../models/request.models";
+import {queryAllUser, requestQuery, requestQuerySearch, typeBodyID} from "../models/request.models";
 import {usersFieldsType} from "../models/data.models";
 
 function sort(sortDir: string) {
@@ -121,10 +121,10 @@ class queryService {
     async getAllUsers(queryAll: queryAllUser) {
 
         const users = await USERS
-            .find({$and:[
-                {login: new RegExp(queryAll.searchLoginTerm,'gi')},
-                {email: new RegExp(queryAll.searchEmailTerm,'gi')}
-                ]})
+            .find(
+                {login: new RegExp(queryAll.searchLoginTerm,'gi'),
+                    email: new RegExp(queryAll.searchEmailTerm,'gi')}
+                )
             .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
@@ -139,10 +139,9 @@ class queryService {
         });
 
         const allCount = await USERS.countDocuments(
-            {$and:[
-                    {login: new RegExp(queryAll.searchLoginTerm,'gi')},
-                    {email: new RegExp(queryAll.searchEmailTerm,'gi')}
-                ]});
+            {login: new RegExp(queryAll.searchLoginTerm,'gi'),
+                email: new RegExp(queryAll.searchEmailTerm,'gi')});
+
         const pagesCount = Math.ceil(allCount / queryAll.pageSize)
 
         const resultObject = {

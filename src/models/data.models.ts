@@ -22,7 +22,6 @@ export type usersFieldsType = {
   _id: ObjectId,
   login: string;
   email: string;
-  saltPass: string;
   hushPass: string;
   createdAt: string
 }
