@@ -17,7 +17,7 @@ class queryService {
         pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
 
         const blogs = await BLOGS
-            .find({name: new RegExp(searchNameTerm,'gi')})
+            .find({name: new RegExp(searchNameTerm, 'gi')})
             .skip(skipped(pageNum, pageSize)).limit(+pageSize)
             .sort({[sortBy]: sort(sortDir)}).toArray();
 
@@ -32,7 +32,7 @@ class queryService {
             }
         });
 
-        const allCount = await BLOGS.countDocuments({name: new RegExp(searchNameTerm,'gi')});
+        const allCount = await BLOGS.countDocuments({name: new RegExp(searchNameTerm, 'gi')});
         const pagesCount = Math.ceil(+allCount / +pageSize)
 
         const resultObject = {
@@ -122,14 +122,21 @@ class queryService {
 
         const users = await USERS
             .find(
-                {login: new RegExp(queryAll.searchLoginTerm,'gi'),
-                    email: new RegExp(queryAll.searchEmailTerm,'gi')}
-                )
+                {
+                    $and: [
+                        {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
+                        {email: new RegExp(queryAll.searchEmailTerm, 'gi')}
+                    ]
+                }
+            )
             .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
 
-        const allMaps = users.map((field:usersFieldsType) => {
+/*        {login: new RegExp(queryAll.searchLoginTerm,'gi'),
+            email: new RegExp(queryAll.searchEmailTerm,'gi')}*/
+
+        const allMaps = users.map((field: usersFieldsType) => {
             return {
                 id: field._id,
                 login: field.login,
@@ -139,8 +146,10 @@ class queryService {
         });
 
         const allCount = await USERS.countDocuments(
-            {login: new RegExp(queryAll.searchLoginTerm,'gi'),
-                email: new RegExp(queryAll.searchEmailTerm,'gi')});
+            {
+                login: new RegExp(queryAll.searchLoginTerm, 'gi'),
+                email: new RegExp(queryAll.searchEmailTerm, 'gi')
+            });
 
         const pagesCount = Math.ceil(allCount / queryAll.pageSize)
 

@@ -4,7 +4,6 @@ import {ObjectId} from "mongodb";
 import bcrypt from "bcrypt";
 
 
-
 async function saltPassGenerate(password: string) {
 
     const salt = await bcrypt.genSalt(10);
@@ -78,9 +77,12 @@ class userService {
 
         const findName = await USERS.find(
             {
-                login: new RegExp(body.loginOrEmail,'gi'),
-                email: new RegExp(body.loginOrEmail,'gi')})
-                .toArray();
+                $or: [
+                    {login: new RegExp(body.loginOrEmail, 'gi')},
+                    {email: new RegExp(body.loginOrEmail, 'gi')}
+                ]
+            })
+            .toArray();
 
         if (findName.length === 0) {
             return false
@@ -88,7 +90,7 @@ class userService {
 
         const hushPassDB = findName.map((f) => f.hushPass);
 
-        const result = await hashPassCompare(body.password,hushPassDB[0]);
+        const result = await hashPassCompare(body.password, hushPassDB[0]);
 
         if (!result) {
             return false
