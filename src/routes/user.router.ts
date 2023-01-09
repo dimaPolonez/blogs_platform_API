@@ -17,8 +17,6 @@ userRouter.delete('/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
     userController.delete);
 
-export default userRouter;
-
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
     async (req: Request<{},{}, {}, requestQueryUser>, res: Response) => {
@@ -39,3 +37,5 @@ userRouter.get('/',
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
 })
+
+export default userRouter;
