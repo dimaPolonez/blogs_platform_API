@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import {blogsFieldsType, postsFieldsType, usersFieldsType} from "../models/data.models";
+import {blogsFieldsType, commentsFieldsType, postsFieldsType, usersFieldsType} from "../models/data.models";
 
 dotenv.config();
 
@@ -24,6 +24,7 @@ const db: mongoDB.Db = client.db(process.env.DB_NAME);
 export const BLOGS = db.collection<blogsFieldsType>('blogs');
 export const POSTS = db.collection<postsFieldsType>('posts');
 export const USERS = db.collection<usersFieldsType>('users');
+export const COMMENTS = db.collection<commentsFieldsType>('comments');
 
 export const ERRORS_CODE = {
   OK_200: 200,
@@ -31,6 +32,7 @@ export const ERRORS_CODE = {
   NO_CONTENT_204: 204,
   BAD_REQUEST_400: 400,
   UNAUTHORIZED_401: 401,
+  NOT_YOUR_OWN_403: 403,
   NOT_FOUND_404: 404,
   INTERNAL_SERVER_ERROR_500: 500,
 };

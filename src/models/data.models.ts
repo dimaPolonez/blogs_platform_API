@@ -26,6 +26,11 @@ export type usersFieldsType = {
   createdAt: string
 }
 
+export type commentsFieldsType = {
+  _id: ObjectId,
+  content: string
+}
+
 export type responseBlogsType = {
   title: string;
   shortDescription: string;
