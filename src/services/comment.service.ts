@@ -35,7 +35,7 @@ class commentService {
             return ERRORS_CODE.NOT_FOUND_404;
         }
 
-        const baerer = result.map((field) => {
+        const bearer = result.map((field) => {
             if(field.userId != userObject._id){
                 return false
             } else {
@@ -43,17 +43,17 @@ class commentService {
             }
         })
 
-        if (baerer){
-            await COMMENTS.updateOne({_id: bodyID}, {
-                $set: {
-                    content: body.content
-                }
-            });
-
-            return ERRORS_CODE.NO_CONTENT_204;
+        if (!bearer[0]){
+            return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
-        return ERRORS_CODE.NOT_YOUR_OWN_403
+        await COMMENTS.updateOne({_id: bodyID}, {
+            $set: {
+                content: body.content
+            }
+        });
+
+        return ERRORS_CODE.NO_CONTENT_204;
     }
 
     async delete(bodyID: typeBodyID) {
