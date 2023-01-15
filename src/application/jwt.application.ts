@@ -5,10 +5,10 @@ import {tokenObjectType} from "../models/data.models";
 class jwtApp {
 
     async createJwt(user: tokenObjectType) {
-
+        debugger
         const token = jwt.sign({userId: user._id}, settings.JWT_SECRET,{expiresIn: '1h'});
 
-        return token
+        return { accessToken: token }
     }
 
     async verifyJwt(token: string) {
