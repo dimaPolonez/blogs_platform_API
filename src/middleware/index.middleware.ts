@@ -4,6 +4,7 @@ import { header, validationResult } from 'express-validator';
 import {postsOfBlogValidator, postValidator} from './post.middleware';
 import { USERS } from '../data/users.data';
 import {userAuthValidator, usersValidator} from "./user.middleware";
+import {commentValidator} from "./comment.middleware";
 
 export const basicAuthorization = (
   req: Request,
@@ -30,6 +31,15 @@ export const basicAuthorization = (
   }
 };
 
+export const bearerAuthorization = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+
+}
+
 export const errorsValidator = (
   req: Request,
   res: Response,
@@ -51,10 +61,12 @@ export const errorsValidator = (
 
 export const indexMiddleware = {
   BASIC_AUTHORIZATION: basicAuthorization,
+  BEARER_AUTHORIZATION: bearerAuthorization,
   BLOGS_VALIDATOR: blogValidator,
   POSTS_VALIDATOR: postValidator,
-  POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
   USERS_VALIDATOR: usersValidator,
+  COMMENT_VALIDATOR: commentValidator,
+  POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
   USER_AUTH: userAuthValidator,
-  ERRORS_VALIDATOR: errorsValidator,
+  ERRORS_VALIDATOR: errorsValidator
 };

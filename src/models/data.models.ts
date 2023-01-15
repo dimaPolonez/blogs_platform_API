@@ -28,7 +28,11 @@ export type usersFieldsType = {
 
 export type commentsFieldsType = {
   _id: ObjectId,
-  content: string
+  content: string,
+  userId: string,
+  userLogin: string,
+  postId: ObjectId,
+  createdAt: string
 }
 
 export type responseBlogsType = {
