@@ -15,8 +15,6 @@ commentRouter.put('/:id',
 
 commentRouter.delete('/:id',
     indexMiddleware.BEARER_AUTHORIZATION,
-    indexMiddleware.COMMENT_VALIDATOR,
-    indexMiddleware.ERRORS_VALIDATOR,
     commentController.delete);
 
 export default commentRouter;
