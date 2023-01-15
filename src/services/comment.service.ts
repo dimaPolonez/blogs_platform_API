@@ -36,12 +36,15 @@ class commentService {
         }
 
         const bearer = result.map((field) => {
-            if(field.userId != userObject._id){
-                return false
-            } else {
+
+            if(field.userId.toString() === userObject._id.toString()){
                 return true
+            } else {
+                return false
             }
         })
+
+        console.log(bearer[0])
 
         if (!bearer[0]){
             return ERRORS_CODE.NOT_YOUR_OWN_403
@@ -67,10 +70,10 @@ class commentService {
         }
 
         const bearer = result.map((field) => {
-            if(field.userId != userObject._id){
-                return false
-            } else {
+            if(field.userId.toString() === userObject._id.toString()){
                 return true
+            } else {
+                return false
             }
         })
 
