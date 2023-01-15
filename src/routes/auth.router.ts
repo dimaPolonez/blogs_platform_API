@@ -18,7 +18,7 @@ authRouter.post('/login',
             if (auth) {
                 const token = await jwtApplication.createJwt(auth);
 
-                res.status(ERRORS_CODE.CREATED_201).json(token);
+                res.status(ERRORS_CODE.OK_200).json(token);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
