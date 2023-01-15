@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {BLOGS, ERRORS_CODE, POSTS, startBD, USERS} from './data/db.data';
+import {BLOGS, COMMENTS, ERRORS_CODE, POSTS, startBD, USERS} from './data/db.data';
 import blogRouter from './routes/blog.router';
 import postRouter from './routes/post.router';
 import userRouter from "./routes/user.router";
@@ -28,7 +28,7 @@ app.use(express.json());
 app.use('/blogs', blogRouter);
 app.use('/posts', postRouter);
 app.use('/users', userRouter);
-app.use('/сomments', commentRouter);
+app.use('/comments', commentRouter);
 app.use('/auth', authRouter);
 
 app.get('/', (req: Request, res: Response) => {
@@ -40,6 +40,7 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
         await BLOGS.deleteMany({});
         await POSTS.deleteMany({});
         await USERS.deleteMany({});
+        await COMMENTS.deleteMany({});
         res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
