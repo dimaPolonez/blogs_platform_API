@@ -72,7 +72,7 @@ class postController {
     try {
       const postId: ObjectId = new ObjectId(req.params.id);
 
-      const comment = await commentService.createCommentOfPost(postId, req.body);
+      const comment = await commentService.createCommentOfPost(postId, req.body, req!.user);
 
       if (comment) {
         res.status(ERRORS_CODE.CREATED_201).json(comment);

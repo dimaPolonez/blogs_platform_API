@@ -1,6 +1,7 @@
 import {requestBodyComment, typeBodyID} from "../models/request.models";
 import {BLOGS, COMMENTS, POSTS} from "../data/db.data";
 import {ObjectId} from "mongodb";
+import {usersFieldsType} from "../models/data.models";
 
 class commentService {
 
@@ -58,7 +59,7 @@ class commentService {
         return true;
     }
 
-    async createCommentOfPost(postId: ObjectId, body: requestBodyComment) {
+    async createCommentOfPost(postId: ObjectId, body: requestBodyComment, objectUser: usersFieldsType) {
         let newDateCreated = new Date().toISOString();
 
         const postFind = await POSTS.find({_id: postId}).toArray();
@@ -70,8 +71,8 @@ class commentService {
         const createdComment = await COMMENTS.insertOne({
             _id: new ObjectId(),
             content: body.content,
-            userId: 'body.userId',
-            userLogin: 'body.userLogin',
+            userId: objectUser._id,
+            userLogin: objectUser.login,
             postId: postId,
             createdAt: newDateCreated
         });

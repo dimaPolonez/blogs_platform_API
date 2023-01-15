@@ -1,31 +1,7 @@
 import {queryAuthUser, requestBodyUser, typeBodyID} from "../models/request.models";
-import {USERS} from "../data/db.data";
+import {BLOGS, ERRORS_CODE, USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
-import bcrypt from "bcrypt";
-
-
-async function saltPassGenerate(password: string) {
-
-    const salt = await bcrypt.genSalt(10);
-
-    const hush = await hashPassGenerate(password, salt);
-
-    return hush
-}
-
-async function hashPassGenerate(password: string, saltPass: string) {
-
-    const hush = await bcrypt.hash(password, saltPass);
-
-    return hush
-}
-
-async function hashPassCompare(password: string, hush: string) {
-
-    const result = await bcrypt.compare(password, hush);
-
-    return result
-}
+import bcryptApplication from "../application/bcrypt.application";
 
 class userService {
 
@@ -33,7 +9,7 @@ class userService {
 
         const newDateCreated = new Date().toISOString();
 
-        const hushPass = await saltPassGenerate(body.password)
+        const hushPass = await bcryptApplication.saltGenerate(body.password)
 
         const createdUser = await USERS.insertOne({
             _id: new ObjectId(),
@@ -90,13 +66,23 @@ class userService {
 
         const hushPassDB = findName.map((f) => f.hushPass);
 
-        const result = await hashPassCompare(body.password, hushPassDB[0]);
+        const result = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
 
         if (!result) {
             return false
         }
 
-        return true
+        return findName[0]
+    }
+
+    async getOne(userId: typeBodyID) {
+
+        if (!userId) {
+            throw new Error('не указан ID');
+        }
+        const user = await USERS.find({ _id: userId }).toArray();
+
+        return user[0]
     }
 }
 
