@@ -77,9 +77,6 @@ class userService {
 
     async getOne(userId: typeBodyID) {
 
-        if (!userId) {
-            throw new Error('не указан ID');
-        }
         const user = await USERS.find({ _id: userId }).toArray();
 
         return user[0]

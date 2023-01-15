@@ -8,6 +8,7 @@ import {commentValidator} from "./comment.middleware";
 import {ERRORS_CODE} from "../data/db.data";
 import jwtApplication from "../application/jwt.application";
 import userService from "../services/user.service";
+import {ObjectId} from "mongodb";
 
 export const basicAuthorization = (
   req: Request,
@@ -42,17 +43,21 @@ export const bearerAuthorization = async (
 
   if (!req.headers.authorization) {
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+    return
   }
 
-  const token: string = req.headers.authorization!.split(' ')[1]
+  const token: string = req.headers.authorization!.substring(7)
 
-  const userId = await jwtApplication.verifyJwt(token)
+  const result = await jwtApplication.verifyJwt(token);
 
-  if (userId) {
-    req.user = await userService.getOne(userId);
+  if (result) {
+    const getId: ObjectId = new ObjectId(result)
+    req.user = await userService.getOne(getId);
     next();
+  } else {
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
   }
-  res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+
 }
 
 export const errorsValidator = (

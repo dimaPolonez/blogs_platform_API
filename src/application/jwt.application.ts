@@ -15,7 +15,7 @@ class jwtApp {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
 
-            return new ObjectId(result.userId)
+            return result.userId
         } catch (e) {
             return null
         }
