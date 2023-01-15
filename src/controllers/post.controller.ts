@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import postService from '../services/post.service';
 import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
+import commentService from "../services/comment.service";
 
 class postController {
 
@@ -63,6 +64,23 @@ class postController {
         res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
       }
     } catch (e) {
+      res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+    }
+  }
+
+  async createCommentOfPost(req: Request, res: Response) {
+    try {
+      const postId: ObjectId = new ObjectId(req.params.id);
+
+      const comment = await commentService.createCommentOfPost(postId, req.body, req!.user);
+
+      if (comment) {
+        res.status(ERRORS_CODE.CREATED_201).json(comment);
+      } else {
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+      }
+
+    } catch(e) {
       res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
   }

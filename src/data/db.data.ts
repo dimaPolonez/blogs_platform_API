@@ -5,10 +5,12 @@ import {blogsFieldsType, commentsFieldsType, postsFieldsType, usersFieldsType} f
 
 dotenv.config();
 
-const DB_URL = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
-//mongodb://0.0.0.0:27017
+export const settings = {
+  DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
+  JWT_SECRET: process.env.JWT_SECRET || '123'
+}
 
-export const client = new MongoClient(DB_URL);
+export const client = new MongoClient(settings.DB_URL);
 
 export async function startBD() {
   try {

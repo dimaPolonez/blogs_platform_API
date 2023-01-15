@@ -1,9 +1,10 @@
 import {Request, Response, Router} from 'express';
 import postController from '../controllers/post.controller';
 import { indexMiddleware } from '../middleware/index.middleware';
-import {requestQueryAll} from "../models/request.models";
+import {queryAllComments, requestQueryAll, requestQueryComments} from "../models/request.models";
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
+import {ObjectId} from "mongodb";
 
 const postRouter = Router({});
 
@@ -32,6 +33,12 @@ postRouter.delete(
   postController.delete
 );
 
+postRouter.post('/:id/comments',
+    indexMiddleware.BEARER_AUTHORIZATION,
+    indexMiddleware.COMMENT_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    postController.createCommentOfPost);
+
 postRouter.get('/', async (req: Request<{},{},{},requestQueryAll>, res: Response) => {
     try {
         let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
@@ -41,6 +48,29 @@ postRouter.get('/', async (req: Request<{},{},{},requestQueryAll>, res: Response
 
         const posts = await queryService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
         res.status(ERRORS_CODE.OK_200).json(posts);
+    } catch (e) {
+        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+    }
+})
+
+postRouter.get('/:id/comments', async (req: Request<{id: string},{},{},requestQueryComments>, res: Response) => {
+    try {
+
+        let queryAll: queryAllComments = {
+            pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
+            pageSize: req.query.pageSize ? +(req.query.pageSize) : 10,
+            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc'
+        }
+
+        const postId: ObjectId = new ObjectId(req.params.id);
+
+        const comments = await queryService.getAllCommentsOfBlog(postId, queryAll);
+        if (comments) {
+            res.status(ERRORS_CODE.OK_200).json(comments);
+        } else {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        }
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }

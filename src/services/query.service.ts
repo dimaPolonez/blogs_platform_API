@@ -1,5 +1,5 @@
-import {BLOGS, POSTS, USERS} from "../data/db.data";
-import {queryAllUser, requestQuery, requestQuerySearch, typeBodyID} from "../models/request.models";
+import {BLOGS, COMMENTS, POSTS, USERS} from "../data/db.data";
+import {queryAllComments, queryAllUser, requestQuery, requestQuerySearch, typeBodyID} from "../models/request.models";
 import {usersFieldsType} from "../models/data.models";
 
 function sort(sortDir: string) {
@@ -161,6 +161,46 @@ class queryService {
         }
 
         return resultObject
+    }
+
+    async getAllCommentsOfBlog(bodyID: typeBodyID, queryAll: queryAllComments) {
+        if (!bodyID) {
+            throw new Error('не указан ID');
+        }
+
+        const result = await POSTS.find({_id: bodyID}).toArray()
+
+        if (result.length === 0) {
+            return false;
+        }
+
+        const comments = await COMMENTS.find({postId: bodyID})
+            .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
+
+        const allMaps = comments.map((field) => {
+            return {
+                id: field._id,
+                content: field.content,
+                userId: field.userId,
+                userLogin: field.userLogin,
+                createdAt: field.createdAt
+            }
+        });
+        const allCount = await COMMENTS.countDocuments({postId: bodyID});
+        const pagesCount = Math.ceil(+allCount / queryAll.pageSize)
+
+        const resultObject = {
+            pagesCount: pagesCount,
+            page: queryAll.pageNumber,
+            pageSize: queryAll.pageSize,
+            totalCount: +allCount,
+            items: allMaps
+        }
+
+        return resultObject
+
     }
 
 }

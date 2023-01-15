@@ -1,5 +1,5 @@
 import {BLOGS, POSTS} from "../data/db.data";
-import {requestBodyPost, requestBodyPostOfBlog, typeBodyID} from "../models/request.models";
+import {requestBodyComment, requestBodyPost, requestBodyPostOfBlog, typeBodyID} from "../models/request.models";
 import {ObjectId} from "mongodb";
 
 class postService {

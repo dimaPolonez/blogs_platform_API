@@ -62,3 +62,21 @@ export type queryAuthUser = {
   loginOrEmail: string,
   password: string
 }
+
+export type requestBodyComment = {
+  content: string
+};
+
+export type queryAllComments = {
+  pageNumber: number,
+  pageSize: number,
+  sortBy: string,
+  sortDirection: string
+}
+
+export type requestQueryComments = {
+  pageNumber: string,
+  pageSize: string,
+  sortBy: string,
+  sortDirection:string
+};
