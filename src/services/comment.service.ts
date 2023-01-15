@@ -56,19 +56,31 @@ class commentService {
         return ERRORS_CODE.NO_CONTENT_204;
     }
 
-    async delete(bodyID: typeBodyID) {
+    async delete(bodyID: typeBodyID, userObject: usersFieldsType) {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
         const result = await COMMENTS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
-            return false;
+            return ERRORS_CODE.NOT_FOUND_404;
+        }
+
+        const bearer = result.map((field) => {
+            if(field.userId != userObject._id){
+                return false
+            } else {
+                return true
+            }
+        })
+
+        if (!bearer[0]){
+            return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
         await COMMENTS.deleteOne({_id: bodyID});
 
-        return true;
+        return ERRORS_CODE.NO_CONTENT_204;
     }
 
     async createCommentOfPost(postId: ObjectId, body: requestBodyComment, objectUser: usersFieldsType) {
