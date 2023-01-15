@@ -65,8 +65,12 @@ postRouter.get('/:id/comments', async (req: Request<{id: string},{},{},requestQu
 
         const postId: ObjectId = new ObjectId(req.params.id);
 
-        const posts = await queryService.getAllCommentsOfBlog(postId, queryAll);
-        res.status(ERRORS_CODE.OK_200).json(posts);
+        const comments = await queryService.getAllCommentsOfBlog(postId, queryAll);
+        if (comments) {
+            res.status(ERRORS_CODE.OK_200).json(comments);
+        } else {
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        }
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
