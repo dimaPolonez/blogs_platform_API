@@ -3,7 +3,6 @@ import {Request, Response, Router} from "express";
 import userService from "../services/user.service";
 import {ERRORS_CODE} from "../data/db.data";
 import jwtApplication from "../application/jwt.application";
-import {tokenObjectType} from "../models/data.models";
 
 
 const authRouter = Router({});
@@ -18,7 +17,7 @@ authRouter.post('/login',
             if (auth) {
                 const token = await jwtApplication.createJwt(auth);
 
-                res.status(ERRORS_CODE.OK_200).json(token);
+                res.status(ERRORS_CODE.OK_200).send(token);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
