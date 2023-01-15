@@ -2,6 +2,7 @@ import {queryAuthUser, requestBodyUser, typeBodyID} from "../models/request.mode
 import {BLOGS, ERRORS_CODE, USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
+import {usersFieldsType} from "../models/data.models";
 
 class userService {
 

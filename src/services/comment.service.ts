@@ -1,5 +1,5 @@
 import {requestBodyComment, typeBodyID} from "../models/request.models";
-import {BLOGS, COMMENTS, POSTS} from "../data/db.data";
+import {BLOGS, COMMENTS, ERRORS_CODE, POSTS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import {usersFieldsType} from "../models/data.models";
 
@@ -24,7 +24,7 @@ class commentService {
         return objResult[0]
     }
 
-    async update(bodyID: typeBodyID, body: requestBodyComment) {
+    async update(bodyID: typeBodyID, body: requestBodyComment, userObject: usersFieldsType) {
         if (!bodyID) {
             throw new Error('не указан ID');
         }
@@ -32,16 +32,28 @@ class commentService {
         const result = await COMMENTS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
-            return false;
+            return ERRORS_CODE.NOT_FOUND_404;
         }
 
-        await COMMENTS.updateOne({_id: bodyID}, {
-            $set: {
-                content: body.content
+        const baerer = result.map((field) => {
+            if(field.userId != userObject._id){
+                return false
+            } else {
+                return true
             }
-        });
+        })
 
-        return true;
+        if (baerer){
+            await COMMENTS.updateOne({_id: bodyID}, {
+                $set: {
+                    content: body.content
+                }
+            });
+
+            return ERRORS_CODE.NO_CONTENT_204;
+        }
+
+        return ERRORS_CODE.NOT_YOUR_OWN_403
     }
 
     async delete(bodyID: typeBodyID) {

@@ -25,13 +25,14 @@ class commentController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const comment = await commentService.update(bodyId, req.body);
+            const comment = await commentService.update(bodyId, req.body, req.user);
 
-            if (comment) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            switch (comment) {
+                case (204): return res.sendStatus(ERRORS_CODE.NO_CONTENT_204); break;
+                case (403): return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403); break;
+                case (404): return res.sendStatus(ERRORS_CODE.NOT_FOUND_404); break;
             }
+
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }

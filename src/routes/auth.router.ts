@@ -3,6 +3,7 @@ import {Request, Response, Router} from "express";
 import userService from "../services/user.service";
 import {ERRORS_CODE} from "../data/db.data";
 import jwtApplication from "../application/jwt.application";
+import {usersFieldsType} from "../models/data.models";
 
 
 const authRouter = Router({});
@@ -29,17 +30,16 @@ authRouter.post('/login',
 authRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,
     async (req: Request, res: Response) => {
-/*        try {
-            const auth = await userService.auth(req.body)
-
-            if (auth) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
+        try {
+            const me = {
+                email: req.user.email,
+                login: req.user.login,
+                userId: req.user._id
             }
+            res.status(ERRORS_CODE.OK_200).json(me);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
-        }*/
+        }
     });
 
 export default authRouter;
