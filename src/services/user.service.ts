@@ -1,8 +1,9 @@
-import {queryAuthUser, requestBodyUser, typeBodyID} from "../models/request.models";
 import {BLOGS, ERRORS_CODE, USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import {usersFieldsType} from "../models/data.models";
+import { userBDType } from "../models/user.models";
+import { authReqType } from "../models/auth.models";
 
 class userService {
 
@@ -50,9 +51,11 @@ class userService {
         return true;
     }
 
-    async auth(body: queryAuthUser) {
+    async auth(body: authReqType) :
+    Promise <false | userBDType>
+    {
 
-        const findName = await USERS.find(
+        const findName: userBDType [] = await USERS.find(
             {
                 $or: [
                     {login: new RegExp(body.loginOrEmail, 'gi')},
@@ -65,9 +68,9 @@ class userService {
             return false
         }
 
-        const hushPassDB = findName.map((f) => f.hushPass);
+        const hushPassDB: string [] = findName.map((f) => f.hushPass);
 
-        const result = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
+        const result: boolean = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
 
         if (!result) {
             return false

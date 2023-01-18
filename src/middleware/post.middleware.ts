@@ -1,5 +1,4 @@
 import {body} from 'express-validator';
-import {url} from "inspector";
 import {BLOGS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 

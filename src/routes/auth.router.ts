@@ -3,7 +3,9 @@ import {Request, Response, Router} from "express";
 import userService from "../services/user.service";
 import {ERRORS_CODE} from "../data/db.data";
 import jwtApplication from "../application/jwt.application";
-import {usersFieldsType} from "../models/data.models";
+import { bodyReqType } from "../models/request.models";
+import { userBDType} from "../models/user.models";
+import { authMeType, authReqType} from "../models/auth.models";
 
 
 const authRouter = Router({});
@@ -11,9 +13,9 @@ const authRouter = Router({});
 authRouter.post('/login',
     indexMiddleware.USER_AUTH,
     indexMiddleware.ERRORS_VALIDATOR,
-    async (req: Request, res: Response) => {
+    async (req: bodyReqType<authReqType>, res: Response) => {
         try {
-            const auth: any = await userService.auth(req.body)
+            const auth: false | userBDType = await userService.auth(req.body)
 
             if (auth) {
                 const token = await jwtApplication.createJwt(auth);
@@ -31,7 +33,7 @@ authRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,
     async (req: Request, res: Response) => {
         try {
-            const me = {
+            const me: authMeType = {
                 email: req.user.email,
                 login: req.user.login,
                 userId: req.user._id

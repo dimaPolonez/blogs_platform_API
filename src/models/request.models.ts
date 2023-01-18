@@ -1,82 +1,62 @@
 import {ObjectId} from "mongodb";
+import {Request} from "express";
 
-export type requestBodyBlog = {
-  name: string,
-  description: string,
-  websiteUrl: string
-};
+export type bodyReqType<T> = Request<{}, {}, T>
 
-export type requestBodyUser = {
-  login: string,
-  password: string,
-  email: string
-};
+export type queryReqType<T> = Request<{}, {}, {}, T>
 
-export type requestBodyPost = {
-  title: string,
-  shortDescription: string,
-  content: string,
-  blogId: ObjectId
-};
+export type paramsReqType<T> = Request<T>
 
-export type requestBodyPostOfBlog = {
-  title: string,
-  shortDescription: string,
-  content: string
-};
+export type paramsAndQueryReqType<T, Q> = Request<T, {}, {}, Q>
 
-export type requestQuery = string;
+export type paramsId = {id: string};
 
-export type requestQuerySearch = string;
+export type objectId = ObjectId;
 
-export type requestQueryAll = {
+export type queryReqPagSearchAuth = {
+  searchLoginTerm: string,
+  searchEmailTerm: string,
+  sortBy: string,
+  sortDirection: string,
+  pageNumber: string,
+  pageSize: string
+}
+
+export type notStringQueryReqPagSearchAuth = {
+  searchLoginTerm: string,
+  searchEmailTerm: string,
+  sortBy: string,
+  sortDirection: string,
+  pageNumber: number,
+  pageSize: number
+}
+
+export type queryReqPagOfSearchName = {
   searchNameTerm: string,
-  pageNumber: string,
-  pageSize: string,
-  sortBy: string,
-  sortDirection:string
-};
-
-export type typeBodyID = ObjectId;
-
-export type requestQueryUser = {
   sortBy: string,
   sortDirection: string,
   pageNumber: string,
-  pageSize: string,
-  searchLoginTerm: string,
-  searchEmailTerm: string
+  pageSize: string
 }
 
-export type queryAllUser = {
+export type notStringQueryReqPagOfSearchName = {
+  searchNameTerm: string,
+  sortBy: string,
+  sortDirection:string,
+  pageNumber: number,
+  pageSize: number
+}
+
+export type queryReqPag = {
+  sortBy: string,
+  sortDirection: string,
+  pageNumber: string,
+  pageSize: string
+}
+
+export type notStringQueryReqPag = {
   sortBy: string,
   sortDirection: string,
   pageNumber: number,
-  pageSize: number,
-  searchLoginTerm: string,
-  searchEmailTerm: string
+  pageSize: number
 }
-
-
-export type queryAuthUser = {
-  loginOrEmail: string,
-  password: string
-}
-
-export type requestBodyComment = {
-  content: string
-};
-
-export type queryAllComments = {
-  pageNumber: number,
-  pageSize: number,
-  sortBy: string,
-  sortDirection: string
-}
-
-export type requestQueryComments = {
-  pageNumber: string,
-  pageSize: string,
-  sortBy: string,
-  sortDirection:string
-};
