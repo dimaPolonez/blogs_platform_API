@@ -45,9 +45,9 @@ class postService {
         const blogBodyId: ObjectId = new ObjectId(body.blogId);
 
         const blogFind: blogBDType [] = await BLOGS.find({_id: blogBodyId}).toArray();
-        const blogName: string = String(blogFind.map((field: blogBDType) => {
+        const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
-        }))
+        })
 
         const createdPost = await POSTS.insertOne({
             _id: new ObjectId(),
@@ -55,7 +55,7 @@ class postService {
             shortDescription: body.shortDescription,
             content: body.content,
             blogId: blogBodyId,
-            blogName: blogName,
+            blogName: blogName[0],
             createdAt: newDateCreated
         });
 
@@ -86,9 +86,9 @@ class postService {
         }
 
         const blogFind: blogBDType [] = await BLOGS.find({_id: body.blogId}).toArray();
-        const blogName: string = String(blogFind.map((field: blogBDType) => {
+        const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
-        }))
+        })
 
         await POSTS.updateOne({_id: bodyID}, {
             $set: {
@@ -96,7 +96,7 @@ class postService {
                 shortDescription: body.shortDescription,
                 content: body.content,
                 blogId: body.blogId,
-                blogName: blogName
+                blogName: blogName[0]
             }
         });
 
@@ -128,9 +128,9 @@ class postService {
             return false;
         }
 
-        const blogName: string = String(blogFind.map((field: blogBDType) => {
+        const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
-        }))
+        })
 
         const createdPost = await POSTS.insertOne({
             _id: new ObjectId(),
@@ -138,7 +138,7 @@ class postService {
             shortDescription: body.shortDescription,
             content: body.content,
             blogId: bodyID,
-            blogName: blogName,
+            blogName: blogName[0],
             createdAt: newDateCreated
         });
 
