@@ -15,7 +15,8 @@ class jwtApp {
         return objToken
     }
 
-    public async verifyJwt(token: string) {
+    public async verifyJwt(token: string):
+        Promise <any> {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
 

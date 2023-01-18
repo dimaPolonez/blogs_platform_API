@@ -1,40 +1,42 @@
 import {Response, Router} from 'express';
 import blogController from '../controllers/blog.controller';
-import { indexMiddleware } from '../middleware/index.middleware';
+import {indexMiddleware} from '../middleware/index.middleware';
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
-import { notStringQueryReqPag, notStringQueryReqPagOfSearchName, 
-    objectId, paramsAndQueryReqType, paramsId, queryReqPag, queryReqPagOfSearchName, 
-    queryReqType} from '../models/request.models';
-import { resultBlogObjectType } from '../models/blog.models';
-import { resultPostObjectType } from '../models/post.models';
+import {
+    notStringQueryReqPag, notStringQueryReqPagOfSearchName,
+    paramsAndQueryReqType, paramsId, queryReqPag, queryReqPagOfSearchName,
+    queryReqType
+} from '../models/request.models';
+import {resultBlogObjectType} from '../models/blog.models';
+import {resultPostObjectType} from '../models/post.models';
 
 const blogRouter = Router({});
 
 blogRouter.get(
-    '/:id',blogController.getOne);
+    '/:id', blogController.getOne);
 
 blogRouter.post(
-  '/',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
-  indexMiddleware.ERRORS_VALIDATOR,
-  blogController.create
+    '/',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.BLOGS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    blogController.create
 );
 
 blogRouter.put(
-  '/:id',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
-  indexMiddleware.ERRORS_VALIDATOR,
-  blogController.update
+    '/:id',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.BLOGS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    blogController.update
 );
 
 blogRouter.delete(
-  '/:id',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  blogController.delete
+    '/:id',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    blogController.delete
 );
 
 blogRouter.post(
@@ -56,7 +58,7 @@ blogRouter.get('/:id/posts', async (req: paramsAndQueryReqType<paramsId, queryRe
             pageSize: req.query.pageSize ? +req.query.pageSize : 10
         }
 
-        const bodyId: objectId = new ObjectId(req.params.id);
+        const bodyId: ObjectId = new ObjectId(req.params.id);
 
         const post: false | resultPostObjectType = await queryService.getAllPostsOfBlog(bodyId, queryAll);
 

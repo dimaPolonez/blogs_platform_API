@@ -13,3 +13,25 @@ export type userReqType = {
     password: string,
     email: string
   }
+
+export type userAllMaps = {
+    id: ObjectId,
+    login: string,
+    email: string,
+    createdAt: string
+}
+
+export type resultUserObjectType = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: userAllMaps []
+}
+
+export type userObjectResult = {
+    id: ObjectId,
+    login: string,
+    email: string,
+    createdAt: string
+}

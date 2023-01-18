@@ -4,6 +4,7 @@ import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import userController from "../controllers/user.controller";
 import { notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType } from "../models/request.models";
+import {resultUserObjectType} from "../models/user.models";
 
 const userRouter = Router({});
 
@@ -31,7 +32,7 @@ userRouter.get('/',
             pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
         }
 
-        const users = await queryService.getAllUsers(queryAll);
+        const users: resultUserObjectType = await queryService.getAllUsers(queryAll);
         res.status(ERRORS_CODE.OK_200).json(users);
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

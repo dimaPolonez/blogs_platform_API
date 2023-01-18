@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import { ERRORS_CODE, SUPERADMIN } from "../data/db.data";
 import userService from "../services/user.service";
+import {userBDType} from "../models/user.models";
 
 
 export const basicAuthorization = (
@@ -44,13 +45,17 @@ export const bearerAuthorization = async (
   
     const token: string = req.headers.authorization!.substring(7)
   
-    const result = await jwtApplication.verifyJwt(token);
+    const result: string = await jwtApplication.verifyJwt(token);
   
     if (result) {
       const getId: ObjectId = new ObjectId(result)
-      req.user = await userService.getOne(getId);
-      next();
-      return
+      const findUser: false | userBDType  = await userService.getOne(getId);
+      if (findUser) {
+        req.user = findUser;
+        next();
+        return
+      }
+      res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
     }
   
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');

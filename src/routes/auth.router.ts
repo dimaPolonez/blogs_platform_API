@@ -3,9 +3,9 @@ import {Request, Response, Router} from "express";
 import userService from "../services/user.service";
 import {ERRORS_CODE} from "../data/db.data";
 import jwtApplication from "../application/jwt.application";
-import { bodyReqType } from "../models/request.models";
-import { userBDType} from "../models/user.models";
-import { authMeType, authReqType} from "../models/auth.models";
+import {bodyReqType} from "../models/request.models";
+import {userBDType} from "../models/user.models";
+import {authMeType, authReqType, tokenObjectType} from "../models/auth.models";
 
 
 const authRouter = Router({});
@@ -18,7 +18,7 @@ authRouter.post('/login',
             const auth: false | userBDType = await userService.auth(req.body)
 
             if (auth) {
-                const token = await jwtApplication.createJwt(auth);
+                const token: tokenObjectType = await jwtApplication.createJwt(auth);
 
                 res.status(ERRORS_CODE.OK_200).send(token);
             } else {

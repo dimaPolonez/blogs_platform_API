@@ -17,16 +17,6 @@ export type postReqType = {
     blogId: ObjectId
   }
 
-export type postOfBlogBDType = {
-  _id: ObjectId,
-  title: string,
-  shortDescription: string,
-  content: string,
-  blogId: ObjectId,
-  blogName: string,
-  createdAt: string
-  }
-
 export type postOfBlogReqType = {
   title: string,
   shortDescription: string,
@@ -49,4 +39,14 @@ export type resultPostObjectType = {
   pageSize: number,
   totalCount: number,
   items: postAllMaps []
+}
+
+export type postObjectResult = {
+  id: ObjectId,
+  title: string,
+  shortDescription: string,
+  content: string,
+  blogId: ObjectId,
+  blogName: string,
+  createdAt: string
 }

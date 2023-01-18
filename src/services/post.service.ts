@@ -1,148 +1,163 @@
 import {BLOGS, POSTS} from "../data/db.data";
-import {requestBodyComment, requestBodyPost, requestBodyPostOfBlog, typeBodyID} from "../models/request.models";
 import {ObjectId} from "mongodb";
+import {postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
+import {blogBDType} from "../models/blog.models";
 
 class postService {
 
-  async getOne(bodyID: typeBodyID) {
-    if (!bodyID) {
-      throw new Error('не указан ID');
-    }
-    const post = await POSTS.find({ _id: bodyID }).toArray();
+    async findPost(bodyID:ObjectId):
+        Promise<postBDType []>
+    {
+        const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray();
 
-    const objResult = post.map((field) => {
-      return {
-        id: field._id,
-        title: field.title,
-        shortDescription: field.shortDescription,
-        content: field.content,
-        blogId: field.blogId,
-        blogName: field.blogName,
-        createdAt: field.createdAt
-      }
-    });
-
-    return objResult[0]
-  }
-
-  async create(body: requestBodyPost) {
-
-    let newDateCreated = new Date().toISOString();
-
-    const blogBodyId: ObjectId = new ObjectId(body.blogId);
-
-    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
-    const blogName = String(blogFind.map((field) => {return field.name}))
-
-    const createdPost = await POSTS.insertOne({
-      _id: new ObjectId(),
-      title: body.title,
-      shortDescription: body.shortDescription,
-      content: body.content,
-      blogId: blogBodyId,
-      blogName: blogName,
-      createdAt: newDateCreated
-    });
-
-    let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
-
-    const objResult = result.map((field) => {
-      return {
-        id: field._id,
-        title: field.title,
-        shortDescription: field.shortDescription,
-        content: field.content,
-        blogId: field.blogId,
-        blogName: field.blogName,
-        createdAt: field.createdAt
-      }
-    });
-
-    return objResult[0]
-  }
-
-  async update(bodyID: typeBodyID, body: requestBodyPost) {
-    if (!bodyID) {
-      throw new Error('не указан ID');
+        return result
     }
 
-    const result = await POSTS.find({_id: bodyID}).toArray()
+    async getOne(bodyID: ObjectId):
+        Promise<false | postObjectResult> {
 
-    if (result.length === 0) {
-      return false;
-    }
-    const blogBodyId: ObjectId = new ObjectId(body.blogId);
+        const find: postBDType [] = await this.findPost(bodyID);
 
-    const blogFind = await BLOGS.find({ _id: blogBodyId}).toArray();
-    const blogName = String(blogFind.map((field) => {return field.name}))
+        if (find.length === 0) {
+            return false;
+        }
 
-    await POSTS.updateOne({_id: bodyID}, {
-      $set: {
-        title: body.title,
-        shortDescription: body.shortDescription,
-        content: body.content,
-        blogId: blogBodyId,
-        blogName: blogName
-      }});
+        const objResult: postObjectResult [] = find.map((field: postBDType) => {
+            return {
+                id: field._id,
+                title: field.title,
+                shortDescription: field.shortDescription,
+                content: field.content,
+                blogId: field.blogId,
+                blogName: field.blogName,
+                createdAt: field.createdAt
+            }
+        });
 
-    return true;
-  }
-
-  async delete(bodyID: typeBodyID) {
-    if (!bodyID) {
-      throw new Error('не указан ID');
+        return objResult[0]
     }
 
-    const result = await POSTS.find({_id: bodyID}).toArray()
+    async create(body: postReqType):
+        Promise<postObjectResult> {
 
-    if (result.length === 0) {
-      return false;
+        let newDateCreated: string = new Date().toISOString();
+
+        const blogBodyId: ObjectId = new ObjectId(body.blogId);
+
+        const blogFind: blogBDType [] = await BLOGS.find({_id: blogBodyId}).toArray();
+        const blogName: string = String(blogFind.map((field: blogBDType) => {
+            return field.name
+        }))
+
+        const createdPost = await POSTS.insertOne({
+            _id: new ObjectId(),
+            title: body.title,
+            shortDescription: body.shortDescription,
+            content: body.content,
+            blogId: blogBodyId,
+            blogName: blogName,
+            createdAt: newDateCreated
+        });
+
+        let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
+
+        const objResult: postObjectResult [] = result.map((field: postBDType) => {
+            return {
+                id: field._id,
+                title: field.title,
+                shortDescription: field.shortDescription,
+                content: field.content,
+                blogId: field.blogId,
+                blogName: field.blogName,
+                createdAt: field.createdAt
+            }
+        });
+
+        return objResult[0]
     }
 
-    await POSTS.deleteOne({_id: bodyID});
+    async update(bodyID: ObjectId, body: postReqType):
+        Promise<boolean> {
 
-    return true;
-  }
+        const find: postBDType [] = await this.findPost(bodyID);
 
-  async createOnePostOfBlog(bodyID: typeBodyID, body: requestBodyPostOfBlog) {
+        if (find.length === 0) {
+            return false;
+        }
 
-    let newDateCreated = new Date().toISOString();
+        const blogFind: blogBDType [] = await BLOGS.find({_id: body.blogId}).toArray();
+        const blogName: string = String(blogFind.map((field: blogBDType) => {
+            return field.name
+        }))
 
-    const blogFind = await BLOGS.find({ _id: bodyID}).toArray();
+        await POSTS.updateOne({_id: bodyID}, {
+            $set: {
+                title: body.title,
+                shortDescription: body.shortDescription,
+                content: body.content,
+                blogId: body.blogId,
+                blogName: blogName
+            }
+        });
 
-    if (blogFind.length === 0) {
-      return false;
+        return true;
     }
 
-    const blogName = String(blogFind.map((field) => {return field.name}))
+    async delete(bodyID: ObjectId):
+        Promise<boolean> {
 
-    const createdPost = await POSTS.insertOne({
-      _id: new ObjectId(),
-      title: body.title,
-      shortDescription: body.shortDescription,
-      content: body.content,
-      blogId: bodyID,
-      blogName: blogName,
-      createdAt: newDateCreated
-    });
+        const find: postBDType [] = await this.findPost(bodyID);
 
-    let result = await POSTS.find({_id: createdPost.insertedId}).toArray();
+        if (find.length === 0) {
+            return false;
+        }
 
-    const objResult = result.map((field) => {
-      return {
-        id: field._id,
-        title: field.title,
-        shortDescription: field.shortDescription,
-        content: field.content,
-        blogId: field.blogId,
-        blogName: field.blogName,
-        createdAt: field.createdAt
-      }
-    });
+        await POSTS.deleteOne({_id: bodyID});
 
-  return objResult[0]
-  }
+        return true;
+    }
 
+    async createOnePostOfBlog(bodyID: ObjectId, body: postOfBlogReqType):
+        Promise<false | postObjectResult> {
+
+        let newDateCreated: string = new Date().toISOString();
+
+        const blogFind: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray();
+
+        if (blogFind.length === 0) {
+            return false;
+        }
+
+        const blogName: string = String(blogFind.map((field: blogBDType) => {
+            return field.name
+        }))
+
+        const createdPost = await POSTS.insertOne({
+            _id: new ObjectId(),
+            title: body.title,
+            shortDescription: body.shortDescription,
+            content: body.content,
+            blogId: bodyID,
+            blogName: blogName,
+            createdAt: newDateCreated
+        });
+
+        let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
+
+        const objResult: postObjectResult [] = result.map((field: postBDType) => {
+            return {
+                id: field._id,
+                title: field.title,
+                shortDescription: field.shortDescription,
+                content: field.content,
+                blogId: field.blogId,
+                blogName: field.blogName,
+                createdAt: field.createdAt
+            }
+        });
+
+        return objResult[0]
+    }
 }
 
 export default new postService();

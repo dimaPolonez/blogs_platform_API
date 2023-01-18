@@ -29,3 +29,11 @@ export type resultBlogObjectType = {
         totalCount: number,
         items: blogAllMaps []
     }
+
+export type blogObjectResult = {
+        id: ObjectId,
+        name: string,
+        description: string,
+        websiteUrl: string,
+        createdAt: string
+}

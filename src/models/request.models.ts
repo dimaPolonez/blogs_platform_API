@@ -1,4 +1,3 @@
-import {ObjectId} from "mongodb";
 import {Request} from "express";
 
 export type bodyReqType<T> = Request<{}, {}, T>
@@ -7,11 +6,11 @@ export type queryReqType<T> = Request<{}, {}, {}, T>
 
 export type paramsReqType<T> = Request<T>
 
+export type paramsAndBodyReqType<T, Q> = Request<T, {}, Q>
+
 export type paramsAndQueryReqType<T, Q> = Request<T, {}, {}, Q>
 
 export type paramsId = {id: string};
-
-export type objectId = ObjectId;
 
 export type queryReqPagSearchAuth = {
   searchLoginTerm: string,

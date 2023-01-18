@@ -23,6 +23,7 @@ export const errorsValidator = (
   }
 
   next();
+  return
 }
 
 export const indexMiddleware = {
