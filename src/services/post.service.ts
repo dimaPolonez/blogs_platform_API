@@ -42,7 +42,9 @@ class postService {
 
         let newDateCreated: string = new Date().toISOString();
 
-        const blogFind: blogBDType [] = await BLOGS.find({_id: body.blogId}).toArray();
+        const blogId: ObjectId = new ObjectId(body.blogId);
+
+        const blogFind: blogBDType [] = await BLOGS.find({_id: blogId}).toArray();
         const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
         })
@@ -52,7 +54,7 @@ class postService {
             title: body.title,
             shortDescription: body.shortDescription,
             content: body.content,
-            blogId: body.blogId,
+            blogId: blogId,
             blogName: blogName[0],
             createdAt: newDateCreated
         });
@@ -83,7 +85,9 @@ class postService {
             return false;
         }
 
-        const blogFind: blogBDType [] = await BLOGS.find({_id: body.blogId}).toArray();
+        const blogId: ObjectId = new ObjectId(body.blogId);
+
+        const blogFind: blogBDType [] = await BLOGS.find({_id: blogId}).toArray();
         const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
         })
@@ -93,7 +97,7 @@ class postService {
                 title: body.title,
                 shortDescription: body.shortDescription,
                 content: body.content,
-                blogId: body.blogId,
+                blogId: blogId,
                 blogName: blogName[0]
             }
         });

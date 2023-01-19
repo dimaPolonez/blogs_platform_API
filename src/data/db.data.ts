@@ -8,8 +8,6 @@ import { commentOfPostBDType } from '../models/comment.models';
 
 dotenv.config();
 
-//MONGOURI = 'mongodb+srv://admin:m2hYzhEYKsGPkdB4@cluster0.yl1ygpd.mongodb.net/?retryWrites=true&w=majority'
-
 export const settings = {
   DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
   JWT_SECRET: process.env.JWT_SECRET || '123'
