@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import jwtApplication from "../application/jwt.application";
+import mailerApplication from '../application/mailer.application';
 import { ERRORS_CODE } from '../data/db.data';
 import { authMeType, authReqType, tokenObjectType } from "../models/auth.models";
 import { bodyReqType } from "../models/request.models";
@@ -28,6 +29,8 @@ class authController {
     async confirmEmail(req: Request, res: Response) {
         try {
             await authService.confirm(req.user);
+            mailerApplication.sendMailActivate(req.user.email);
+
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
@@ -44,7 +47,7 @@ class authController {
                 const findUser: false | userBDType  = await authService.getOne(user.id);
                 
                 if (findUser) {
-                    await authService.sendMail(findUser);
+                    await mailerApplication.sendMailCode(findUser.email);
                     res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
                 }
             }
@@ -55,7 +58,8 @@ class authController {
 
     async resendingEmail(req: Request, res: Response) {
         try {
-            await authService.sendMail(req.user);
+
+            await mailerApplication.sendMailRepeat(req.user.email);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

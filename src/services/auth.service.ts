@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import { USERS } from "../data/db.data";
 import { authReqType } from "../models/auth.models";
-import { userBDType, userObjectResult } from "../models/user.models";
+import { userBDType} from "../models/user.models";
 
 
 class authService {
@@ -48,10 +48,6 @@ class authService {
             }
         });
 
-    }
-
-    async sendMail(user: userBDType) {
-        
     }
 
     async getOne(bodyID: ObjectId):
