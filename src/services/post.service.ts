@@ -42,9 +42,7 @@ class postService {
 
         let newDateCreated: string = new Date().toISOString();
 
-        const blogBodyId: ObjectId = new ObjectId(body.blogId);
-
-        const blogFind: blogBDType [] = await BLOGS.find({_id: blogBodyId}).toArray();
+        const blogFind: blogBDType [] = await BLOGS.find({_id: body.blogId}).toArray();
         const blogName: string [] = blogFind.map((field: blogBDType) => {
             return field.name
         })
@@ -54,7 +52,7 @@ class postService {
             title: body.title,
             shortDescription: body.shortDescription,
             content: body.content,
-            blogId: blogBodyId,
+            blogId: body.blogId,
             blogName: blogName[0],
             createdAt: newDateCreated
         });
