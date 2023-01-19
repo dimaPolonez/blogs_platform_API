@@ -1,64 +1,10 @@
 import { blogValidator } from './blog.middleware';
 import { NextFunction, Request, Response } from 'express';
-import { header, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import {postsOfBlogValidator, postValidator} from './post.middleware';
-import { USERS } from '../data/users.data';
 import {userAuthValidator, usersValidator} from "./user.middleware";
 import {commentValidator} from "./comment.middleware";
-import {ERRORS_CODE} from "../data/db.data";
-import jwtApplication from "../application/jwt.application";
-import userService from "../services/user.service";
-import {ObjectId} from "mongodb";
-
-export const basicAuthorization = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const errors = validationResult(req);
-  header('authorization')
-    .isString()
-    .bail()
-    .trim()
-    .bail()
-    .notEmpty()
-    .bail()
-    .withMessage('Field authorization incorrect');
-
-  if (
-    req.headers.authorization !== `Basic ${USERS[0].logPass}` ||
-    !errors.isEmpty()
-  ) {
-    res.status(401).json('Unauthorized');
-  } else {
-    next();
-  }
-};
-
-export const bearerAuthorization = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-
-  if (!req.headers.authorization) {
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
-    return
-  }
-
-  const token: string = req.headers.authorization!.substring(7)
-
-  const result = await jwtApplication.verifyJwt(token);
-
-  if (result) {
-    const getId: ObjectId = new ObjectId(result)
-    req.user = await userService.getOne(getId);
-    next();
-  } else {
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
-  }
-
-}
+import { basicAuthorization, bearerAuthorization } from './auth.middleware';
 
 export const errorsValidator = (
   req: Request,
@@ -73,11 +19,12 @@ export const errorsValidator = (
         let object: object = { message: x.msg, field: x.param };
         return object;
       }),
-    });
-  } else {
-    next();
+    })
   }
-};
+
+  next();
+  return
+}
 
 export const indexMiddleware = {
   BASIC_AUTHORIZATION: basicAuthorization,
@@ -89,4 +36,4 @@ export const indexMiddleware = {
   POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
   USER_AUTH: userAuthValidator,
   ERRORS_VALIDATOR: errorsValidator
-};
+}

@@ -2,24 +2,24 @@ import bcrypt from "bcrypt";
 
 class bcryptApp {
 
-    async saltGenerate(password: string) {
+    public async saltGenerate(password: string): Promise <string> {
 
-        const salt = await bcrypt.genSalt(10);
-        const hush = await this.hushGenerate(password, salt);
-
-        return hush
-    }
-
-    async hushGenerate(password: string, salt: string) {
-
-        const hush = await bcrypt.hash(password, salt);
+        const salt: string = await bcrypt.genSalt(10);
+        const hush: string = await this.hushGenerate(password, salt);
 
         return hush
     }
 
-    async hushCompare(password: string, hush: string) {
+    private async hushGenerate(password: string, salt: string): Promise <string> {
 
-        const result = await bcrypt.compare(password, hush);
+        const hush: string = await bcrypt.hash(password, salt);
+
+        return hush
+    }
+
+    public async hushCompare(password: string, hush: string): Promise <boolean> {
+
+        const result: boolean = await bcrypt.compare(password, hush);
 
         return result
     }

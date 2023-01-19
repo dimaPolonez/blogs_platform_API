@@ -1,17 +1,29 @@
-import {requestBodyComment, typeBodyID} from "../models/request.models";
-import {BLOGS, COMMENTS, ERRORS_CODE, POSTS} from "../data/db.data";
+import {COMMENTS, ERRORS_CODE, POSTS} from "../data/db.data";
 import {ObjectId} from "mongodb";
-import {usersFieldsType} from "../models/data.models";
+import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
+import {userBDType} from "../models/user.models";
+import {postBDType, postOfBlogReqType} from "../models/post.models";
 
 class commentService {
 
-    async getOne(bodyID: typeBodyID) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
-        const comment = await COMMENTS.find({_id: bodyID}).toArray();
+    async findComment(bodyID:ObjectId):
+        Promise<commentOfPostBDType []>
+    {
+        const result: commentOfPostBDType [] = await COMMENTS.find({_id: bodyID}).toArray();
 
-        const objResult = comment.map((field) => {
+        return result
+    }
+
+    async getOne(bodyID: ObjectId):
+        Promise<false | commentObjectResult> {
+
+        const find: commentOfPostBDType [] = await this.findComment(bodyID);
+
+        if (find.length === 0) {
+            return false;
+        }
+
+        const objResult: commentObjectResult [] = find.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,
@@ -24,29 +36,25 @@ class commentService {
         return objResult[0]
     }
 
-    async update(bodyID: typeBodyID, body: requestBodyComment, userObject: usersFieldsType) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
+    async update(bodyID: ObjectId, body: commentReqType, userObject: userBDType):
+        Promise<number> {
 
-        const result = await COMMENTS.find({_id: bodyID}).toArray()
+        const find: commentOfPostBDType [] = await this.findComment(bodyID);
 
-        if (result.length === 0) {
+        if (find.length === 0) {
             return ERRORS_CODE.NOT_FOUND_404;
         }
 
-        const bearer = result.map((field) => {
+        const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
 
-            if(field.userId.toString() === userObject._id.toString()){
+            if (field.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
             }
         })
 
-        console.log(bearer[0])
-
-        if (!bearer[0]){
+        if (!bearer[0]) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
@@ -59,25 +67,24 @@ class commentService {
         return ERRORS_CODE.NO_CONTENT_204;
     }
 
-    async delete(bodyID: typeBodyID, userObject: usersFieldsType) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
-        const result = await COMMENTS.find({_id: bodyID}).toArray()
+    async delete(bodyID: ObjectId, userObject: userBDType):
+        Promise<number> {
 
-        if (result.length === 0) {
+        const find: commentOfPostBDType [] = await this.findComment(bodyID);
+
+        if (find.length === 0) {
             return ERRORS_CODE.NOT_FOUND_404;
         }
 
-        const bearer = result.map((field) => {
-            if(field.userId.toString() === userObject._id.toString()){
+        const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
+            if (field.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
             }
         })
 
-        if (!bearer[0]){
+        if (!bearer[0]) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
@@ -86,10 +93,12 @@ class commentService {
         return ERRORS_CODE.NO_CONTENT_204;
     }
 
-    async createCommentOfPost(postId: ObjectId, body: requestBodyComment, objectUser: usersFieldsType) {
-        let newDateCreated = new Date().toISOString();
+    async createCommentOfPost(postId: ObjectId, body: postOfBlogReqType, objectUser: userBDType):
+        Promise<false | commentObjectResult>
+        {
+        let newDateCreated: string = new Date().toISOString();
 
-        const postFind = await POSTS.find({_id: postId}).toArray();
+        const postFind: postBDType [] = await POSTS.find({_id: postId}).toArray();
 
         if (postFind.length === 0) {
             return false;
@@ -104,9 +113,9 @@ class commentService {
             createdAt: newDateCreated
         });
 
-        let result = await COMMENTS.find({_id: createdComment.insertedId}).toArray();
+        let result: commentOfPostBDType [] = await COMMENTS.find({_id: createdComment.insertedId}).toArray();
 
-        const objResult = result.map((field) => {
+        const objResult: commentObjectResult [] = result.map((field:commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,
@@ -118,6 +127,7 @@ class commentService {
 
         return objResult[0]
     }
+
 }
 
 export default new commentService();

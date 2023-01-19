@@ -14,10 +14,10 @@ async function startApp() {
     try {
         await startBD();
         app.listen(PORT, () => {
-            console.log(`Example app listening on port ${PORT}`);
-        });
+            console.log(`Example app listening on port ${PORT}`)
+        })
     } catch (e) {
-        console.log(e);
+        console.log(e)
     }
 }
 
@@ -33,7 +33,7 @@ app.use('/auth', authRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.json('Server start!');
-});
+})
 
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
     try {
@@ -45,4 +45,4 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
-});
+})

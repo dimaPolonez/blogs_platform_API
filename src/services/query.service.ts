@@ -1,28 +1,36 @@
 import {BLOGS, COMMENTS, POSTS, USERS} from "../data/db.data";
-import {queryAllComments, queryAllUser, requestQuery, requestQuerySearch, typeBodyID} from "../models/request.models";
-import {usersFieldsType} from "../models/data.models";
+import {
+    notStringQueryReqPag,
+    notStringQueryReqPagOfSearchName, notStringQueryReqPagSearchAuth
+} from "../models/request.models";
+import {blogAllMaps, blogBDType, resultBlogObjectType} from "../models/blog.models";
+import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.models";
+import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
+import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
+import {ObjectId} from "mongodb";
 
-function sort(sortDir: string) {
+function sortObject(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
 }
 
-function skipped(pageNum: string | number, pageSize: string | number): number {
-    return (+pageNum - 1) * (+pageSize);
+function skippedObject(pageNum: number, pageSize: number): number {
+    return (pageNum - 1) * pageSize;
 }
 
 class queryService {
 
     async getAllBlogs(
-        searchNameTerm: requestQuerySearch, pageNum: requestQuery,
-        pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
+        queryAll: notStringQueryReqPagOfSearchName):
+        Promise<resultBlogObjectType> {
 
-        const blogs = await BLOGS
-            .find({name: new RegExp(searchNameTerm, 'gi')})
-            .skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort({[sortBy]: sort(sortDir)}).toArray();
+        const blogs: blogBDType [] = await BLOGS
+            .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray();
 
 
-        const allMaps = blogs.map((field) => {
+        const allMaps: blogAllMaps [] = blogs.map((field: blogBDType) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -32,13 +40,13 @@ class queryService {
             }
         });
 
-        const allCount = await BLOGS.countDocuments({name: new RegExp(searchNameTerm, 'gi')});
-        const pagesCount = Math.ceil(+allCount / +pageSize)
+        const allCount: number = await BLOGS.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')});
+        const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject = {
+        const resultObject: resultBlogObjectType = {
             pagesCount: pagesCount,
-            page: +pageNum,
-            pageSize: +pageSize,
+            page: queryAll.pageNumber,
+            pageSize: queryAll.pageSize,
             totalCount: allCount,
             items: allMaps
         }
@@ -46,12 +54,14 @@ class queryService {
         return resultObject
     }
 
-    async getAllPosts(pageNum: requestQuery, pageSize: requestQuery, sortBy: requestQuery, sortDir: requestQuery) {
+    async getAllPosts(queryAll: notStringQueryReqPag): Promise<resultPostObjectType> {
 
-        const posts = await POSTS.find({}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort(({[sortBy]: sort(sortDir)})).toArray();
+        const posts: postBDType [] = await POSTS.find({})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps = posts.map((field) => {
+        const allMaps: postAllMaps [] = posts.map((field: postBDType) => {
             return {
                 id: field._id,
                 title: field.title,
@@ -63,13 +73,13 @@ class queryService {
             }
         });
 
-        const allCount = await POSTS.countDocuments({});
-        const pagesCount = Math.ceil(+allCount / +pageSize)
+        const allCount: number = await POSTS.countDocuments({});
+        const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject = {
+        const resultObject: resultPostObjectType = {
             pagesCount: pagesCount,
-            page: +pageNum,
-            pageSize: +pageSize,
+            page: queryAll.pageNumber,
+            pageSize: queryAll.pageSize,
             totalCount: allCount,
             items: allMaps
         }
@@ -77,22 +87,22 @@ class queryService {
         return resultObject
     }
 
-    async getAllPostsOfBlog(bodyID: typeBodyID, pageNum: requestQuery, pageSize: requestQuery,
-                            sortBy: requestQuery, sortDir: requestQuery) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
+    async getAllPostsOfBlog
+    (bodyID: ObjectId, queryAll: notStringQueryReqPag):
+        Promise<resultPostObjectType | false> {
 
-        const result = await BLOGS.find({_id: bodyID}).toArray()
+        const result: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
             return false;
         }
 
-        const posts = await POSTS.find({blogId: bodyID}).skip(skipped(pageNum, pageSize)).limit(+pageSize)
-            .sort(({[sortBy]: sort(sortDir)})).toArray();
+        const posts: postBDType [] = await POSTS.find({blogId: bodyID})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps = posts.map((field) => {
+        const allMaps: postAllMaps [] = posts.map((field: postBDType) => {
             return {
                 id: field._id,
                 title: field.title,
@@ -103,14 +113,14 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-        const allCount = await POSTS.countDocuments({blogId: bodyID});
-        const pagesCount = Math.ceil(+allCount / +pageSize)
+        const allCount: number = await POSTS.countDocuments({blogId: bodyID});
+        const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject = {
+        const resultObject: resultPostObjectType = {
             pagesCount: pagesCount,
-            page: +pageNum,
-            pageSize: +pageSize,
-            totalCount: +allCount,
+            page: queryAll.pageNumber,
+            pageSize: queryAll.pageSize,
+            totalCount: allCount,
             items: allMaps
         }
 
@@ -118,9 +128,10 @@ class queryService {
 
     }
 
-    async getAllUsers(queryAll: queryAllUser) {
+    async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
+        Promise<resultUserObjectType> {
 
-        const users = await USERS
+        const users: userBDType [] = await USERS
             .find(
                 {
                     $or: [
@@ -129,11 +140,11 @@ class queryService {
                     ]
                 }
             )
-            .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps = users.map((field: usersFieldsType) => {
+        const allMaps: userAllMaps [] = users.map((field: userBDType) => {
             return {
                 id: field._id,
                 login: field.login,
@@ -142,7 +153,7 @@ class queryService {
             }
         });
 
-        const allCount = await USERS.countDocuments(
+        const allCount: number = await USERS.countDocuments(
             {
                 $or: [
                     {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
@@ -150,9 +161,9 @@ class queryService {
                 ]
             });
 
-        const pagesCount = Math.ceil(allCount / queryAll.pageSize)
+        const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject = {
+        const resultObject: resultUserObjectType = {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
@@ -163,23 +174,21 @@ class queryService {
         return resultObject
     }
 
-    async getAllCommentsOfBlog(bodyID: typeBodyID, queryAll: queryAllComments) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
+    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag):
+        Promise<false | resultCommentObjectType> {
 
-        const result = await POSTS.find({_id: bodyID}).toArray()
+        const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray()
 
         if (result.length === 0) {
             return false;
         }
 
-        const comments = await COMMENTS.find({postId: bodyID})
-            .skip(skipped(queryAll.pageNumber, queryAll.pageSize))
+        const comments: commentOfPostBDType [] = await COMMENTS.find({postId: bodyID})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sort(queryAll.sortDirection)})).toArray();
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps = comments.map((field) => {
+        const allMaps: commentAllMaps [] = comments.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,
@@ -188,21 +197,19 @@ class queryService {
                 createdAt: field.createdAt
             }
         });
-        const allCount = await COMMENTS.countDocuments({postId: bodyID});
-        const pagesCount = Math.ceil(+allCount / queryAll.pageSize)
+        const allCount: number = await COMMENTS.countDocuments({postId: bodyID});
+        const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject = {
+        const resultObject: resultCommentObjectType = {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
-            totalCount: +allCount,
+            totalCount: allCount,
             items: allMaps
         }
 
         return resultObject
-
     }
-
 }
 
 export default new queryService();

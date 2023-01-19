@@ -1,16 +1,28 @@
-import {BLOGS} from '../data/db.data';
-import {requestBodyBlog, typeBodyID} from "../models/request.models";
+import {BLOGS, POSTS} from '../data/db.data';
 import {ObjectId} from "mongodb";
+import {blogBDType, blogObjectResult, blogReqType} from "../models/blog.models";
+import {postBDType} from "../models/post.models";
 
 class blogService {
+    async findBlog(bodyID: ObjectId):
+        Promise<blogBDType []> {
+        const result: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray();
 
-    async getOne(bodyID: typeBodyID) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
+        return result
+    }
+
+    async getOne(bodyID: ObjectId):
+        Promise<false | blogObjectResult> {
+
+        const find: blogBDType [] = await this.findBlog(bodyID);
+
+        if (find.length === 0) {
+            return false;
         }
-        const blog = await BLOGS.find({ _id: bodyID }).toArray();
 
-        const objResult = blog.map((field) => {
+        const blog: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray();
+
+        const objResult: blogObjectResult [] = blog.map((field: blogBDType) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -23,9 +35,9 @@ class blogService {
         return objResult[0]
     }
 
-    async create(body: requestBodyBlog) {
-
-        const newDateCreated = new Date().toISOString();
+    async create(body: blogReqType):
+        Promise<blogObjectResult> {
+        const newDateCreated: string = new Date().toISOString();
 
         const createdBlog = await BLOGS.insertOne({
             _id: new ObjectId(),
@@ -35,9 +47,9 @@ class blogService {
             createdAt: newDateCreated
         });
 
-        let result = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
+        let result: blogBDType [] = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
 
-        const objResult = result.map((field) => {
+        const objResult: blogObjectResult [] = result.map((field: blogBDType) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -50,14 +62,12 @@ class blogService {
         return objResult[0]
     }
 
-    async update(bodyID: typeBodyID, body: requestBodyBlog) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
+    async update(bodyID: ObjectId, body: blogReqType):
+        Promise<boolean> {
 
-        const result = await BLOGS.find({_id: bodyID}).toArray()
+        const find: blogBDType [] = await this.findBlog(bodyID);
 
-        if (result.length === 0) {
+        if (find.length === 0) {
             return false;
         }
 
@@ -72,13 +82,12 @@ class blogService {
         return true;
     }
 
-    async delete(bodyID: typeBodyID) {
-        if (!bodyID) {
-            throw new Error('не указан ID');
-        }
-        const result = await BLOGS.find({_id: bodyID}).toArray()
+    async delete(bodyID: ObjectId):
+        Promise<boolean> {
 
-        if (result.length === 0) {
+        const find: blogBDType [] = await this.findBlog(bodyID);
+
+        if (find.length === 0) {
             return false;
         }
 

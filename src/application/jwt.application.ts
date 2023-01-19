@@ -1,17 +1,22 @@
 import jwt from 'jsonwebtoken';
-import {ObjectId} from "mongodb";
 import {settings} from "../data/db.data";
-import {tokenObjectType} from "../models/data.models";
+import { tokenObjectType } from '../models/auth.models';
+import { userBDType } from '../models/user.models';
+
 class jwtApp {
 
-    async createJwt(user: tokenObjectType) {
-        debugger
-        const token = jwt.sign({userId: user._id}, settings.JWT_SECRET,{expiresIn: '1h'});
+    public async createJwt(user: userBDType): Promise <tokenObjectType> {
+        const token: string = jwt.sign({userId: user._id}, settings.JWT_SECRET,{expiresIn: '1h'});
+        
+        const objToken: tokenObjectType = {
+            accessToken: token
+        }
 
-        return { accessToken: token }
+        return objToken
     }
 
-    async verifyJwt(token: string) {
+    public async verifyJwt(token: string):
+        Promise <any> {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
 

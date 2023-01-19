@@ -1,36 +1,42 @@
-import {Request, Response, Router} from 'express';
+import {Response, Router} from 'express';
 import blogController from '../controllers/blog.controller';
-import { indexMiddleware } from '../middleware/index.middleware';
-import {requestQueryAll} from "../models/request.models";
+import {indexMiddleware} from '../middleware/index.middleware';
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
+import {
+    notStringQueryReqPag, notStringQueryReqPagOfSearchName,
+    paramsAndQueryReqType, paramsId, queryReqPag, queryReqPagOfSearchName,
+    queryReqType
+} from '../models/request.models';
+import {resultBlogObjectType} from '../models/blog.models';
+import {resultPostObjectType} from '../models/post.models';
 
 const blogRouter = Router({});
 
 blogRouter.get(
-    '/:id',blogController.getOne);
+    '/:id', blogController.getOne);
 
 blogRouter.post(
-  '/',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
-  indexMiddleware.ERRORS_VALIDATOR,
-  blogController.create
+    '/',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.BLOGS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    blogController.create
 );
 
 blogRouter.put(
-  '/:id',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  indexMiddleware.BLOGS_VALIDATOR,
-  indexMiddleware.ERRORS_VALIDATOR,
-  blogController.update
+    '/:id',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.BLOGS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    blogController.update
 );
 
 blogRouter.delete(
-  '/:id',
-  indexMiddleware.BASIC_AUTHORIZATION,
-  blogController.delete
+    '/:id',
+    indexMiddleware.BASIC_AUTHORIZATION,
+    blogController.delete
 );
 
 blogRouter.post(
@@ -42,17 +48,19 @@ blogRouter.post(
 );
 
 
-blogRouter.get('/:id/posts', async (req: Request<{id: string},{},{},requestQueryAll>, res: Response) => {
+blogRouter.get('/:id/posts', async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
     try {
-        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
-        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
-        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
-        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
+
+        let queryAll: notStringQueryReqPag = {
+            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
+            pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
+            pageSize: req.query.pageSize ? +req.query.pageSize : 10
+        }
 
         const bodyId: ObjectId = new ObjectId(req.params.id);
 
-        const post = await queryService.getAllPostsOfBlog(bodyId, pageNumber,
-            pageSize, sortBy, sortDirection);
+        const post: false | resultPostObjectType = await queryService.getAllPostsOfBlog(bodyId, queryAll);
 
         if (post) {
             res.status(ERRORS_CODE.OK_200).json(post);
@@ -64,15 +72,18 @@ blogRouter.get('/:id/posts', async (req: Request<{id: string},{},{},requestQuery
     }
 })
 
-blogRouter.get('/', async (req: Request<{},{}, {},requestQueryAll>, res: Response) => {
+blogRouter.get('/', async (req: queryReqType<queryReqPagOfSearchName>, res: Response) => {
     try {
-        let searchNameTerm =  req.query.searchNameTerm ? req.query.searchNameTerm : ''
-        let pageNumber =  req.query.pageNumber ? req.query.pageNumber : '1'
-        let pageSize =  req.query.pageSize ? req.query.pageSize : '10'
-        let sortBy =  req.query.sortBy ? req.query.sortBy : 'createdAt'
-        let sortDirection =  req.query.sortDirection ? req.query.sortDirection : 'desc'
 
-        const blogs = await queryService.getAllBlogs(searchNameTerm, pageNumber, pageSize, sortBy, sortDirection);
+        let queryAll: notStringQueryReqPagOfSearchName = {
+            searchNameTerm: req.query.searchNameTerm ? req.query.searchNameTerm : '',
+            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
+            pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
+            pageSize: req.query.pageSize ? +req.query.pageSize : 10
+        }
+
+        const blogs: resultBlogObjectType = await queryService.getAllBlogs(queryAll);
         res.status(ERRORS_CODE.OK_200).json(blogs);
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

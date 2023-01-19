@@ -1,9 +1,10 @@
-import {Request, Response, Router} from "express";
+import {Response, Router} from "express";
 import {indexMiddleware} from "../middleware/index.middleware";
-import {queryAllUser, requestQueryUser} from "../models/request.models";
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import userController from "../controllers/user.controller";
+import { notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType } from "../models/request.models";
+import {resultUserObjectType} from "../models/user.models";
 
 const userRouter = Router({});
 
@@ -19,19 +20,19 @@ userRouter.delete('/:id',
 
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
-    async (req: Request<{},{}, {}, requestQueryUser>, res: Response) => {
+    async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => {
     try {
 
-        let queryAll: queryAllUser = {
+        let queryAll: notStringQueryReqPagSearchAuth = {
+            searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
+            searchEmailTerm: req.query.searchEmailTerm ? req.query.searchEmailTerm : '',
             sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
             sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
             pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
-            pageSize: req.query.pageSize ? +(req.query.pageSize) : 10,
-            searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
-            searchEmailTerm: req.query.searchEmailTerm ? req.query.searchEmailTerm : ''
+            pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
         }
 
-        const users = await queryService.getAllUsers(queryAll);
+        const users: resultUserObjectType = await queryService.getAllUsers(queryAll);
         res.status(ERRORS_CODE.OK_200).json(users);
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

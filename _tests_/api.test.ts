@@ -1,6 +1,5 @@
 import request from 'supertest';
 import {app} from '../src';
-import {blogsFieldsType} from "../src/models/data.models";
 
 
 describe('/', () => {

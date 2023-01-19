@@ -1,16 +1,19 @@
-import {Request, Response} from 'express';
+import {Response} from 'express';
 import blogService from '../services/blog.service';
 import {ERRORS_CODE} from "../data/db.data";
 import postService from "../services/post.service";
 import {ObjectId} from "mongodb";
+import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
+import {blogObjectResult, blogReqType} from "../models/blog.models";
+import {postObjectResult, postOfBlogReqType} from "../models/post.models";
 
 class blogController {
 
-    async getOne(req: Request, res: Response) {
+    async getOne(req: paramsReqType<paramsId>, res: Response) {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog: object = await blogService.getOne(bodyId);
+            const blog: false | blogObjectResult = await blogService.getOne(bodyId);
 
             if (blog) {
                 res.status(ERRORS_CODE.OK_200).json(blog);
@@ -22,9 +25,9 @@ class blogController {
         }
     }
 
-    async create(req: Request, res: Response) {
+    async create(req: bodyReqType<blogReqType>, res: Response) {
         try {
-            const blog = await blogService.create(req.body);
+            const blog: blogObjectResult = await blogService.create(req.body);
 
             if (blog) {
                 res.status(ERRORS_CODE.CREATED_201).json(blog);
@@ -36,11 +39,11 @@ class blogController {
         }
     }
 
-    async update(req: Request, res: Response) {
+    async update(req: paramsAndBodyReqType<paramsId, blogReqType>, res: Response) {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog = await blogService.update(bodyId, req.body);
+            const blog: boolean = await blogService.update(bodyId, req.body);
 
             if (blog) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
@@ -52,11 +55,11 @@ class blogController {
         }
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: paramsReqType<paramsId>, res: Response) {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog = await blogService.delete(bodyId);
+            const blog: boolean = await blogService.delete(bodyId);
 
             if (blog) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
@@ -68,11 +71,11 @@ class blogController {
         }
     }
 
-    async createOnePostOfBlog(req: Request, res: Response) {
+    async createOnePostOfBlog(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const post = await postService.createOnePostOfBlog(bodyId, req.body);
+            const post: false | postObjectResult = await postService.createOnePostOfBlog(bodyId, req.body);
 
             if (post) {
                 res.status(ERRORS_CODE.CREATED_201).json(post);
