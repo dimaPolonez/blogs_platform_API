@@ -9,13 +9,10 @@ class userController {
 
     async create(req: bodyReqType<userReqType>, res: Response) {
         try {
-            const user: userObjectResult = await userService.create(req.body);
+            const confirm: boolean = true;
 
-            if (user) {
-                res.status(ERRORS_CODE.CREATED_201).json(user);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
-            }
+            const user: userObjectResult = await userService.create(req.body, confirm);
+            res.status(ERRORS_CODE.CREATED_201).json(user);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }

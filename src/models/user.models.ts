@@ -4,6 +4,7 @@ export type userBDType = {
   _id: ObjectId,
   login: string,
   email: string,
+  confirm: boolean,
   hushPass: string,
   createdAt: string
   }

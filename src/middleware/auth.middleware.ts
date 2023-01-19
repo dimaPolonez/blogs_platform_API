@@ -3,8 +3,8 @@ import { header, validationResult } from "express-validator";
 import { ObjectId } from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import { ERRORS_CODE, SUPERADMIN } from "../data/db.data";
-import userService from "../services/user.service";
 import {userBDType} from "../models/user.models";
+import authService from "../services/auth.service";
 
 
 export const basicAuthorization = (
@@ -49,7 +49,7 @@ export const bearerAuthorization = async (
   
     if (result) {
       const getId: ObjectId = new ObjectId(result)
-      const findUser: false | userBDType  = await userService.getOne(getId);
+      const findUser: false | userBDType  = await authService.getOne(getId);
       if (findUser) {
         req.user = findUser;
         next();
