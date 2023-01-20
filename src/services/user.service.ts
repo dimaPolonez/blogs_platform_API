@@ -2,10 +2,11 @@ import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
+import { authParams } from "../models/auth.models";
 
 class userService {
 
-    async create(body: userReqType, confirmBool: boolean):
+    async create(body: userReqType, authParams: authParams):
         Promise<userObjectResult> {
 
         const newDateCreated: string = new Date().toISOString();
@@ -14,11 +15,19 @@ class userService {
 
         const createdUser = await USERS.insertOne({
             _id: new ObjectId(),
-            login: body.login,
-            email: body.email,
-            confirm: confirmBool,
-            hushPass: hushPass,
-            createdAt: newDateCreated
+            infUser: {
+                login: body.login,
+                email: body.email,
+                createdAt: newDateCreated
+            },
+            activeUser: {
+                codeActivated: authParams.codeActivated,
+                lifeTimeCode: authParams.lifeTimeCode
+            },
+            authUser: {
+                confirm: authParams.confirm,
+                hushPass: hushPass
+            }
         });
 
         let result: userBDType [] = await USERS.find({_id: createdUser.insertedId}).toArray();
@@ -26,9 +35,9 @@ class userService {
         const objResult: userObjectResult [] = result.map((field: userBDType) => {
             return {
                 id: field._id,
-                login: field.login,
-                email: field.email,
-                createdAt: field.createdAt
+                login: field.infUser.login,
+                email: field.infUser.email,
+                createdAt: field.infUser.createdAt
             }
         });
 

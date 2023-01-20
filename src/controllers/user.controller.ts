@@ -4,14 +4,20 @@ import {ERRORS_CODE} from "../data/db.data";
 import userService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
+import { authParams } from "../models/auth.models";
 
 class userController {
 
     async create(req: bodyReqType<userReqType>, res: Response) {
         try {
-            const confirm: boolean = true;
 
-            const user: userObjectResult = await userService.create(req.body, confirm);
+            const authParams: authParams = {
+                confirm: true,
+                codeActivated: 'Activated',
+                lifeTimeCode: 'Activated'
+            }
+
+            const user: userObjectResult = await userService.create(req.body, authParams);
             res.status(ERRORS_CODE.CREATED_201).json(user);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

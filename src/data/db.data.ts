@@ -22,7 +22,7 @@ export async function startBD() {
     await client.db('blogs_platform_API').command({ ping: 1 });
     console.log('Connected successfully to mongo server');
   } catch {
-    await client.close();
+    await client.close(); 
   }
 }
 

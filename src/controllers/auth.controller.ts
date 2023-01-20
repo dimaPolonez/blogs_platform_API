@@ -7,6 +7,9 @@ import { bodyReqType } from "../models/request.models";
 import { userBDType, userObjectResult, userReqType } from "../models/user.models";
 import authService from '../services/auth.service';
 import userService from '../services/user.service';
+import { authParams } from "../models/auth.models";
+import {v4 as uuidv4} from 'uuid';
+import add from 'date-fns/add';
 
 class authController {
 
@@ -29,7 +32,7 @@ class authController {
     async confirmEmail(req: Request, res: Response) {
         try {
             await authService.confirm(req.user);
-            mailerApplication.sendMailActivate(req.user.email);
+            mailerApplication.sendMailActivate(req.user.infUser.email);
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
@@ -39,15 +42,25 @@ class authController {
 
     async registration(req: bodyReqType<userReqType>, res: Response) {
         try {
-            const confirm: boolean = false;
 
-            const user: userObjectResult = await userService.create(req.body, confirm);
+            const lifetime: string = add(new Date(), {
+                hours: 1,
+                minutes: 3
+            }).toString()
+
+            const authParams: authParams = {
+                confirm: false,
+                codeActivated: uuidv4(),
+                lifeTimeCode: lifetime
+            }
+            
+            const user: userObjectResult = await userService.create(req.body, authParams);
 
             if (user) {
                 const findUser: false | userBDType  = await authService.getOne(user.id);
                 
                 if (findUser) {
-                    await mailerApplication.sendMailCode(findUser.email);
+                    await mailerApplication.sendMailCode(findUser.infUser.email, findUser.activeUser.codeActivated);
                     res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
                 }
             }
@@ -59,7 +72,8 @@ class authController {
     async resendingEmail(req: Request, res: Response) {
         try {
 
-            await mailerApplication.sendMailRepeat(req.user.email);
+            const codeActive: string = '';
+            await mailerApplication.sendMailRepeat(req.user.infUser.email, codeActive);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
@@ -69,8 +83,8 @@ class authController {
     async aboutMe(req: Request, res: Response) {
         try {
             const me: authMeType = {
-                email: req.user.email,
-                login: req.user.login,
+                email: req.user.infUser.email,
+                login: req.user.infUser.login,
                 userId: req.user._id
             }
             res.status(ERRORS_CODE.OK_200).json(me);

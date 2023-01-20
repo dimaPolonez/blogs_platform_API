@@ -2,11 +2,19 @@ import { ObjectId } from "mongodb";
 
 export type userBDType = {
   _id: ObjectId,
-  login: string,
-  email: string,
-  confirm: boolean,
-  hushPass: string,
-  createdAt: string
+  infUser: {
+    login: string,
+    email: string,
+    createdAt: string
+  },
+  activeUser: {
+    codeActivated: string,
+    lifeTimeCode: string,
+  },
+  authUser: {
+    confirm: boolean,
+    hushPass: string
+  }
   }
 
 export type userReqType = {

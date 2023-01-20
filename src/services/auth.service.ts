@@ -23,13 +23,13 @@ class authService {
             return false
         }
 
-        const checkConfirm: boolean [] = findName.map((f) => f.confirm);
+        const checkConfirm: boolean [] = findName.map((f) => f.authUser.confirm);
 
         if (checkConfirm[0] === false) {
             return false
         }
 
-        const hushPassDB: string [] = findName.map((f) => f.hushPass);
+        const hushPassDB: string [] = findName.map((f) => f.authUser.hushPass);
 
         const result: boolean = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
 
@@ -44,7 +44,9 @@ class authService {
 
         await USERS.updateOne({_id: user._id}, {
             $set: {
-                confirm: true
+                confirm: true,
+                codeActivated: 'Activated',
+                lifeTimeCode: 'Activated'
             }
         });
 

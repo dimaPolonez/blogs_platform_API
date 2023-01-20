@@ -108,7 +108,7 @@ class commentService {
             _id: new ObjectId(),
             content: body.content,
             userId: objectUser._id,
-            userLogin: objectUser.login,
+            userLogin: objectUser.infUser.login,
             postId: postId,
             createdAt: newDateCreated
         });

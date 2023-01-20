@@ -23,3 +23,9 @@ export type authReqType = {
     login: string,
     userId: ObjectId
   }
+
+export type authParams = {
+    confirm: boolean,
+    codeActivated: string,
+    lifeTimeCode: string
+  }
