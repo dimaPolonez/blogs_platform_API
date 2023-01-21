@@ -1,8 +1,9 @@
-import { ObjectId } from "mongodb";
+import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
-import { USERS } from "../data/db.data";
-import { authReqType } from "../models/auth.models";
-import { userBDType} from "../models/user.models";
+import {POSTS, USERS} from "../data/db.data";
+import {authParams, authReqType} from "../models/auth.models";
+import {userBDType} from "../models/user.models";
+import {postBDType} from "../models/post.models";
 
 
 class authService {
@@ -40,20 +41,38 @@ class authService {
         return findName[0]
     }
 
-    async confirm(user: userBDType){
+    async confirm(code: string, authParams: authParams) {
 
-        await USERS.updateOne({_id: user._id}, {
+        const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
+
+        await USERS.updateOne({"activeUser.codeActivated": code}, {
             $set: {
-                confirm: true,
-                codeActivated: 'Activated',
-                lifeTimeCode: 'Activated'
+                authUser: {confirm: authParams.confirm, hushPass: ''},
+                activeUser: {
+                    codeActivated: authParams.codeActivated,
+                    lifeTimeCode: authParams.lifeTimeCode
+                }
             }
         });
+
+        const result: string [] = find.map((f:userBDType) => f.infUser.email);
+
+        return result[0]
+
+    }
+
+    async resending(email: string) {
+
+        const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
+
+        const result: string [] = find.map((f:userBDType) => f.activeUser.codeActivated);
+
+        return result[0]
 
     }
 
     async getOne(bodyID: ObjectId):
-        Promise <false | userBDType>{
+        Promise<false | userBDType> {
 
         const find: userBDType [] = await USERS.find({_id: bodyID}).toArray();
 

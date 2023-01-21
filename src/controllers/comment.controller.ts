@@ -30,9 +30,15 @@ class commentController {
             const comment: number = await commentService.update(bodyId, req.body, req.user);
 
             switch (comment) {
-                case (204): return res.sendStatus(ERRORS_CODE.NO_CONTENT_204); break;
-                case (403): return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403); break;
-                case (404): return res.sendStatus(ERRORS_CODE.NOT_FOUND_404); break;
+                case (204):
+                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                    break;
+                case (403):
+                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403);
+                    break;
+                case (404):
+                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                    break;
             }
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
@@ -46,9 +52,15 @@ class commentController {
             const comment: number = await commentService.delete(bodyId, req.user);
 
             switch (comment) {
-                case (204): return res.sendStatus(ERRORS_CODE.NO_CONTENT_204); break;
-                case (403): return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403); break;
-                case (404): return res.sendStatus(ERRORS_CODE.NOT_FOUND_404); break;
+                case (204):
+                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                    break;
+                case (403):
+                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403);
+                    break;
+                case (404):
+                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                    break;
             }
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

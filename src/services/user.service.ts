@@ -2,7 +2,7 @@ import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
-import { authParams } from "../models/auth.models";
+import {authParams} from "../models/auth.models";
 
 class userService {
 
@@ -58,7 +58,7 @@ class userService {
         return true;
     }
 
-    
+
 }
 
 export default new userService();

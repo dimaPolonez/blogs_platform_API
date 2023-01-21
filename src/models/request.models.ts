@@ -10,52 +10,52 @@ export type paramsAndBodyReqType<T, Q> = Request<T, {}, Q>
 
 export type paramsAndQueryReqType<T, Q> = Request<T, {}, {}, Q>
 
-export type paramsId = {id: string};
+export type paramsId = { id: string };
 
 export type queryReqPagSearchAuth = {
-  searchLoginTerm: string,
-  searchEmailTerm: string,
-  sortBy: string,
-  sortDirection: string,
-  pageNumber: string,
-  pageSize: string
+    searchLoginTerm: string,
+    searchEmailTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: string,
+    pageSize: string
 }
 
 export type notStringQueryReqPagSearchAuth = {
-  searchLoginTerm: string,
-  searchEmailTerm: string,
-  sortBy: string,
-  sortDirection: string,
-  pageNumber: number,
-  pageSize: number
+    searchLoginTerm: string,
+    searchEmailTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: number,
+    pageSize: number
 }
 
 export type queryReqPagOfSearchName = {
-  searchNameTerm: string,
-  sortBy: string,
-  sortDirection: string,
-  pageNumber: string,
-  pageSize: string
+    searchNameTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: string,
+    pageSize: string
 }
 
 export type notStringQueryReqPagOfSearchName = {
-  searchNameTerm: string,
-  sortBy: string,
-  sortDirection:string,
-  pageNumber: number,
-  pageSize: number
+    searchNameTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: number,
+    pageSize: number
 }
 
 export type queryReqPag = {
-  sortBy: string,
-  sortDirection: string,
-  pageNumber: string,
-  pageSize: string
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: string,
+    pageSize: string
 }
 
 export type notStringQueryReqPag = {
-  sortBy: string,
-  sortDirection: string,
-  pageNumber: number,
-  pageSize: number
+    sortBy: string,
+    sortDirection: string,
+    pageNumber: number,
+    pageSize: number
 }

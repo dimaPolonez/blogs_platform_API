@@ -149,7 +149,7 @@ class queryService {
                 id: field._id,
                 login: field.infUser.login,
                 email: field.infUser.email,
-                createdAt: field.infUser.createdAt
+                createdAt: field.infUser.createdAt,
             }
         });
 

@@ -4,7 +4,7 @@ import {ERRORS_CODE} from "../data/db.data";
 import userService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
-import { authParams } from "../models/auth.models";
+import {authParams} from "../models/auth.models";
 
 class userController {
 
@@ -41,4 +41,5 @@ class userController {
     }
 
 }
+
 export default new userController();

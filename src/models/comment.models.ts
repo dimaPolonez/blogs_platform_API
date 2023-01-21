@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import {ObjectId} from "mongodb"
 
 export type commentOfPostBDType = {
     _id: ObjectId,
@@ -7,7 +7,7 @@ export type commentOfPostBDType = {
     userLogin: string,
     postId: ObjectId,
     createdAt: string
-    }
+}
 
 export type commentReqType = {
     content: string

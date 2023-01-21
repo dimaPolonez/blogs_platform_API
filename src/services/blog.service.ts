@@ -1,7 +1,6 @@
-import {BLOGS, POSTS} from '../data/db.data';
+import {BLOGS} from '../data/db.data';
 import {ObjectId} from "mongodb";
 import {blogBDType, blogObjectResult, blogReqType} from "../models/blog.models";
-import {postBDType} from "../models/post.models";
 
 class blogService {
     async findBlog(bodyID: ObjectId):

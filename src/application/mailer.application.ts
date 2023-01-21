@@ -1,24 +1,23 @@
 import nodemailer from "nodemailer";
-import { settings } from "../data/db.data";
+import {settings} from "../data/db.data";
 
 class mailerApp {
 
-    private async options(objectMail: object){
+    private async options(objectMail: object) {
 
         const transporter = nodemailer.createTransport({
             host: "smtp.yandex.ru",
             port: 465,
             secure: true,
             auth: settings.MAIL_URL
-          });
+        });
 
         transporter.sendMail(objectMail);
-        
-    } 
 
-    public async sendMailCode(email: string, codeActive: string)
-    {
-          this.options({
+    }
+
+    public async sendMailCode(email: string, codeActive: string) {
+        this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'You have successfully registered',
@@ -27,12 +26,11 @@ class mailerApp {
 
     }
 
-    public async sendMailRepeat(email: string, codeActive: string)
-    {
-          this.options({
+    public async sendMailRepeat(email: string, codeActive: string) {
+        this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
-            subject:'We resent you an email',
+            subject: 'We resent you an email',
             html: `<h2>We resent you an email with a link to activate your user</h2>
             <p>To activate your account, follow the link:
             <a href="https://blogs-platform-api.vercel.app?code=${codeActive}">https://blogs-platform-api.vercel.app?code=${codeActive}</a></p>`
@@ -40,8 +38,7 @@ class mailerApp {
 
     }
 
-    public async sendMailActivate(email: string)
-    {
+    public async sendMailActivate(email: string) {
         this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,

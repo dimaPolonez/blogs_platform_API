@@ -5,9 +5,8 @@ import {blogBDType} from "../models/blog.models";
 
 class postService {
 
-    async findPost(bodyID:ObjectId):
-        Promise<postBDType []>
-    {
+    async findPost(bodyID: ObjectId):
+        Promise<postBDType []> {
         const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray();
 
         return result
