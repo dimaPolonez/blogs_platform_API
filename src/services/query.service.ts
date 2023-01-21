@@ -150,6 +150,7 @@ class queryService {
                 login: field.infUser.login,
                 email: field.infUser.email,
                 createdAt: field.infUser.createdAt,
+                time: field.activeUser.lifeTimeCode
             }
         });
 

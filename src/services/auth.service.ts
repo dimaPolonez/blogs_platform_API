@@ -1,9 +1,9 @@
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
-import {POSTS, USERS} from "../data/db.data";
+import {USERS} from "../data/db.data";
 import {authParams, authReqType} from "../models/auth.models";
-import {userBDType} from "../models/user.models";
-import {postBDType} from "../models/post.models";
+import {userBDType, userReqType} from "../models/user.models";
+import {isAfter, isBefore, isPast, toDate} from "date-fns";
 
 
 class authService {
@@ -81,6 +81,71 @@ class authService {
         }
 
         return find[0]
+    }
+
+    async checkUnique(userReg: userReqType):
+        Promise<boolean> {
+
+        const find: userBDType [] = await USERS.find(
+            {
+                $or: [
+                    {"infUser.login": new RegExp(userReg.login, 'gi')},
+                    {"infUser.email": new RegExp(userReg.email, 'gi')}
+                ]
+            }
+        ).toArray();
+
+        if (find.length === 0) {
+            return true;
+        }
+        return false
+    }
+
+    async checkCode(code: string):
+        Promise<boolean> {
+
+        const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
+
+        if (find.length === 0) {
+            return false;
+        }
+
+        const result: boolean [] = find.map((f:userBDType) => {
+            const nowDate = new Date();
+
+            const date = Date.parse(f.activeUser.lifeTimeCode)
+
+            return isAfter(date, nowDate)
+        });
+
+        if (!result[0]){
+            return false
+        }
+
+        return true;
+    }
+
+    async checkEmail(email: string):
+        Promise<boolean> {
+
+        const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
+
+        if (find.length === 0) {
+            return false;
+        }
+
+        const result: boolean [] = find.map((f:userBDType) => {
+            const result: boolean = (f.activeUser.codeActivated === 'Activated')
+
+            return result
+        });
+
+        if (!result[0]){
+            return true
+        }
+
+            return false
+
     }
 }
 

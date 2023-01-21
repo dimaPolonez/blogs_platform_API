@@ -4,7 +4,14 @@ import {validationResult} from 'express-validator';
 import {postsOfBlogValidator, postValidator} from './post.middleware';
 import {userAuthValidator, usersValidator} from "./user.middleware";
 import {commentValidator} from "./comment.middleware";
-import {basicAuthorization, bearerAuthorization} from './auth.middleware';
+import {
+    authConfirm, authEmail,
+    authRegistration,
+    basicAuthorization,
+    bearerAuthorization,
+    codeValidator,
+    emailValidator
+} from './auth.middleware';
 
 export const errorsValidator = (
     req: Request,
@@ -35,5 +42,10 @@ export const indexMiddleware = {
     COMMENT_VALIDATOR: commentValidator,
     POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
     USER_AUTH: userAuthValidator,
+    CHECK_LOGIN: authRegistration,
+    CHECK_CODE: authConfirm,
+    CHECK_EMAIL: authEmail,
+    EMAIL_VALIDATOR: emailValidator,
+    CODE_VALIDATOR: codeValidator,
     ERRORS_VALIDATOR: errorsValidator
 }
