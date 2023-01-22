@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import {settings} from "../data/db.data";
 
 class mailerApp {
 
@@ -13,7 +12,7 @@ class mailerApp {
         });
 
         try {
-            await transporter.sendMail(objectMail);
+           await transporter.sendMail(objectMail);
         } catch (e) {
             console.log(e)
         }
@@ -21,8 +20,8 @@ class mailerApp {
 
     }
 
-    public async sendMailCode(email: string, codeActive: string) {
-        await this.options({
+    public sendMailCode(email: string, codeActive: string) {
+        this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'You have successfully registered',
@@ -32,8 +31,8 @@ class mailerApp {
         })
     }
 
-    public async sendMailRepeat(email: string, codeActive: string) {
-        await this.options({
+    public sendMailRepeat(email: string, codeActive: string) {
+        this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'We resent you an email',
@@ -43,8 +42,8 @@ class mailerApp {
         })
     }
 
-    public async sendMailActivate(email: string) {
-        await this.options({
+    public sendMailActivate(email: string) {
+        this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'Congratulations!',
