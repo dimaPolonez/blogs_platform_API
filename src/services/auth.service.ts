@@ -81,8 +81,6 @@ class authService {
 
         return find[0]
     }
-
-
 }
 
 export default new authService();

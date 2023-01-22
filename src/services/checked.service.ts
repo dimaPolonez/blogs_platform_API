@@ -6,7 +6,7 @@ class checkedService {
 
     public async loginUniq(value: string) {
 
-        const findUser: userBDType [] = await USERS.find({ "infUser.login": value}).toArray();
+        const findUser: userBDType [] = await USERS.find({"infUser.login": value}).toArray();
 
         if (findUser.length !== 0) {
             throw new Error('This login already exists in the system')
@@ -17,7 +17,7 @@ class checkedService {
 
     public async emailUniq(value: string) {
 
-        const findUser: userBDType [] = await USERS.find({ "infUser.email": value}).toArray();
+        const findUser: userBDType [] = await USERS.find({"infUser.email": value}).toArray();
 
         if (findUser.length !== 0) {
             throw new Error('This email already exists in the system')

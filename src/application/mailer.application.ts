@@ -14,7 +14,7 @@ class mailerApp {
         });
 
         try {
-           await transporter.sendMail(objectMail);
+            await transporter.sendMail(objectMail);
         } catch (e) {
             console.log(e)
         }

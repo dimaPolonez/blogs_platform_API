@@ -38,7 +38,7 @@ class authController {
 
             const userObject: userBDType = await authService.getOneToCode(req.body.code);
 
-            await authService.confirm(userObject,authParams);
+            await authService.confirm(userObject, authParams);
 
             await mailerApplication.sendMailActivate(userObject.infUser.email);
 
@@ -66,8 +66,8 @@ class authController {
             const userObject: userBDType = await authService.getOneToEmail(req.body.email);
             const authParams: authParams = await codeActiveApplication.createCode();
 
-            await authService.confirm(userObject,authParams);
-            await mailerApplication.sendMailCode(req.body.email,authParams.codeActivated);
+            await authService.confirm(userObject, authParams);
+            await mailerApplication.sendMailCode(req.body.email, authParams.codeActivated);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
