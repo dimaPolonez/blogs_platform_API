@@ -149,8 +149,7 @@ class queryService {
                 id: field._id,
                 login: field.infUser.login,
                 email: field.infUser.email,
-                createdAt: field.infUser.createdAt,
-                time: field.activeUser.lifeTimeCode
+                createdAt: field.infUser.createdAt
             }
         });
 

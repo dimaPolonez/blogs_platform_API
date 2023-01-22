@@ -3,7 +3,7 @@ import bcryptApplication from "../application/bcrypt.application";
 import {USERS} from "../data/db.data";
 import {authParams, authReqType} from "../models/auth.models";
 import {userBDType, userReqType} from "../models/user.models";
-import {isAfter, isBefore, isPast, toDate} from "date-fns";
+import {isAfter} from "date-fns";
 
 
 class authService {

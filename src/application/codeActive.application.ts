@@ -21,8 +21,8 @@ class activeCodeService {
         Promise<string> {
 
         const lifetime: string = add(new Date(), {
-/*            hours: 1,*/
-            minutes: 1
+            hours: 1,
+            minutes: 10
         }).toString()
 
         return lifetime;
