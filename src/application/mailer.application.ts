@@ -21,9 +21,10 @@ class mailerApp {
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'You have successfully registered',
-            html: `<h2>You have successfully registered on our service!</h2><p>To activate your account, follow the link: <a href="https://blogs-platform-api.vercel.app/confirm-registration?code=${codeActive}">https://blogs-platform-api.vercel.app/confirm-registration?code=${codeActive}</a></p>`
+            html: `<h2>You have successfully registered on our service!</h2><p>To activate your account, follow the link: 
+    <a href="https://blogs-platform-api.vercel.app/confirm-email?code=${codeActive}">
+    complete registration</a></p>`
         })
-
     }
 
     public async sendMailRepeat(email: string, codeActive: string) {
@@ -31,9 +32,9 @@ class mailerApp {
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'We resent you an email',
-            html: `<h2>We resent you an email with a link to activate your user</h2>
-            <p>To activate your account, follow the link:
-            <a href="https://blogs-platform-api.vercel.app/confirm-registration?code=${codeActive}">https://blogs-platform-api.vercel.app/confirm-registration?code=${codeActive}</a></p>`
+            html: `<h2>You have successfully registered on our service!</h2><p>To activate your account, follow the link: 
+    <a href="https://blogs-platform-api.vercel.app/confirm-email?code=${codeActive}">
+    complete registration</a></p>`
         })
     }
 
