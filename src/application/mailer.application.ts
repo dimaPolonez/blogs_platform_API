@@ -1,14 +1,16 @@
 import nodemailer from "nodemailer";
+import {settings} from "../data/db.data";
 
 class mailerApp {
 
     private async options(objectMail: object) {
 
         const transporter = nodemailer.createTransport({
-            host: "smtp.yandex.ru",
-            port: 465,
-            secure: true,
-            auth: {user: 'testPolonez@yandex.ru', pass: 'testPolonez2023'}
+            service: 'gmail',
+            auth: {
+                user: settings.MAIL_URL_USER,
+                pass: settings.MAIL_URL_PASS
+            }
         });
 
         try {
@@ -16,12 +18,10 @@ class mailerApp {
         } catch (e) {
             console.log(e)
         }
-
-
     }
 
-    public sendMailCode(email: string, codeActive: string) {
-        this.options({
+    public async sendMailCode(email: string, codeActive: string) {
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'You have successfully registered',
@@ -31,8 +31,8 @@ class mailerApp {
         })
     }
 
-    public sendMailRepeat(email: string, codeActive: string) {
-        this.options({
+    public async sendMailRepeat(email: string, codeActive: string) {
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'We resent you an email',
@@ -42,8 +42,8 @@ class mailerApp {
         })
     }
 
-    public sendMailActivate(email: string) {
-        this.options({
+    public async sendMailActivate(email: string) {
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'Congratulations!',

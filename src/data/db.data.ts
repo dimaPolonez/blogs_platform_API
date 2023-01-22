@@ -11,7 +11,8 @@ dotenv.config();
 export const settings = {
     DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
     JWT_SECRET: process.env.JWT_SECRET || '123',
-    MAIL_URL: process.env.MAIL_URL
+    MAIL_URL_USER: process.env.MAIL_URL_USER,
+    MAIL_URL_PASS: process.env.MAIL_URL_PASS
 }
 
 export const client = new MongoClient(settings.DB_URL);
