@@ -9,15 +9,20 @@ class mailerApp {
             host: "smtp.yandex.ru",
             port: 465,
             secure: true,
-            auth: settings.MAIL_URL
+            auth: {user: process.env["MAIL_URL_USER"], pass: process.env["MAIL_URL_PASS"]}
         });
 
-        transporter.sendMail(objectMail);
+        try {
+            await transporter.sendMail(objectMail);
+        } catch (e) {
+            console.log(e)
+        }
+
 
     }
 
     public async sendMailCode(email: string, codeActive: string) {
-        this.options({
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'You have successfully registered',
@@ -28,7 +33,7 @@ class mailerApp {
     }
 
     public async sendMailRepeat(email: string, codeActive: string) {
-        this.options({
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'We resent you an email',
@@ -39,7 +44,7 @@ class mailerApp {
     }
 
     public async sendMailActivate(email: string) {
-        this.options({
+        await this.options({
             from: 'Blogs_platform_API <testPolonez@yandex.ru>',
             to: email,
             subject: 'Congratulations!',
