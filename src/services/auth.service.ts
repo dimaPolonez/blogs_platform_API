@@ -45,23 +45,13 @@ class authService {
 
         await USERS.updateOne({_id: user._id}, {
             $set: {
-                authUser: {confirm: authParams.confirm, hushPass: ''},
+                authUser: {confirm: authParams.confirm, hushPass: user.authUser.hushPass},
                 activeUser: {
                     codeActivated: authParams.codeActivated,
                     lifeTimeCode: authParams.lifeTimeCode
                 }
             }
         });
-
-    }
-
-    async resending(email: string) {
-
-        const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
-
-        const result: string [] = find.map((f: userBDType) => f.activeUser.codeActivated);
-
-        return result[0]
 
     }
 

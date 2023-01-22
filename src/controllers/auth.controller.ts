@@ -18,7 +18,6 @@ class authController {
 
             if (auth) {
                 const token: tokenObjectType = await jwtApplication.createJwt(auth);
-
                 res.status(ERRORS_CODE.OK_200).send(token);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
