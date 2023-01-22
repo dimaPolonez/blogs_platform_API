@@ -30,7 +30,7 @@ class checkedService {
 
         const findUser: userBDType [] = await USERS.find({"activeUser.codeActivated": value}).toArray();
 
-        if (findUser.length !== 0) {
+        if (findUser.length === 0) {
             throw new Error('Code is not valid')
         }
 
@@ -47,7 +47,6 @@ class checkedService {
         } else {
             return true
         }
-
     }
 
     public async emailToBase(value: string) {
@@ -56,6 +55,12 @@ class checkedService {
 
         if (findUser.length === 0) {
             throw new Error('Email is not registration')
+        }
+
+        const result: string [] = findUser.map((f: userBDType) => f.activeUser.codeActivated);
+
+        if (result[0] === 'Activated') {
+            throw new Error('Account activated')
         }
 
         return true

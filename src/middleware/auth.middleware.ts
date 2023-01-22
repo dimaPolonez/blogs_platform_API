@@ -61,35 +61,33 @@ export const bearerAuthorization = async (
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
 }
 
-    export const codeValidator = [
-        body('code')
-            .isString()
-            .bail()
-            .trim()
-            .bail()
-            .notEmpty()
-            .bail()
-            .isLength({min: 36, max: 36})
-            .bail()
-            .custom(checkedService.activateCodeValid)
-            .bail()
-            .withMessage('Field code incorrect'),
-    ];
+export const codeValidator = [
+    body('code')
+        .isString()
+        .bail()
+        .trim()
+        .bail()
+        .notEmpty()
+        .bail()
+        .custom(checkedService.activateCodeValid)
+        .bail()
+        .withMessage('Field code incorrect')
+];
 
-    export const emailValidator = [
-        body('email')
-            .isString()
-            .bail()
-            .trim()
-            .bail()
-            .notEmpty()
-            .bail()
-            .isEmail()
-            .bail()
-            .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-            .bail()
-            .custom(checkedService.emailToBase)
-            .bail()
-            .withMessage('Field email incorrect'),
-    ];
+export const emailValidator = [
+    body('email')
+        .isString()
+        .bail()
+        .trim()
+        .bail()
+        .notEmpty()
+        .bail()
+        .isEmail()
+        .bail()
+        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+        .bail()
+        .custom(checkedService.emailToBase)
+        .bail()
+        .withMessage('Field email incorrect'),
+];
 
