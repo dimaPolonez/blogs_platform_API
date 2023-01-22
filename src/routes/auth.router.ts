@@ -13,19 +13,16 @@ authRouter.post('/login',
 authRouter.post('/registration-confirmation',
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    indexMiddleware.CHECK_CODE,
     authController.confirmEmail);
 
 authRouter.post('/registration',
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    indexMiddleware.CHECK_LOGIN,
     authController.registration);
 
 authRouter.post('/registration-email-resending',
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    indexMiddleware.CHECK_EMAIL,
     authController.resendingEmail);
 
 authRouter.get('/me',

@@ -2,8 +2,7 @@ import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import {USERS} from "../data/db.data";
 import {authParams, authReqType} from "../models/auth.models";
-import {userBDType, userReqType} from "../models/user.models";
-import {isAfter} from "date-fns";
+import {userBDType} from "../models/user.models";
 
 
 class authService {
@@ -14,8 +13,8 @@ class authService {
         const findName: userBDType [] = await USERS.find(
             {
                 $or: [
-                    {"infUser.login": new RegExp(body.loginOrEmail, 'gi')},
-                    {"infUser.email": new RegExp(body.loginOrEmail, 'gi')}
+                    {"infUser.login": body.loginOrEmail},
+                    {"infUser.email": body.loginOrEmail}
                 ]
             })
             .toArray();
@@ -67,65 +66,23 @@ class authService {
         return find[0]
     }
 
-    async checkUnique(userReg: userReqType):
-        Promise<boolean> {
-
-        const find: userBDType [] = await USERS.find(
-            {
-                $or: [
-                    {"infUser.login": new RegExp(userReg.login, 'gi')},
-                    {"infUser.email": new RegExp(userReg.email, 'gi')}
-                ]
-            }
-        ).toArray();
-
-        if (find.length === 0) {
-            return true;
-        }
-        return false
-    }
-
-    async checkCode(code: string):
-        Promise<userBDType | false> {
+    async getOneToCode(code: string):
+        Promise<userBDType> {
 
         const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
 
-        if (find.length === 0) {
-            return false;
-        }
-
-        const result: boolean [] = find.map((f: userBDType) => {
-            const nowDate = new Date();
-
-            const date = Date.parse(f.activeUser.lifeTimeCode)
-
-            return isAfter(date, nowDate)
-        });
-
-        if (!result[0]) {
-            return false
-        } else {
-            return find[0]
-        }
+        return find[0]
     }
 
-    async checkEmail(email: string):
-        Promise<string | false> {
+    async getOneToEmail(email: string):
+        Promise<userBDType> {
 
         const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
 
-        if (find.length === 0) {
-            return false;
-        }
-
-        const result: string [] = find.map((f: userBDType) => f.activeUser.codeActivated);
-
-        if(result[0] === 'Activated') {
-            return false
-        }
-
-        return result[0]
+        return find[0]
     }
+
+
 }
 
 export default new authService();

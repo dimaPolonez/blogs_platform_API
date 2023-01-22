@@ -36,9 +36,11 @@ class authController {
                 lifeTimeCode: 'Activated'
             }
 
-            await authService.confirm(req.user,authParams);
+            const userObject: userBDType = await authService.getOneToCode(req.body.code);
 
-            await mailerApplication.sendMailActivate(req.user.infUser.email);
+            await authService.confirm(userObject,authParams);
+
+            await mailerApplication.sendMailActivate(userObject.infUser.email);
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
@@ -61,7 +63,8 @@ class authController {
 
     async resendingEmail(req: Request, res: Response) {
         try {
-            await mailerApplication.sendMailRepeat(req.body.email,req.user.activeUser.codeActivated);
+            const userObject: userBDType = await authService.getOneToEmail(req.body.email);
+            await mailerApplication.sendMailCode(req.body.email,userObject.activeUser.codeActivated);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

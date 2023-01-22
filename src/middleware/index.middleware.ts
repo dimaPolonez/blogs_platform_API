@@ -5,8 +5,6 @@ import {postsOfBlogValidator, postValidator} from './post.middleware';
 import {userAuthValidator, usersValidator} from "./user.middleware";
 import {commentValidator} from "./comment.middleware";
 import {
-    authConfirm, authEmail,
-    authRegistration,
     basicAuthorization,
     bearerAuthorization,
     codeValidator,
@@ -42,9 +40,6 @@ export const indexMiddleware = {
     COMMENT_VALIDATOR: commentValidator,
     POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
     USER_AUTH: userAuthValidator,
-    CHECK_LOGIN: authRegistration,
-    CHECK_CODE: authConfirm,
-    CHECK_EMAIL: authEmail,
     EMAIL_VALIDATOR: emailValidator,
     CODE_VALIDATOR: codeValidator,
     ERRORS_VALIDATOR: errorsValidator

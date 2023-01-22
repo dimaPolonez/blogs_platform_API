@@ -2,10 +2,10 @@ import {Request, Response, NextFunction} from "express";
 import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
-import {ERRORS_CODE, SUPERADMIN} from "../data/db.data";
+import {ERRORS_CODE, SUPERADMIN, USERS} from "../data/db.data";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
-
+import checkedService from "../services/checked.service";
 
 export const basicAuthorization = (
     req: Request,
@@ -59,83 +59,37 @@ export const bearerAuthorization = async (
     }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
-
 }
 
-export const authRegistration = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+    export const codeValidator = [
+        body('code')
+            .isString()
+            .bail()
+            .trim()
+            .bail()
+            .notEmpty()
+            .bail()
+            .isLength({min: 36, max: 36})
+            .bail()
+            .custom(checkedService.activateCodeValid)
+            .bail()
+            .withMessage('Field code incorrect'),
+    ];
 
-    const checked: boolean = await authService.checkUnique(req.body);
+    export const emailValidator = [
+        body('email')
+            .isString()
+            .bail()
+            .trim()
+            .bail()
+            .notEmpty()
+            .bail()
+            .isEmail()
+            .bail()
+            .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+            .bail()
+            .custom(checkedService.emailToBase)
+            .bail()
+            .withMessage('Field email incorrect'),
+    ];
 
-    if (checked) {
-        next();
-        return
-    } else {
-        res.sendStatus(ERRORS_CODE.BAD_REQUEST_400)
-    }
-}
-
-export const authConfirm = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-
-    const checked: userBDType | false = await authService.checkCode(req.body.code);
-
-    if (checked) {
-        req.user = checked;
-        next();
-        return
-    } else {
-        res.sendStatus(ERRORS_CODE.BAD_REQUEST_400)
-    }
-}
-
-export const codeValidator = [
-    body('code')
-        .isString()
-        .bail()
-        .trim()
-        .bail()
-        .notEmpty()
-        .bail()
-        .isLength({min: 36, max: 36})
-        .bail()
-        .withMessage('Field code incorrect'),
-];
-
-export const emailValidator = [
-    body('email')
-        .isString()
-        .bail()
-        .trim()
-        .bail()
-        .notEmpty()
-        .bail()
-        .isEmail()
-        .bail()
-        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-        .bail()
-        .withMessage('Field email incorrect'),
-];
-
-export const authEmail = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-
-    const checked: string | false = await authService.checkEmail(req.body.email);
-
-    if (checked) {
-        req.user.activeUser.codeActivated = checked;
-        next();
-        return
-    } else {
-        res.sendStatus(ERRORS_CODE.BAD_REQUEST_400)
-    }
-}
