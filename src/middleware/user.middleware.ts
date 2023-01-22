@@ -51,10 +51,6 @@ export const userAuthValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(checkedService.loginUniq)
-        .bail()
-        .custom(checkedService.emailUniq)
-        .bail()
         .withMessage('Field loginOrEmail incorrect'),
     body('password')
         .isString()
