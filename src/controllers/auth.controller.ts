@@ -52,11 +52,8 @@ class authController {
 
             const user: userObjectResult = await userService.create(req.body, authParams);
 
-            const findUser: false | userBDType = await authService.getOne(user.id);
-                if (findUser) {
-                    await mailerApplication.sendMailCode(findUser.infUser.email, findUser.activeUser.codeActivated);
-                    res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-                }
+            await mailerApplication.sendMailCode(user.email, authParams.codeActivated);
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
