@@ -8,8 +8,8 @@ class mailerApp {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'testpolonez@gmail.com',
-                pass: 'gakzlzyovseopazk'
+                user: settings.MAIL_URL_USER,
+                pass: settings.MAIL_URL_PASS
             }
         });
 
