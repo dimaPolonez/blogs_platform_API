@@ -84,9 +84,10 @@ export const authConfirm = async (
     next: NextFunction
 ) => {
 
-    const checked: boolean = await authService.checkCode(req.body.code);
+    const checked: userBDType | false = await authService.checkCode(req.body.code);
 
     if (checked) {
+        req.user = checked;
         next();
         return
     } else {
@@ -126,9 +127,10 @@ export const authEmail = async (
     next: NextFunction
 ) => {
 
-    const checked: boolean = await authService.checkEmail(req.body.email);
+    const checked: string | false = await authService.checkEmail(req.body.email);
 
     if (checked) {
+        req.user.activeUser.codeActivated = checked;
         next();
         return
     } else {

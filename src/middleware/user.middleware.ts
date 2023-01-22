@@ -35,6 +35,7 @@ export const usersValidator = [
         .withMessage('Field email incorrect'),
 ];
 
+
 export const userAuthValidator = [
     body('loginOrEmail')
         .isString()

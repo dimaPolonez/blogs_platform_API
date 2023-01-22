@@ -41,11 +41,9 @@ class authService {
         return findName[0]
     }
 
-    async confirm(code: string, authParams: authParams) {
+    async confirm(user: userBDType, authParams: authParams) {
 
-        const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
-
-        await USERS.updateOne({"activeUser.codeActivated": code}, {
+        await USERS.updateOne({_id: user._id}, {
             $set: {
                 authUser: {confirm: authParams.confirm, hushPass: ''},
                 activeUser: {
@@ -55,17 +53,13 @@ class authService {
             }
         });
 
-        const result: string [] = find.map((f:userBDType) => f.infUser.email);
-
-        return result[0]
-
     }
 
     async resending(email: string) {
 
         const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
 
-        const result: string [] = find.map((f:userBDType) => f.activeUser.codeActivated);
+        const result: string [] = find.map((f: userBDType) => f.activeUser.codeActivated);
 
         return result[0]
 
@@ -102,7 +96,7 @@ class authService {
     }
 
     async checkCode(code: string):
-        Promise<boolean> {
+        Promise<userBDType | false> {
 
         const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
 
@@ -110,7 +104,7 @@ class authService {
             return false;
         }
 
-        const result: boolean [] = find.map((f:userBDType) => {
+        const result: boolean [] = find.map((f: userBDType) => {
             const nowDate = new Date();
 
             const date = Date.parse(f.activeUser.lifeTimeCode)
@@ -118,15 +112,15 @@ class authService {
             return isAfter(date, nowDate)
         });
 
-        if (!result[0]){
+        if (!result[0]) {
             return false
+        } else {
+            return find[0]
         }
-
-        return true;
     }
 
     async checkEmail(email: string):
-        Promise<boolean> {
+        Promise<string | false> {
 
         const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
 
@@ -134,18 +128,13 @@ class authService {
             return false;
         }
 
-        const result: boolean [] = find.map((f:userBDType) => {
-            const result: boolean = (f.activeUser.codeActivated === 'Activated')
+        const result: string [] = find.map((f: userBDType) => f.activeUser.codeActivated);
 
-            return result
-        });
-
-        if (!result[0]){
-            return true
+        if(result[0] === 'Activated') {
+            return false
         }
 
-            return false
-
+        return result[0]
     }
 }
 

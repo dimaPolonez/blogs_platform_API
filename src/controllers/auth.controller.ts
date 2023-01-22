@@ -37,9 +37,9 @@ class authController {
                 lifeTimeCode: 'Activated'
             }
 
-            const email: string = await authService.confirm(req.body.code,authParams);
+            await authService.confirm(req.user,authParams);
 
-            await mailerApplication.sendMailActivate(email);
+            await mailerApplication.sendMailActivate(req.user.infUser.email);
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
@@ -53,13 +53,11 @@ class authController {
 
             const user: userObjectResult = await userService.create(req.body, authParams);
 
-            if (user) {
-                const findUser: false | userBDType = await authService.getOne(user.id);
+            const findUser: false | userBDType = await authService.getOne(user.id);
                 if (findUser) {
                     await mailerApplication.sendMailCode(findUser.infUser.email, findUser.activeUser.codeActivated);
                     res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
                 }
-            }
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
@@ -67,8 +65,7 @@ class authController {
 
     async resendingEmail(req: Request, res: Response) {
         try {
-            const code: string = await authService.resending(req.body.email)
-            await mailerApplication.sendMailRepeat(req.body.email,code);
+            await mailerApplication.sendMailRepeat(req.body.email,req.user.activeUser.codeActivated);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
