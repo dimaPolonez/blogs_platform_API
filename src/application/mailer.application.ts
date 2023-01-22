@@ -9,7 +9,7 @@ class mailerApp {
             host: "smtp.yandex.ru",
             port: 465,
             secure: true,
-            auth: {user: process.env["MAIL_URL_USER"], pass: process.env["MAIL_URL_PASS"]}
+            auth: {user: 'testPolonez@yandex.ru', pass: 'testPolonez2023'}
         });
 
         try {
