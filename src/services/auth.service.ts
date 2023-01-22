@@ -14,8 +14,8 @@ class authService {
         const findName: userBDType [] = await USERS.find(
             {
                 $or: [
-                    {login: new RegExp(body.loginOrEmail, 'gi')},
-                    {email: new RegExp(body.loginOrEmail, 'gi')}
+                    {"infUser.login": new RegExp(body.loginOrEmail, 'gi')},
+                    {"infUser.email": new RegExp(body.loginOrEmail, 'gi')}
                 ]
             })
             .toArray();
