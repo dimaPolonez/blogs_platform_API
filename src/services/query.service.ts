@@ -135,8 +135,8 @@ class queryService {
             .find(
                 {
                     $or: [
-                        {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
-                        {email: new RegExp(queryAll.searchEmailTerm, 'gi')}
+                        {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                        {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
                     ]
                 }
             )
@@ -147,17 +147,17 @@ class queryService {
         const allMaps: userAllMaps [] = users.map((field: userBDType) => {
             return {
                 id: field._id,
-                login: field.login,
-                email: field.email,
-                createdAt: field.createdAt
+                login: field.infUser.login,
+                email: field.infUser.email,
+                createdAt: field.infUser.createdAt
             }
         });
 
         const allCount: number = await USERS.countDocuments(
             {
                 $or: [
-                    {login: new RegExp(queryAll.searchLoginTerm, 'gi')},
-                    {email: new RegExp(queryAll.searchEmailTerm, 'gi')}
+                    {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                    {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
                 ]
             });
 

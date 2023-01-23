@@ -3,7 +3,7 @@ import {indexMiddleware} from "../middleware/index.middleware";
 import queryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import userController from "../controllers/user.controller";
-import { notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType } from "../models/request.models";
+import {notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType} from "../models/request.models";
 import {resultUserObjectType} from "../models/user.models";
 
 const userRouter = Router({});
@@ -21,22 +21,22 @@ userRouter.delete('/:id',
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
     async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => {
-    try {
+        try {
 
-        let queryAll: notStringQueryReqPagSearchAuth = {
-            searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
-            searchEmailTerm: req.query.searchEmailTerm ? req.query.searchEmailTerm : '',
-            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
-            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
-            pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
-            pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
+            let queryAll: notStringQueryReqPagSearchAuth = {
+                searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
+                searchEmailTerm: req.query.searchEmailTerm ? req.query.searchEmailTerm : '',
+                sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+                sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
+                pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
+                pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
+            }
+
+            const users: resultUserObjectType = await queryService.getAllUsers(queryAll);
+            res.status(ERRORS_CODE.OK_200).json(users);
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
-
-        const users: resultUserObjectType = await queryService.getAllUsers(queryAll);
-        res.status(ERRORS_CODE.OK_200).json(users);
-    } catch (e) {
-        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
-    }
-})
+    })
 
 export default userRouter;

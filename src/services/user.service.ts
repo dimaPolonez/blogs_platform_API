@@ -2,19 +2,11 @@ import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import bcryptApplication from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
-import {authReqType} from "../models/auth.models";
+import {authParams} from "../models/auth.models";
 
 class userService {
 
-    async findUser(bodyID:ObjectId):
-        Promise<userBDType []>
-    {
-        const result: userBDType [] = await USERS.find({_id: bodyID}).toArray();
-
-        return result
-    }
-
-    async create(body: userReqType):
+    async create(body: userReqType, authParams: authParams):
         Promise<userObjectResult> {
 
         const newDateCreated: string = new Date().toISOString();
@@ -23,21 +15,29 @@ class userService {
 
         const createdUser = await USERS.insertOne({
             _id: new ObjectId(),
-            login: body.login,
-            email: body.email,
-            hushPass: hushPass,
-            createdAt: newDateCreated
+            infUser: {
+                login: body.login,
+                email: body.email,
+                createdAt: newDateCreated
+            },
+            activeUser: {
+                codeActivated: authParams.codeActivated,
+                lifeTimeCode: authParams.lifeTimeCode
+            },
+            authUser: {
+                confirm: authParams.confirm,
+                hushPass: hushPass
+            }
         });
-
 
         let result: userBDType [] = await USERS.find({_id: createdUser.insertedId}).toArray();
 
         const objResult: userObjectResult [] = result.map((field: userBDType) => {
             return {
                 id: field._id,
-                login: field.login,
-                email: field.email,
-                createdAt: field.createdAt
+                login: field.infUser.login,
+                email: field.infUser.email,
+                createdAt: field.infUser.createdAt
             }
         });
 
@@ -47,7 +47,7 @@ class userService {
     async delete(bodyID: ObjectId):
         Promise<boolean> {
 
-        const find: userBDType []= await this.findUser(bodyID)
+        const find: userBDType [] = await USERS.find({_id: bodyID}).toArray();
 
         if (find.length === 0) {
             return false;
@@ -56,45 +56,6 @@ class userService {
         await USERS.deleteOne({_id: bodyID});
 
         return true;
-    }
-
-    async auth(body: authReqType):
-        Promise<false | userBDType> {
-
-        const findName: userBDType [] = await USERS.find(
-            {
-                $or: [
-                    {login: new RegExp(body.loginOrEmail, 'gi')},
-                    {email: new RegExp(body.loginOrEmail, 'gi')}
-                ]
-            })
-            .toArray();
-
-        if (findName.length === 0) {
-            return false
-        }
-
-        const hushPassDB: string [] = findName.map((f) => f.hushPass);
-
-        const result: boolean = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
-
-        if (!result) {
-            return false
-        }
-
-        return findName[0]
-    }
-
-    async getOne(bodyID: ObjectId):
-        Promise <false | userBDType>{
-
-        const find: userBDType []= await this.findUser(bodyID)
-
-        if (find.length === 0) {
-            return false;
-        }
-
-        return find[0]
     }
 }
 

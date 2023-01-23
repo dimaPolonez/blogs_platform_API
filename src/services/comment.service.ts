@@ -6,9 +6,8 @@ import {postBDType, postOfBlogReqType} from "../models/post.models";
 
 class commentService {
 
-    async findComment(bodyID:ObjectId):
-        Promise<commentOfPostBDType []>
-    {
+    async findComment(bodyID: ObjectId):
+        Promise<commentOfPostBDType []> {
         const result: commentOfPostBDType [] = await COMMENTS.find({_id: bodyID}).toArray();
 
         return result
@@ -94,8 +93,7 @@ class commentService {
     }
 
     async createCommentOfPost(postId: ObjectId, body: postOfBlogReqType, objectUser: userBDType):
-        Promise<false | commentObjectResult>
-        {
+        Promise<false | commentObjectResult> {
         let newDateCreated: string = new Date().toISOString();
 
         const postFind: postBDType [] = await POSTS.find({_id: postId}).toArray();
@@ -108,14 +106,14 @@ class commentService {
             _id: new ObjectId(),
             content: body.content,
             userId: objectUser._id,
-            userLogin: objectUser.login,
+            userLogin: objectUser.infUser.login,
             postId: postId,
             createdAt: newDateCreated
         });
 
         let result: commentOfPostBDType [] = await COMMENTS.find({_id: createdComment.insertedId}).toArray();
 
-        const objResult: commentObjectResult [] = result.map((field:commentOfPostBDType) => {
+        const objResult: commentObjectResult [] = result.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,
