@@ -67,6 +67,8 @@ class jwtApp {
 
         if (findBase.length > 0) {
             return result.userId
+        } else {
+            return false
         }
 
     } catch (e) {

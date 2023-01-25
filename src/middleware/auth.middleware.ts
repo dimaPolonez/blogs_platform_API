@@ -87,8 +87,9 @@ export const cookieRefresh = async (
         }
         res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
         return
+    } else {
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
     }
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
 }
 
 export const codeValidator = [
