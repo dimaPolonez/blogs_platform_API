@@ -1,10 +1,10 @@
 import {ObjectId} from "mongodb"
-import {userBDType} from "./user.models"
+import {req_user_token} from "./user.models"
 
 declare global {
     namespace Express {
         export interface Request {
-            user: userBDType
+            user: req_user_token
         }
     }
 }
@@ -14,7 +14,7 @@ export type authReqType = {
     password: string
 }
 
-export type tokenObjectType = {
+export type tokensObjectType = {
     accessToken: string
 }
 

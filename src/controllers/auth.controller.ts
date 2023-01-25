@@ -2,13 +2,18 @@ import {Request, Response} from 'express';
 import jwtApplication from "../application/jwt.application";
 import mailerApplication from '../application/mailer.application';
 import {ERRORS_CODE} from '../data/db.data';
-import {authMeType, authReqType, tokenObjectType} from "../models/auth.models";
+import {authMeType, authReqType, tokensObjectType} from "../models/auth.models";
 import {bodyReqType} from "../models/request.models";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
 import authService from '../services/auth.service';
 import userService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
+
+const optionsCookie: object = {
+    httpOnly: true,
+    secure: true
+}
 
 class authController {
 
@@ -17,13 +22,25 @@ class authController {
             const auth: false | userBDType = await authService.auth(req.body)
 
             if (auth) {
-                const token: tokenObjectType = await jwtApplication.createJwt(auth);
-                res.status(ERRORS_CODE.OK_200).send(token);
+                const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
+
+                const refreshToken: string = await jwtApplication.createRefreshJwt(auth)
+
+                res.status(ERRORS_CODE.OK_200).cookie('refreshToken', refreshToken, optionsCookie).json(accessToken);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method authorization, ${e}`);
+        }
+    }
+
+    async refreshToken(req: Request, res: Response){
+        try {
+
+
+        } catch {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth controller method refreshToken');
         }
     }
 
@@ -74,11 +91,19 @@ class authController {
         }
     }
 
+    async logout(req: Request, res: Response){
+        try {
+            
+        } catch {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth.controller method logout');
+        }
+    }
+
     async aboutMe(req: Request, res: Response) {
         try {
             const me: authMeType = {
-                email: req.user.infUser.email,
-                login: req.user.infUser.login,
+                email: req.user.email,
+                login: req.user.login,
                 userId: req.user._id
             }
             res.status(ERRORS_CODE.OK_200).json(me);

@@ -3,6 +3,7 @@ import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import {ERRORS_CODE, SUPERADMIN, USERS} from "../data/db.data";
+import { tokensObjectType } from "../models/auth.models";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
 import checkedService from "../services/checked.service";
@@ -38,27 +39,30 @@ export const bearerAuthorization = async (
     next: NextFunction
 ) => {
 
-    if (!req.headers.authorization) {
-        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
-        return
-    }
+    const refreshToken: string = req.cookies('refreshToken').toString();
 
-    const token: string = req.headers.authorization!.substring(7)
+    const userRefresh: string = await jwtApplication.verifyRefreshJwt(refreshToken)
+    
+    if(userRefresh) {
 
-    const result: string = await jwtApplication.verifyJwt(token);
-
-    if (result) {
-        const getId: ObjectId = new ObjectId(result)
+        const getId: ObjectId = new ObjectId(userRefresh)
         const findUser: false | userBDType = await authService.getOne(getId);
-        if (findUser) {
-            req.user = findUser;
-            next();
-            return
-        }
-        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if(findUser){
+                const newAccessToken: tokensObjectType = await jwtApplication.createAccessJwt(findUser);
+                req.user = {
+                    _id: findUser._id,
+                    accessToken: newAccessToken,
+                    login: findUser.infUser.login,
+                    email: findUser.infUser.email,
+                    createdAt: findUser.infUser.createdAt
+                    }
+                next();
+                return
+            }
+    } else {
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
     }
-
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+    
 }
 
 export const codeValidator = [
