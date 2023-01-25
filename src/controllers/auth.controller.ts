@@ -40,7 +40,7 @@ class authController {
 
     async refreshToken(req: Request, res: Response){
         try {
-            await jwtApplication.deleteToRefreshToken(req.cookies('refreshToken'))
+            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
             const refreshToken: string = await jwtApplication.createRefreshJwt(req.user)
@@ -110,7 +110,7 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
-            await jwtApplication.deleteToRefreshToken(req.cookies('refreshToken'))
+            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
             res.clearCookie('refreshToken')
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)

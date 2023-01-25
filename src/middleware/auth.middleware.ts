@@ -72,9 +72,7 @@ export const cookieRefresh = async (
         return
     }
 
-    const refreshToken: string = req.cookies('refreshToken');
-
-    console.log(refreshToken)
+    const refreshToken: string = req.cookies.refreshToken;
 
     const userRefreshId: string = await jwtApplication.verifyRefreshJwt(refreshToken);
 
