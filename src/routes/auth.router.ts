@@ -10,6 +10,10 @@ authRouter.post('/login',
     indexMiddleware.ERRORS_VALIDATOR,
     authController.authorization);
 
+authRouter.post('/refresh-token',
+    indexMiddleware.COOKIE_REFRESH,
+    authController.refreshToken);
+
 authRouter.post('/registration-confirmation',
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
@@ -24,6 +28,10 @@ authRouter.post('/registration-email-resending',
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     authController.resendingEmail);
+
+authRouter.post('/logout',
+    indexMiddleware.COOKIE_REFRESH,
+    authController.logout);
 
 authRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,

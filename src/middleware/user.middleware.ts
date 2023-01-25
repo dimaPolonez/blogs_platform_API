@@ -33,8 +33,6 @@ export const usersValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .isEmail()
-        .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
         .custom(checkedService.emailUniq)

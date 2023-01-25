@@ -43,12 +43,12 @@ export const bearerAuthorization = async (
         return
     }
 
-    const token: string = req.headers.authorization!.substring(7)
+    const token: string = req.headers.authorization.substring(7)
 
-    const result: string = await jwtApplication.verifyJwt(token);
+    const userAccessId: string = await jwtApplication.verifyAccessJwt(token);
 
-    if (result) {
-        const getId: ObjectId = new ObjectId(result)
+    if (userAccessId) {
+        const getId: ObjectId = new ObjectId(userAccessId)
         const findUser: false | userBDType = await authService.getOne(getId);
         if (findUser) {
             req.user = findUser;
@@ -56,9 +56,39 @@ export const bearerAuthorization = async (
             return
         }
         res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        return
+    }
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+}
+
+export const cookieRefresh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    if (!req.cookies.refreshToken) {
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+        return
     }
 
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+    const refreshToken: string = req.cookies.refreshToken;
+
+    const userRefreshId: string = await jwtApplication.verifyRefreshJwt(refreshToken);
+
+    if (userRefreshId) {
+        const getId: ObjectId = new ObjectId(userRefreshId)
+        const findUser: false | userBDType = await authService.getOne(getId);
+        if (findUser) {
+            req.user = findUser;
+            next();
+            return
+        }
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+        return
+    } else {
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+    }
 }
 
 export const codeValidator = [
@@ -81,8 +111,6 @@ export const emailValidator = [
         .trim()
         .bail()
         .notEmpty()
-        .bail()
-        .isEmail()
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()

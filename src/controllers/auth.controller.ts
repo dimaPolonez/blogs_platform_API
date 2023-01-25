@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import jwtApplication from "../application/jwt.application";
 import mailerApplication from '../application/mailer.application';
 import {ERRORS_CODE} from '../data/db.data';
-import {authMeType, authReqType, tokenObjectType} from "../models/auth.models";
+import {authMeType, authReqType, tokensObjectType} from "../models/auth.models";
 import {bodyReqType} from "../models/request.models";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
 import authService from '../services/auth.service';
@@ -17,13 +17,47 @@ class authController {
             const auth: false | userBDType = await authService.auth(req.body)
 
             if (auth) {
-                const token: tokenObjectType = await jwtApplication.createJwt(auth);
-                res.status(ERRORS_CODE.OK_200).send(token);
+                const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
+
+                const refreshToken: string = await jwtApplication.createRefreshJwt(auth)
+
+                const expired: number = await jwtApplication.insertToRefreshToken(refreshToken)
+
+                const optionsCookie: object = {
+                    maxAge: expired,
+                    httpOnly: true,
+                    secure: true
+            }
+
+                res.status(ERRORS_CODE.OK_200).cookie('refreshToken', refreshToken, optionsCookie).json(accessToken);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method authorization, ${e}`);
+        }
+    }
+
+    async refreshToken(req: Request, res: Response){
+        try {
+            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
+            const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
+
+            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user)
+
+            const expired: number = await jwtApplication.insertToRefreshToken(refreshToken)
+
+            const optionsCookie: object = {
+                maxAge: expired,
+                httpOnly: true,
+                secure: true
+            }
+
+            res.status(ERRORS_CODE.OK_200)
+                .cookie('refreshToken', refreshToken, optionsCookie)
+                .json(accessToken);
+        } catch(e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method refreshToken ${e}`);
         }
     }
 
@@ -74,12 +108,23 @@ class authController {
         }
     }
 
+    async logout(req: Request, res: Response){
+        try {
+            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
+            res.clearCookie('refreshToken')
+
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+        } catch {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth.controller method logout');
+        }
+    }
+
     async aboutMe(req: Request, res: Response) {
         try {
             const me: authMeType = {
+                userId: req.user._id,
                 email: req.user.infUser.email,
-                login: req.user.infUser.login,
-                userId: req.user._id
+                login: req.user.infUser.login
             }
             res.status(ERRORS_CODE.OK_200).json(me);
         } catch (e) {

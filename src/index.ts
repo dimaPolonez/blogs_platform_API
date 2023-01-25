@@ -5,6 +5,7 @@ import postRouter from './routes/post.router';
 import userRouter from "./routes/user.router";
 import authRouter from "./routes/auth.router";
 import commentRouter from "./routes/comment.router";
+import cookieParser from 'cookie-parser';
 
 const PORT = process.env.PORT || 5000;
 
@@ -24,6 +25,7 @@ async function startApp() {
 startApp()
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/blogs', blogRouter);
 app.use('/posts', postRouter);
@@ -32,6 +34,7 @@ app.use('/comments', commentRouter);
 app.use('/auth', authRouter);
 
 app.get('/', (req: Request, res: Response) => {
+
     res.json('Server start!');
 })
 

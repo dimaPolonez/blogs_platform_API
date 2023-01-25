@@ -14,7 +14,7 @@ export type authReqType = {
     password: string
 }
 
-export type tokenObjectType = {
+export type tokensObjectType = {
     accessToken: string
 }
 
