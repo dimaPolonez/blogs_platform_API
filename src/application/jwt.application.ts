@@ -62,7 +62,7 @@ class jwtApp {
     public async verifyRefreshJwt(token: string):
     Promise<any> {
     try {
-        const result: any = jwt.verify(token, settings.JWT_SECRET)
+        const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
         const findBase: resfreshTokenBDType [] = await REFRESH_TOKENS_ACTIVE.find({token: token}).toArray()
 
         if (findBase.length > 0) {
