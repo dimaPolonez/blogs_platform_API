@@ -35,22 +35,26 @@ class jwtApp {
 
         const refreshToken: string = jwt.sign({userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: 20});
 
-        await this.insertToRefreshToken(refreshToken)
-
         return refreshToken
     }
 
-    private async insertToRefreshToken(refreshToken: string){
+    public async insertToRefreshToken(refreshToken: string):
+        Promise <number>
+        {
 
         const expiredTime: string = add(new Date(), {
             seconds: 20
         }).toString()
+
+        const expiredNumber: number = 20;
 
         await REFRESH_TOKENS_ACTIVE.insertOne({
             _id: new ObjectId(),
             token: refreshToken,
             expired: expiredTime
         })
+
+        return expiredNumber
     }
 
     public async deleteToRefreshToken(refreshToken: string){

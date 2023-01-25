@@ -3,7 +3,6 @@ import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import {ERRORS_CODE, SUPERADMIN, USERS} from "../data/db.data";
-import { tokensObjectType } from "../models/auth.models";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
 import checkedService from "../services/checked.service";
@@ -68,12 +67,14 @@ export const cookieRefresh = async (
     next: NextFunction
 ) => {
 
-    if (!req.cookies('refreshToken')) {
+    if (!req.cookies.refreshToken) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
         return
     }
 
     const refreshToken: string = req.cookies('refreshToken');
+
+    console.log(refreshToken)
 
     const userRefreshId: string = await jwtApplication.verifyRefreshJwt(refreshToken);
 
@@ -112,8 +113,6 @@ export const emailValidator = [
         .trim()
         .bail()
         .notEmpty()
-        .bail()
-        .isEmail()
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
