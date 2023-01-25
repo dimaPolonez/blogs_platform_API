@@ -4,14 +4,13 @@ import { ObjectId } from 'mongodb';
 import {REFRESH_TOKENS_ACTIVE, settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
 import {userBDType} from '../models/user.models';
+import {resfreshTokenBDType} from "../models/refreshToken.models";
 
 class jwtApp {
 
     public async createAccessJwt(user: userBDType): Promise<tokensObjectType> {
 
         const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 10});
-        
-
 
         const objToken: tokensObjectType = {
             accessToken: accessToken,
@@ -64,8 +63,12 @@ class jwtApp {
     Promise<any> {
     try {
         const result: any = jwt.verify(token, settings.JWT_SECRET)
+        const findBase: resfreshTokenBDType [] = await REFRESH_TOKENS_ACTIVE.find({token: token}).toArray()
 
-        return result.userId
+        if (findBase.length > 0) {
+            return result.userId
+        }
+
     } catch (e) {
         return null
     }

@@ -37,10 +37,16 @@ class authController {
 
     async refreshToken(req: Request, res: Response){
         try {
+            await jwtApplication.deleteToRefreshToken(req.cookies('refreshToken'))
+            const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
+            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user)
 
-        } catch {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth controller method refreshToken');
+            res.status(ERRORS_CODE.OK_200)
+                .cookie('refreshToken', refreshToken, optionsCookie)
+                .json(accessToken);
+        } catch(e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method refreshToken ${e}`);
         }
     }
 

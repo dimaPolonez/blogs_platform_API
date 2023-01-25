@@ -7,7 +7,7 @@ import {commentValidator} from "./comment.middleware";
 import {
     basicAuthorization,
     bearerAuthorization,
-    codeValidator,
+    codeValidator, cookieRefresh,
     emailValidator
 } from './auth.middleware';
 
@@ -34,6 +34,7 @@ export const errorsValidator = (
 export const indexMiddleware = {
     BASIC_AUTHORIZATION: basicAuthorization,
     BEARER_AUTHORIZATION: bearerAuthorization,
+    COOKIE_REFRESH:cookieRefresh,
     BLOGS_VALIDATOR: blogValidator,
     POSTS_VALIDATOR: postValidator,
     USERS_VALIDATOR: usersValidator,

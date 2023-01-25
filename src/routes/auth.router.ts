@@ -11,6 +11,7 @@ authRouter.post('/login',
     authController.authorization);
 
 authRouter.post('/refresh-token',
+    indexMiddleware.COOKIE_REFRESH,
     authController.refreshToken);
 
 authRouter.post('/registration-confirmation',
