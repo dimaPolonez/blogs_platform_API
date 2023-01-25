@@ -30,6 +30,7 @@ authRouter.post('/registration-email-resending',
     authController.resendingEmail);
 
 authRouter.post('/logout',
+    indexMiddleware.COOKIE_REFRESH,
     authController.logout);
 
 authRouter.get('/me',

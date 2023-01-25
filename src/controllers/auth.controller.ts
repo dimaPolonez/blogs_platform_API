@@ -99,7 +99,9 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
-            
+            await jwtApplication.deleteToRefreshToken(req.cookies('refreshToken'))
+
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth.controller method logout');
         }
