@@ -102,9 +102,9 @@ class authController {
     async aboutMe(req: Request, res: Response) {
         try {
             const me: authMeType = {
-                email: req.user.email,
-                login: req.user.login,
-                userId: req.user._id
+                userId: req.user._id,
+                email: req.user.infUser.email,
+                login: req.user.infUser.login
             }
             res.status(ERRORS_CODE.OK_200).json(me);
         } catch (e) {

@@ -39,29 +39,27 @@ export const bearerAuthorization = async (
     next: NextFunction
 ) => {
 
-    const refreshToken: string = req.cookies('refreshToken').toString();
-
-    const userRefresh: string = await jwtApplication.verifyRefreshJwt(refreshToken)
-    
-    if(userRefresh) {
-
-        const getId: ObjectId = new ObjectId(userRefresh)
-        const findUser: false | userBDType = await authService.getOne(getId);
-            if(findUser){
-                const newAccessToken: tokensObjectType = await jwtApplication.createAccessJwt(findUser);
-                req.user = {
-                    _id: findUser._id,
-                    accessToken: newAccessToken,
-                    login: findUser.infUser.login,
-                    email: findUser.infUser.email,
-                    createdAt: findUser.infUser.createdAt
-                    }
-                next();
-                return
-            }
-    } else {
+    if (!req.headers.authorization) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+        return
     }
+
+    const token: string = req.headers.authorization.substring(7)
+
+    const result: string = await jwtApplication.verifyAccessJwt(token);
+
+    if (result) {
+        const getId: ObjectId = new ObjectId(result)
+        const findUser: false | userBDType = await authService.getOne(getId);
+        if (findUser) {
+            req.user = findUser;
+            next();
+            return
+        }
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+    }
+
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
     
 }
 

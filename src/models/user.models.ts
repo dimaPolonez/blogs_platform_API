@@ -1,5 +1,4 @@
 import {ObjectId} from "mongodb";
-import { tokensObjectType } from "./auth.models";
 
 export type userBDType = {
     _id: ObjectId,
@@ -16,14 +15,6 @@ export type userBDType = {
         confirm: boolean,
         hushPass: string
     }
-}
-
-export type req_user_token = {
-    _id: ObjectId,
-    login: string,
-    email: string,
-    createdAt: string,
-    accessToken: tokensObjectType
 }
 
 export type userReqType = {

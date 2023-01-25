@@ -1,5 +1,4 @@
-import { ObjectID } from 'bson';
-import { add, isAfter } from 'date-fns';
+import { add } from 'date-fns';
 import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import {REFRESH_TOKENS_ACTIVE, settings} from "../data/db.data";
@@ -48,7 +47,7 @@ class jwtApp {
             seconds: 20
         }).toString()
 
-        const createdBlog = await REFRESH_TOKENS_ACTIVE.insertOne({
+        await REFRESH_TOKENS_ACTIVE.insertOne({
             _id: new ObjectId(),
             token: refreshToken,
             expired: expiredTime
