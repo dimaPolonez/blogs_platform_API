@@ -48,8 +48,8 @@ export const bearerAuthorization = async (
     const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
 
     if (userAccessId) {
-
-        const findUser: false | userBDType = await authService.getOne(userAccessId);
+        const getId: ObjectId = new ObjectId(userAccessId)
+        const findUser: false | userBDType = await authService.getOne(getId);
         if (findUser) {
             req.user = findUser;
             next();
@@ -77,8 +77,8 @@ export const cookieRefresh = async (
     const userRefreshId: ObjectId | null = await jwtApplication.verifyRefreshJwt(refreshToken);
 
     if (userRefreshId) {
-
-        const findUser: false | userBDType = await authService.getOne(userRefreshId);
+        const getId: ObjectId = new ObjectId(userRefreshId)
+        const findUser: false | userBDType = await authService.getOne(getId);
         if (findUser) {
             req.user = findUser;
             next();
