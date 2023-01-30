@@ -23,6 +23,7 @@ class bcryptApp {
 
         return result
     }
+
 }
 
 export default new bcryptApp();
