@@ -6,6 +6,7 @@ import userRouter from "./routes/user.router";
 import authRouter from "./routes/auth.router";
 import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
+import bcryptApplication from "./application/bcrypt.application";
 
 const PORT = process.env.PORT || 5000;
 
@@ -33,8 +34,7 @@ app.use('/users', userRouter);
 app.use('/comments', commentRouter);
 app.use('/auth', authRouter);
 
-app.get('/', (req: Request, res: Response) => {
-
+app.get('/', async (req: Request, res: Response) => {
     res.json('Server start!');
 })
 
