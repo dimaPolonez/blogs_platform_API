@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
-import {settings} from "../data/db.data";
+import {ACTIVE_DEVICE, settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
 import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
+import {deviceInfoObject} from "../models/activeDevice.models";
+import guardService from "../services/guard.service";
 
 class jwtApp {
 
@@ -17,10 +19,16 @@ class jwtApp {
         return objToken
     }
 
-    public async createRefreshJwt(user: userBDType):
+    public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const refreshToken: string = jwt.sign({userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: 20});
+        const expiresTime: number = 20;
+
+        const deviceId: number = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
+
+        const refreshToken: string = jwt.sign({deviceId: deviceId}, settings.JWTREFRESH_SECRET, {expiresIn: expiresTime});
+
+
 
         return refreshToken
     }

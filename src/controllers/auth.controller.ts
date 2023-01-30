@@ -9,6 +9,7 @@ import authService from '../services/auth.service';
 import userService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
+import {deviceInfoObject} from "../models/activeDevice.models";
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -21,10 +22,15 @@ class authController {
         try {
             const auth: false | userBDType = await authService.auth(req.body)
 
+            const deviceInfo: deviceInfoObject = {
+                ip: req.ip,
+                title: req.headers["user-agent"]!
+            }
+
             if (auth) {
                 const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
 
-                const refreshToken: string = await jwtApplication.createRefreshJwt(auth)
+                const refreshToken: string = await jwtApplication.createRefreshJwt(auth, deviceInfo)
 
                 res.status(ERRORS_CODE.OK_200)
                     .cookie('refreshToken', refreshToken, optionsCookie)
@@ -39,9 +45,14 @@ class authController {
 
     async refreshToken(req: Request, res: Response){
         try {
+            const deviceInfo: deviceInfoObject = {
+                ip: req.ip,
+                title: req.headers["user-agent"]!
+            }
+
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
-            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user)
+            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user, deviceInfo)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)
