@@ -26,7 +26,9 @@ class guardService {
     async allActiveDevice(sessionId: ObjectId):
     Promise<returnActiveDevice []>
     {
-        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
+        const idObject: ObjectId = new ObjectId(sessionId);
+
+        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: idObject}).toArray();
 
         const returnObject: returnActiveDevice [] = allActiveDevice.map((field: activeDeviceBDType) => {
             return {
@@ -42,7 +44,10 @@ class guardService {
     async checkedActiveSession(sessionId: ObjectId):
     Promise<boolean>
     {
-        const findActiveSession: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
+
+        const idObject: ObjectId = new ObjectId(sessionId);
+
+        const findActiveSession: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: idObject}).toArray();
 
         if (findActiveSession.length === 0) {
             return false
@@ -60,8 +65,9 @@ class guardService {
     async killOneSession(sessionId: ObjectId, userObject: userBDType):
     Promise<number>
     {
+        const idObject: ObjectId = new ObjectId(sessionId);
         
-        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
+        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: idObject}).toArray();
 
         if (findDevice.length === 0) {
             return ERRORS_CODE.NOT_FOUND_404
@@ -79,7 +85,7 @@ class guardService {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
-        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
+        await ACTIVE_DEVICE.deleteOne({_id: idObject})
 
         return ERRORS_CODE.NO_CONTENT_204;
     }

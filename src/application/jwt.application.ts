@@ -23,7 +23,7 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const expiresBase: number = 2000; 
+        const expiresBase: number = 20; 
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
@@ -62,6 +62,8 @@ class jwtApp {
             }
 
             const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
+
+            console.log(checkedActiveSession)
 
             if (checkedActiveSession) {
                 return refreshObject
