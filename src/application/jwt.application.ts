@@ -23,15 +23,15 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
+        const expiresBase: number = 20; 
+
         const expiresTime: string = add(new Date(), {
-            seconds: 20
+            seconds: expiresBase
         }).toString();
 
         const deviceId: string = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
 
-        const refreshToken: string = jwt.sign({deviceId: deviceId}, settings.JWTREFRESH_SECRET, {expiresIn: expiresTime});
-
-
+        const refreshToken: string = jwt.sign({deviceId: deviceId}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
 
         return refreshToken
     }
