@@ -1,3 +1,4 @@
+import { isAfter } from "date-fns";
 import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE, ERRORS_CODE} from "../data/db.data";
 import {activeDeviceBDType, deviceInfoObject, returnActiveDevice} from "../models/activeDevice.models";
@@ -51,10 +52,31 @@ class guardService {
 
         if (findActiveSession.length === 0) {
             return false
+        }
+
+        const result: boolean [] = findActiveSession.map((f: activeDeviceBDType) => {
+            const nowDate = new Date();
+
+            const date = Date.parse(f.expiresTime)
+
+            return isAfter(date, nowDate)
+        });
+
+        if (!result[0]) {
+            return false
         } else {
             return true
         }
 
+    }
+
+    async updateExpiredSession(sessionId: ObjectId, expires: string){
+        
+        await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
+            $set: {
+                expiresTime: expires
+            }
+        });
     }
 
     async killAllSessions(userObject: userBDType){

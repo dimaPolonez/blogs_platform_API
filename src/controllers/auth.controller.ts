@@ -46,14 +46,10 @@ class authController {
 
     async refreshToken(req: Request, res: Response){
         try {
-            const deviceInfo: deviceInfoObject = {
-                ip: req.ip,
-                title: req.headers["user-agent"]!
-            }
 
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
-            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user, deviceInfo)
+            const refreshToken: string = await jwtApplication.repeatRefreshJwt(req.user, req.sessionId)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)

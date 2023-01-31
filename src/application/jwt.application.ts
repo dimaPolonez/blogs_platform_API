@@ -36,6 +36,24 @@ class jwtApp {
         return refreshToken
     }
 
+    public async repeatRefreshJwt(user: userBDType, sessionId: ObjectId):
+    Promise<string> {
+
+        const idObject: ObjectId = new ObjectId(sessionId);
+
+        const expiresBase: number = 20; 
+
+        const expiresTime: string = add(new Date(), {
+         seconds: expiresBase
+        }).toString();
+
+        await guardService.updateExpiredSession(idObject, expiresTime);
+
+        const refreshToken: string = jwt.sign({deviceId: idObject, userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+
+    return refreshToken
+}
+
     public async verifyAccessJwt(token: string):
         Promise<ObjectId | null> {
         try {
@@ -62,8 +80,6 @@ class jwtApp {
             }
 
             const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
-
-            console.log(checkedActiveSession)
 
             if (checkedActiveSession) {
                 return refreshObject
