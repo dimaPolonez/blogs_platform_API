@@ -23,11 +23,11 @@ class authController {
         try {
             const auth: false | userBDType = await authService.auth(req.body)
 
-            if (auth) {
+            if (auth && req.headers["user-agent"]) {
 
                 const deviceInfo: deviceInfoObject = {
                     ip: req.ip,
-                    title: req.headers["user-agent"]!
+                    title: req.headers["user-agent"]
                 }
 
                 const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
