@@ -10,7 +10,7 @@ class guardService {
     async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
         Promise<ObjectId>
         {
-            const dateNow: string = new Date().toString();
+            const dateNow: string = new Date().toISOString().substring(0, 10);
 
             const deviceId = await ACTIVE_DEVICE.insertOne({
                 _id: new ObjectId(),
