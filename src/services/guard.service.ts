@@ -32,10 +32,10 @@ class guardService {
 
         const returnObject: returnActiveDevice [] = allActiveDevice.map((field: activeDeviceBDType) => {
             return {
+                deviceId: field._id,
                 ip: field.ip,
-                title: field.title,
                 lastActiveDate: field.lastActiveDate,
-                deviceId: field._id
+                title: field.title
             }
         })
         return returnObject
