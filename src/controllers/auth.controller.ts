@@ -53,7 +53,7 @@ class authController {
                 title: req.headers["user-agent"]!
             }
 
-            await guardService.killOneSession(req.sessionId, req.user)
+            await guardService.killOneSessionRefresh(req.sessionId)
 
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
