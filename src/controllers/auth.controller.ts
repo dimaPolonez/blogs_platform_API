@@ -23,11 +23,11 @@ class authController {
         try {
             const auth: false | userBDType = await authService.auth(req.body)
 
-            if (auth && req.headers["user-agent"]) {
+            if (auth) {
 
                 const deviceInfo: deviceInfoObject = {
                     ip: req.ip,
-                    title: req.headers["user-agent"]
+                    title: req.headers["user-agent"]!
                 }
 
                 const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
@@ -48,9 +48,16 @@ class authController {
     async refreshToken(req: Request, res: Response){
         try {
 
+            const deviceInfo: deviceInfoObject = {
+                ip: req.ip,
+                title: req.headers["user-agent"]!
+            }
+
+            await guardService.killOneSession(req.sessionId, req.user)
+
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
-            const refreshToken: string = await jwtApplication.repeatRefreshJwt(req.user, req.sessionId)
+            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user, deviceInfo)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)
