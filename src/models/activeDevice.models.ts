@@ -7,11 +7,18 @@ export type activeDeviceBDType = {
     ip: string,
     title: string,
     lastActiveDate: string,
-    expiresTime: number,
-    deviceId: number
+    expiresTime: string,
+    deviceId: string
 }
 
 export type deviceInfoObject = {
     ip: string,
     title: string
+}
+
+export type returnActiveDevice = {
+    ip: string,
+    title: string,
+    lastActiveDate: string,
+    deviceId: string
 }

@@ -1,13 +1,17 @@
 import {Request, Response} from 'express';
 import {ERRORS_CODE} from "../data/db.data";
+import { returnActiveDevice } from '../models/activeDevice.models';
+import { paramsId, paramsReqType } from '../models/request.models';
+import guardService from '../services/guard.service';
 
 class guardController {
 
     async getAllSessions(req: Request, res: Response) {
         try {
 
+            const activeDevice: returnActiveDevice [] = await guardService.allActiveDevice(req.user);
 
-            res.status(ERRORS_CODE.OK_200).json()
+            res.status(ERRORS_CODE.OK_200).json(activeDevice)
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
@@ -16,16 +20,18 @@ class guardController {
     async killAllSessions(req: Request, res: Response) {
         try {
 
+            await guardService.killAllSessions(req.user);
+
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
 
-    async killOneSession(req: Request, res: Response) {
+    async killOneSession(req: paramsReqType<paramsId>, res: Response) {
         try {
 
-            const killedSession = 204 | 403 | 404;
+            const killedSession: number = await guardService.killOneSession(req.params.id, req.user)
 
             switch (killedSession) {
                 case (204):

@@ -5,6 +5,7 @@ import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
 import {deviceInfoObject} from "../models/activeDevice.models";
 import guardService from "../services/guard.service";
+import { add } from 'date-fns';
 
 class jwtApp {
 
@@ -22,9 +23,11 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const expiresTime: number = 20;
+        const expiresTime: string = add(new Date(), {
+            seconds: 20
+        }).toString();
 
-        const deviceId: number = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
+        const deviceId: string = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
 
         const refreshToken: string = jwt.sign({deviceId: deviceId}, settings.JWTREFRESH_SECRET, {expiresIn: expiresTime});
 
