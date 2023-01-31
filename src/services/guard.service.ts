@@ -24,12 +24,12 @@ class guardService {
             return deviceId.insertedId
     }
 
-    async allActiveDevice(sessionId: ObjectId):
+    async allActiveDevice(userId: ObjectId):
     Promise<returnActiveDevice []>
     {
-        const idObject: ObjectId = new ObjectId(sessionId);
+        const idUser: ObjectId = new ObjectId(userId);
 
-        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: idObject}).toArray();
+        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: idUser}).toArray();
 
         const returnObject: returnActiveDevice [] = allActiveDevice.map((field: activeDeviceBDType) => {
             return {
