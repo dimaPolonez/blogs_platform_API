@@ -71,9 +71,12 @@ class guardService {
     }
 
     async updateExpiredSession(sessionId: ObjectId, expires: string){
+
+        const dateNow: string = new Date().toString();
         
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
             $set: {
+                lastActiveDate: dateNow,
                 expiresTime: expires
             }
         });

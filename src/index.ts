@@ -27,6 +27,7 @@ startApp()
 
 app.use(express.json());
 app.use(cookieParser());
+app.set('trust proxy', true)
 
 app.use('/blogs', blogRouter);
 app.use('/posts', postRouter);
