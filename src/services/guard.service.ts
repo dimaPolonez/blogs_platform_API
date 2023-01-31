@@ -7,40 +7,49 @@ import { userBDType } from "../models/user.models";
 class guardService {
 
     async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
-        Promise<string>
+        Promise<ObjectId>
         {
             const dateNow: string = new Date().toString();
 
-            let deviceIdNum: number = await ACTIVE_DEVICE.countDocuments({userId: userId});
-
-            let deviceIdStr: string = (deviceIdNum++).toString()
-
-            await ACTIVE_DEVICE.insertOne({
+            const deviceId = await ACTIVE_DEVICE.insertOne({
                 _id: new ObjectId(),
                 userId: userId,
                 ip: deviceInfo.ip,
                 title: deviceInfo.title,
                 lastActiveDate: dateNow,
-                expiresTime: expiresTime,
-                deviceId: deviceIdStr
+                expiresTime: expiresTime
             })
-            return deviceIdStr
+
+            return deviceId.insertedId
     }
 
-    async allActiveDevice(userObject: userBDType):
+    async allActiveDevice(sessionId: ObjectId):
     Promise<returnActiveDevice []>
     {
-        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userObject._id}).toArray();
+        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
 
         const returnObject: returnActiveDevice [] = allActiveDevice.map((field: activeDeviceBDType) => {
             return {
                 ip: field.ip,
                 title: field.title,
                 lastActiveDate: field.lastActiveDate,
-                deviceId: field.deviceId
+                deviceId: field._id
             }
         })
         return returnObject
+    }
+
+    async checkedActiveSession(sessionId: ObjectId):
+    Promise<boolean>
+    {
+        const findActiveSession: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
+
+        if (findActiveSession.length === 0) {
+            return false
+        } else {
+            return true
+        }
+
     }
 
     async killAllSessions(userObject: userBDType){
@@ -48,25 +57,29 @@ class guardService {
         await ACTIVE_DEVICE.deleteMany({userId: userObject._id})
     }
 
-    async killOneSession(bodyID: string, userObject: userBDType):
+    async killOneSession(sessionId: ObjectId, userObject: userBDType):
     Promise<number>
     {
         
-        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({
-            $and: [
-            {deviceId: bodyID},
-            {userId: userObject._id}
-        ]}).toArray();
+        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
 
         if (findDevice.length === 0) {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        await ACTIVE_DEVICE.deleteOne({
-            $and: [
-            {deviceId: bodyID},
-            {userId: userObject._id}
-        ]})
+        const bearer: boolean [] = findDevice.map((field: activeDeviceBDType) => {
+            if (field.userId.toString() === userObject._id.toString()) {
+                return true
+            } else {
+                return false
+            }
+        })
+
+        if (!bearer[0]) {
+            return ERRORS_CODE.NOT_YOUR_OWN_403
+        }
+
+        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
 
         return ERRORS_CODE.NO_CONTENT_204;
     }

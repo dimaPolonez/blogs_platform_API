@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import {ACTIVE_DEVICE, settings} from "../data/db.data";
+import {settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
 import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
-import {deviceInfoObject} from "../models/activeDevice.models";
+import {deviceInfoObject, returnRefreshObject} from "../models/activeDevice.models";
 import guardService from "../services/guard.service";
 import { add } from 'date-fns';
 
@@ -23,15 +23,15 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const expiresBase: number = 20; 
+        const expiresBase: number = 2000; 
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
         }).toString();
 
-        const deviceId: string = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
+        const deviceId: ObjectId = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
 
-        const refreshToken: string = jwt.sign({deviceId: deviceId}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+        const refreshToken: string = jwt.sign({deviceId: deviceId, userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
 
         return refreshToken
     }
@@ -48,11 +48,27 @@ class jwtApp {
     }
 
     public async verifyRefreshJwt(token: string):
-        Promise<ObjectId | null> {
+        Promise<returnRefreshObject | null> {
         try {
             const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
 
-            return result.userId
+            const refreshObject: returnRefreshObject = {
+                userId: result.userId,
+                sessionId: result.deviceId
+            }
+
+            if (!refreshObject.sessionId){
+                return null
+            }
+
+            const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
+
+            if (checkedActiveSession) {
+                return refreshObject
+            } else {
+                return null
+            }
+
         } catch (e) {
             return null
         }

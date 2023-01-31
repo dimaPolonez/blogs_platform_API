@@ -10,6 +10,7 @@ import userService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
 import {deviceInfoObject} from "../models/activeDevice.models";
+import guardService from '../services/guard.service';
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -111,6 +112,9 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
+
+            await guardService.killOneSession(req.sessionId, req.user)
+
             res.clearCookie('refreshToken')
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch (e) {

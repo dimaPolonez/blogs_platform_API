@@ -1,4 +1,5 @@
 import {Request, Response} from 'express';
+import { ObjectId } from 'mongodb';
 import {ERRORS_CODE} from "../data/db.data";
 import { returnActiveDevice } from '../models/activeDevice.models';
 import { paramsId, paramsReqType } from '../models/request.models';
@@ -9,7 +10,7 @@ class guardController {
     async getAllSessions(req: Request, res: Response) {
         try {
 
-            const activeDevice: returnActiveDevice [] = await guardService.allActiveDevice(req.user);
+            const activeDevice: returnActiveDevice [] = await guardService.allActiveDevice(req.sessionId);
 
             res.status(ERRORS_CODE.OK_200).json(activeDevice)
         } catch (e) {
@@ -31,7 +32,9 @@ class guardController {
     async killOneSession(req: paramsReqType<paramsId>, res: Response) {
         try {
 
-            const killedSession: number = await guardService.killOneSession(req.params.id, req.user)
+            const sessionId: ObjectId = new ObjectId(req.params.id);
+
+            const killedSession: number = await guardService.killOneSession(sessionId, req.user)
 
             switch (killedSession) {
                 case (204):

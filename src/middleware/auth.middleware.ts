@@ -3,6 +3,7 @@ import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import {ERRORS_CODE, SUPERADMIN} from "../data/db.data";
+import { returnRefreshObject } from "../models/activeDevice.models";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
 import checkedService from "../services/checked.service";
@@ -74,13 +75,14 @@ export const cookieRefresh = async (
 
     const refreshToken: string = req.cookies.refreshToken;
 
-    const userRefreshId: ObjectId | null = await jwtApplication.verifyRefreshJwt(refreshToken);
+    const userRefreshId: returnRefreshObject | null = await jwtApplication.verifyRefreshJwt(refreshToken);
 
     if (userRefreshId) {
-        const getId: ObjectId = new ObjectId(userRefreshId)
+        const getId: ObjectId = new ObjectId(userRefreshId.userId)
         const findUser: false | userBDType = await authService.getOne(getId);
         if (findUser) {
             req.user = findUser;
+            req.sessionId = userRefreshId.sessionId;
             next();
             return
         }
