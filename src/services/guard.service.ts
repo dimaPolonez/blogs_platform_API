@@ -70,12 +70,14 @@ class guardService {
 
     }
 
-    async updateExpiredSession(sessionId: ObjectId, expires: string){
+    async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string){
 
         const dateNow: string = new Date().toISOString();
         
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
             $set: {
+                ip: deviceInfoObject.ip,
+                title: deviceInfoObject.title,
                 lastActiveDate: dateNow,
                 expiresTime: expires
             }
@@ -85,13 +87,6 @@ class guardService {
     async killAllSessions(userObject: userBDType){
 
         await ACTIVE_DEVICE.deleteMany({userId: userObject._id})
-    }
-
-    async killOneSessionRefresh(sessionId: ObjectId){
-
-        const idObject: ObjectId = new ObjectId(sessionId);
-
-        await ACTIVE_DEVICE.deleteOne({_id: idObject})
     }
 
     async killOneSession(sessionId: ObjectId, userObject: userBDType):

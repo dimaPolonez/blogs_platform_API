@@ -53,11 +53,9 @@ class authController {
                 title: req.headers["user-agent"]!
             }
 
-            await guardService.killOneSessionRefresh(req.sessionId)
-
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
-            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user, deviceInfo)
+            const refreshToken: string = await jwtApplication.updateRefreshJwt(req.user, deviceInfo, req.sessionId)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)
