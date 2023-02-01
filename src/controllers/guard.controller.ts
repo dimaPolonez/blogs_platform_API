@@ -21,7 +21,9 @@ class guardController {
     async killAllSessions(req: Request, res: Response) {
         try {
 
-            await guardService.killAllSessions(req.user);
+            const sessionId: ObjectId = new ObjectId(req.sessionId);
+
+            await guardService.killAllSessions(sessionId, req.user);
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch (e) {

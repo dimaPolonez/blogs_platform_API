@@ -84,9 +84,12 @@ class guardService {
         });
     }
 
-    async killAllSessions(userObject: userBDType){
+    async killAllSessions(ssesionId: ObjectId, userObject: userBDType){
 
-        await ACTIVE_DEVICE.deleteMany({userId: userObject._id})
+        await ACTIVE_DEVICE.deleteMany({$and: [
+            {_id: {$ne: ssesionId}},
+            {userId: userObject._id}
+        ]})
     }
 
     async killOneSessionLogout(sessionId: ObjectId) {
