@@ -11,7 +11,7 @@ class jwtApp {
 
     public async createAccessJwt(user: userBDType): Promise<tokensObjectType> {
 
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 10});
+        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 1000});
 
         const objToken: tokensObjectType = {
             accessToken: accessToken,
@@ -23,7 +23,7 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const expiresBase: number = 20; 
+        const expiresBase: number = 2000; 
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
@@ -50,6 +50,7 @@ class jwtApp {
     public async verifyRefreshJwt(token: string):
         Promise<returnRefreshObject | null> {
         try {
+
             const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
 
             const refreshObject: returnRefreshObject = {
@@ -57,17 +58,13 @@ class jwtApp {
                 sessionId: result.deviceId
             }
 
-            if (!refreshObject.sessionId){
-                return null
-            }
-
             const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
 
             if (checkedActiveSession) {
                 return refreshObject
-            } else {
-                return null
             }
+            
+            return null
 
         } catch (e) {
             return null
