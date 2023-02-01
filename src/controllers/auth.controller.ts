@@ -114,9 +114,6 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
-
-            await guardService.killOneSession(req.sessionId, req.user)
-
             res.clearCookie('refreshToken')
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch (e) {
