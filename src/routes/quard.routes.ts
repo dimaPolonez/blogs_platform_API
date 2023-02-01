@@ -13,7 +13,7 @@ guardRouter.delete('/devices',
     indexMiddleware.COOKIE_REFRESH,
     guardController.killAllSessions);
 
-guardRouter.delete('/devices/{deviceId}',
+guardRouter.delete('/devices/:id',
     indexMiddleware.COOKIE_REFRESH,
     guardController.killOneSession);
 

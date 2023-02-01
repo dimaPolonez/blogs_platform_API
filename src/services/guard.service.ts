@@ -97,9 +97,8 @@ class guardService {
     async killOneSession(sessionId: ObjectId, userObject: userBDType):
     Promise<number>
     {
-        const idObject: ObjectId = new ObjectId(sessionId);
-        
-        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: idObject}).toArray();
+
+        const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
 
         if (findDevice.length === 0) {
             return ERRORS_CODE.NOT_FOUND_404
@@ -112,12 +111,12 @@ class guardService {
                 return false
             }
         })
-
+ 
         if (!bearer[0]) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
-        await ACTIVE_DEVICE.deleteOne({_id: idObject})
+        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
 
         return ERRORS_CODE.NO_CONTENT_204;
     }

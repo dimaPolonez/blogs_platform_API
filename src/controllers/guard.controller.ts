@@ -34,7 +34,7 @@ class guardController {
 
             const sessionId: ObjectId = new ObjectId(req.params.id);
 
-            const killedSession: number = await guardService.killOneSession(sessionId, req.user)
+            const killedSession: number = await guardService.killOneSession(sessionId, req.user);
 
             switch (killedSession) {
                 case (204):
