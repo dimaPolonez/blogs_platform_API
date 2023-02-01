@@ -89,6 +89,11 @@ class guardService {
         await ACTIVE_DEVICE.deleteMany({userId: userObject._id})
     }
 
+    async killOneSessionLogout(sessionId: ObjectId) {
+
+        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
+    }
+
     async killOneSession(sessionId: ObjectId, userObject: userBDType):
     Promise<number>
     {

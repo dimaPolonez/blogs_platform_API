@@ -11,6 +11,7 @@ import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
 import {deviceInfoObject} from "../models/activeDevice.models";
 import guardService from '../services/guard.service';
+import { ObjectId } from 'mongodb';
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -114,6 +115,11 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
+
+            const sessionId: ObjectId = new ObjectId(req.sessionId);
+
+            await guardService.killOneSessionLogout(sessionId)
+
             res.clearCookie('refreshToken')
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
         } catch (e) {
