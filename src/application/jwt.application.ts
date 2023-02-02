@@ -11,7 +11,7 @@ class jwtApp {
 
     public async createAccessJwt(user: userBDType): Promise<tokensObjectType> {
 
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 10});
+        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 1000});
 
         const objToken: tokensObjectType = {
             accessToken: accessToken,
