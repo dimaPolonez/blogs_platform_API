@@ -5,7 +5,7 @@ import {blogBDType} from '../models/blog.models';
 import {postBDType} from '../models/post.models';
 import {userBDType} from '../models/user.models';
 import {commentOfPostBDType} from '../models/comment.models';
-import {activeDeviceBDType} from "../models/activeDevice.models";
+import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
 
 dotenv.config();
 
@@ -35,6 +35,7 @@ export const POSTS = db.collection<postBDType>('posts');
 export const USERS = db.collection<userBDType>('users');
 export const COMMENTS = db.collection<commentOfPostBDType>('comments');
 export const ACTIVE_DEVICE = db.collection<activeDeviceBDType>('refreshTokensActive');
+export const OBJECT_IP = db.collection<objectIP>('objectIP');
 
 export const ERRORS_CODE = {
     OK_200: 200,
@@ -44,6 +45,7 @@ export const ERRORS_CODE = {
     UNAUTHORIZED_401: 401,
     NOT_YOUR_OWN_403: 403,
     NOT_FOUND_404: 404,
+    TOO_MANY_REQUEST_429: 429,
     INTERNAL_SERVER_ERROR_500: 500
 }
 

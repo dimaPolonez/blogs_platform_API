@@ -26,3 +26,10 @@ export type returnRefreshObject = {
     userId: ObjectId,
     sessionId: ObjectId
 }
+
+export type objectIP = {
+    _id: ObjectId,
+    ip: string,
+    tokens: number,
+    lastDate: Date
+}

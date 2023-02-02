@@ -6,6 +6,7 @@ import authController from "../controllers/auth.controller";
 const authRouter = Router({});
 
 authRouter.post('/login',
+    indexMiddleware.IP_BANNER,
     indexMiddleware.USER_AUTH,
     indexMiddleware.ERRORS_VALIDATOR,
     authController.authorization);
@@ -15,16 +16,19 @@ authRouter.post('/refresh-token',
     authController.refreshToken);
 
 authRouter.post('/registration-confirmation',
+    indexMiddleware.IP_BANNER,
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     authController.confirmEmail);
 
 authRouter.post('/registration',
+    indexMiddleware.IP_BANNER,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     authController.registration);
 
 authRouter.post('/registration-email-resending',
+    indexMiddleware.IP_BANNER,
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     authController.resendingEmail);
