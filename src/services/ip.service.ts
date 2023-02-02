@@ -45,7 +45,7 @@ class ipService {
         
         let seconds: number = differenceInSeconds(newDateCreated, objectIP.lastDate)
 
-        if (seconds < 10) {
+        if (seconds <= 10) {
 
             if (objectIP.tokens > 0) {
 
@@ -63,7 +63,7 @@ class ipService {
             await OBJECT_IP.updateOne({_id: objectIP._id}, {
                 $set: {
                         lastDate: newDateCreated,
-                        tokens: 5
+                        tokens: 4
                 }
             })
 
