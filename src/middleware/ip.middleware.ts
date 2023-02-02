@@ -8,13 +8,17 @@ export const ipBanner = async (
     next: NextFunction
 ) => {
 
-    const result: boolean = await ipService.find(req.ip);
+    const endPoint: string = (req.path).slice(1);
+
+    let ipPath: string = req.ip + req.path;
+
+    let result: boolean = await ipService.find(ipPath);
 
     if (result) {
-        next()
+        next();
         return
+    } else {
+        res.sendStatus(ERRORS_CODE.TOO_MANY_REQUEST_429)
     }
 
-    res.sendStatus(ERRORS_CODE.TOO_MANY_REQUEST_429);
-    return
 };

@@ -30,7 +30,7 @@ class ipService {
             _id: new ObjectID(),
             ip: ip,
             lastDate: newDateCreated,
-            tokens: 5
+            tokens: 4
         })
 
         return true 
