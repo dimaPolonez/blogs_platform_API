@@ -63,7 +63,7 @@ class ipService {
             await OBJECT_IP.updateOne({_id: objectIP._id}, {
                 $set: {
                         lastDate: newDateCreated,
-                        tokens: 4
+                        tokens: 5
                 }
             })
 
