@@ -1,16 +1,17 @@
-import { add } from 'date-fns';
 import jwt from 'jsonwebtoken';
-import { ObjectId } from 'mongodb';
-import {REFRESH_TOKENS_ACTIVE, settings} from "../data/db.data";
+import {settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
 import {userBDType} from '../models/user.models';
-import {resfreshTokenBDType} from "../models/refreshToken.models";
+import {ObjectId} from "mongodb";
+import {deviceInfoObject, returnRefreshObject} from "../models/activeDevice.models";
+import guardService from "../services/guard.service";
+import { add } from 'date-fns';
 
 class jwtApp {
 
     public async createAccessJwt(user: userBDType): Promise<tokensObjectType> {
 
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 10});
+        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 1000});
 
         const objToken: tokensObjectType = {
             accessToken: accessToken,
@@ -19,8 +20,42 @@ class jwtApp {
         return objToken
     }
 
+    public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
+        Promise<string> {
+
+        const expiresBase: number = 2000; 
+
+        const expiresTime: string = add(new Date(), {
+            seconds: expiresBase
+        }).toString();
+
+        const deviceId: ObjectId = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
+
+        const refreshToken: string = jwt.sign({deviceId: deviceId, userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+
+        return refreshToken
+    }
+
+    public async updateRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
+    Promise<string> {
+
+    const deviceId: ObjectId = new ObjectId(sessionId);
+
+    const expiresBase: number = 20; 
+
+    const expiresTime: string = add(new Date(), {
+        seconds: expiresBase
+    }).toString();
+
+    await guardService.updateExpiredSession(deviceId, deviceInfoObject, expiresTime);
+
+    const refreshToken: string = jwt.sign({deviceId: deviceId, userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+
+    return refreshToken
+}
+
     public async verifyAccessJwt(token: string):
-        Promise<any> {
+        Promise<ObjectId | null> {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
 
@@ -30,54 +65,28 @@ class jwtApp {
         }
     }
 
-    public async createRefreshJwt(user: userBDType):
-    Promise<string> {
-
-        const refreshToken: string = jwt.sign({userId: user._id}, settings.JWTREFRESH_SECRET, {expiresIn: 20});
-
-        return refreshToken
-    }
-
-    public async insertToRefreshToken(refreshToken: string):
-        Promise <number>
-        {
-
-        const expiredTime: string = add(new Date(), {
-            seconds: 20
-        }).toString()
-
-        const expiredNumber: number = 20;
-
-        await REFRESH_TOKENS_ACTIVE.insertOne({
-            _id: new ObjectId(),
-            token: refreshToken,
-            expired: expiredTime
-        })
-
-        return expiredNumber
-    }
-
-    public async deleteToRefreshToken(refreshToken: string){
-
-        await REFRESH_TOKENS_ACTIVE.deleteOne({token: refreshToken})
-
-    }
-
     public async verifyRefreshJwt(token: string):
-    Promise<any> {
-    try {
-        const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
-        const findBase: resfreshTokenBDType [] = await REFRESH_TOKENS_ACTIVE.find({token: token}).toArray()
+        Promise<returnRefreshObject | null> {
+        try {
 
-        if (findBase.length > 0) {
-            return result.userId
-        } else {
-            return false
+            const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
+
+            const refreshObject: returnRefreshObject = {
+                userId: result.userId,
+                sessionId: result.deviceId
+            }
+
+            const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
+
+            if (checkedActiveSession) {
+                return refreshObject
+            }
+            
+            return null
+
+        } catch (e) {
+            return null
         }
-
-    } catch (e) {
-        return null
-    }
     }
 }
 

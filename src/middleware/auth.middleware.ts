@@ -2,7 +2,8 @@ import {Request, Response, NextFunction} from "express";
 import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
-import {ERRORS_CODE, SUPERADMIN, USERS} from "../data/db.data";
+import {ERRORS_CODE, SUPERADMIN} from "../data/db.data";
+import { returnRefreshObject } from "../models/activeDevice.models";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
 import checkedService from "../services/checked.service";
@@ -45,7 +46,7 @@ export const bearerAuthorization = async (
 
     const token: string = req.headers.authorization.substring(7)
 
-    const userAccessId: string = await jwtApplication.verifyAccessJwt(token);
+    const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
 
     if (userAccessId) {
         const getId: ObjectId = new ObjectId(userAccessId)
@@ -74,21 +75,21 @@ export const cookieRefresh = async (
 
     const refreshToken: string = req.cookies.refreshToken;
 
-    const userRefreshId: string = await jwtApplication.verifyRefreshJwt(refreshToken);
+    const userRefreshId: returnRefreshObject | null = await jwtApplication.verifyRefreshJwt(refreshToken);
 
     if (userRefreshId) {
-        const getId: ObjectId = new ObjectId(userRefreshId)
+        const getId: ObjectId = new ObjectId(userRefreshId.userId)
         const findUser: false | userBDType = await authService.getOne(getId);
         if (findUser) {
             req.user = findUser;
+            req.sessionId = userRefreshId.sessionId;
             next();
             return
         }
         res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
         return
-    } else {
-        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
     }
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
 }
 
 export const codeValidator = [

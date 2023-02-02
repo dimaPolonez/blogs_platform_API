@@ -10,6 +10,7 @@ import {
     codeValidator, cookieRefresh,
     emailValidator
 } from './auth.middleware';
+import { ipBanner } from './ip.middleware';
 
 export const errorsValidator = (
     req: Request,
@@ -35,6 +36,7 @@ export const indexMiddleware = {
     BASIC_AUTHORIZATION: basicAuthorization,
     BEARER_AUTHORIZATION: bearerAuthorization,
     COOKIE_REFRESH:cookieRefresh,
+    IP_BANNER: ipBanner,
     BLOGS_VALIDATOR: blogValidator,
     POSTS_VALIDATOR: postValidator,
     USERS_VALIDATOR: usersValidator,

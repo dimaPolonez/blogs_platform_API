@@ -9,6 +9,14 @@ import authService from '../services/auth.service';
 import userService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
+import {deviceInfoObject} from "../models/activeDevice.models";
+import guardService from '../services/guard.service';
+import { ObjectId } from 'mongodb';
+
+const optionsCookie: object = {
+    httpOnly: true,
+    secure: true
+}
 
 class authController {
 
@@ -17,47 +25,44 @@ class authController {
             const auth: false | userBDType = await authService.auth(req.body)
 
             if (auth) {
+
+                const deviceInfo: deviceInfoObject = {
+                    ip: req.ip,
+                    title: req.headers["user-agent"]!
+                }
+
                 const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(auth)
 
-                const refreshToken: string = await jwtApplication.createRefreshJwt(auth)
+                const refreshToken: string = await jwtApplication.createRefreshJwt(auth, deviceInfo)
 
-                const expired: number = await jwtApplication.insertToRefreshToken(refreshToken)
-
-                const optionsCookie: object = {
-                    maxAge: expired,
-                    httpOnly: true,
-                    secure: true
-            }
-
-                res.status(ERRORS_CODE.OK_200).cookie('refreshToken', refreshToken, optionsCookie).json(accessToken);
+                res.status(ERRORS_CODE.OK_200)
+                    .cookie('refreshToken', refreshToken, optionsCookie)
+                    .json(accessToken);
             } else {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401);
             }
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method authorization, ${e}`);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
 
     async refreshToken(req: Request, res: Response){
         try {
-            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
+
+            const deviceInfo: deviceInfoObject = {
+                ip: req.ip,
+                title: req.headers["user-agent"]!
+            }
+
             const accessToken: tokensObjectType = await jwtApplication.createAccessJwt(req.user)
 
-            const refreshToken: string = await jwtApplication.createRefreshJwt(req.user)
-
-            const expired: number = await jwtApplication.insertToRefreshToken(refreshToken)
-
-            const optionsCookie: object = {
-                maxAge: expired,
-                httpOnly: true,
-                secure: true
-            }
+            const refreshToken: string = await jwtApplication.updateRefreshJwt(req.user, deviceInfo, req.sessionId)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)
                 .json(accessToken);
         } catch(e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(`Crashed auth controller method refreshToken ${e}`);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
 
@@ -110,12 +115,15 @@ class authController {
 
     async logout(req: Request, res: Response){
         try {
-            await jwtApplication.deleteToRefreshToken(req.cookies.refreshToken)
-            res.clearCookie('refreshToken')
 
+            const sessionId: ObjectId = new ObjectId(req.sessionId);
+
+            await guardService.killOneSessionLogout(sessionId)
+
+            res.clearCookie('refreshToken')
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-        } catch {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json('Crashed auth.controller method logout');
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
 
