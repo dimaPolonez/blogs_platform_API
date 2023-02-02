@@ -43,15 +43,15 @@ class ipService {
 
         const newDateCreated: Date = new Date()
         
-        let seconds: number = differenceInSeconds(objectIP.lastDate, newDateCreated)
+        let seconds: number = differenceInSeconds(newDateCreated, objectIP.lastDate)
 
         if (seconds < 10) {
 
             if (objectIP.tokens > 0) {
 
-                const newToken: number = objectIP.tokens--;
+                let newToken: number = objectIP.tokens - 1;
 
-                await OBJECT_IP.updateOne({_id: objectIP._id}, {
+                await OBJECT_IP.updateOne({ip: objectIP.ip}, {
                     $set: {
                             tokens: newToken
                     }
@@ -63,7 +63,7 @@ class ipService {
             await OBJECT_IP.updateOne({_id: objectIP._id}, {
                 $set: {
                         lastDate: newDateCreated,
-                        tokens: 5
+                        tokens: 4
                 }
             })
 
