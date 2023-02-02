@@ -8,7 +8,9 @@ import {
     basicAuthorization,
     bearerAuthorization,
     codeValidator, cookieRefresh,
-    emailValidator
+    emailValidator,
+    newPassValidator,
+    passEmailValidator
 } from './auth.middleware';
 import { ipBanner } from './ip.middleware';
 
@@ -45,5 +47,7 @@ export const indexMiddleware = {
     USER_AUTH: userAuthValidator,
     EMAIL_VALIDATOR: emailValidator,
     CODE_VALIDATOR: codeValidator,
+    PASS_EMAIL_VALIDATOR: passEmailValidator,
+    NEW_PASS_VALIDATOR: newPassValidator,
     ERRORS_VALIDATOR: errorsValidator
 }

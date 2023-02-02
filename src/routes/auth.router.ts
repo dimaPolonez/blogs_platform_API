@@ -15,6 +15,18 @@ authRouter.post('/refresh-token',
     indexMiddleware.COOKIE_REFRESH,
     authController.refreshToken);
 
+authRouter.post('/password-recovery',
+    indexMiddleware.IP_BANNER,
+    indexMiddleware.PASS_EMAIL_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    authController.createNewPass);
+
+authRouter.post('/new-password',
+    indexMiddleware.IP_BANNER,
+    indexMiddleware.NEW_PASS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    authController.updateNewPass);
+
 authRouter.post('/registration-confirmation',
     indexMiddleware.IP_BANNER,
     indexMiddleware.CODE_VALIDATOR,

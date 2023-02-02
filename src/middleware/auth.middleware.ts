@@ -120,3 +120,39 @@ export const emailValidator = [
         .withMessage('Field email incorrect'),
 ];
 
+export const passEmailValidator = [
+    body('email')
+        .isString()
+        .bail()
+        .trim()
+        .bail()
+        .notEmpty()
+        .bail()
+        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+        .withMessage('Field email incorrect'),
+];
+
+export const newPassValidator = [
+    body('newPassword')
+        .isString()
+        .bail()
+        .trim()
+        .bail()
+        .notEmpty()
+        .bail()
+        .isLength({min: 6, max: 20})
+        .bail()
+        .withMessage('Field newPassword incorrect'),
+
+    body('recoveryCode')
+        .isString()
+        .bail()
+        .trim()
+        .bail()
+        .notEmpty()
+        .bail()
+        .custom(checkedService.recoveryCodePass)
+        .bail()
+        .withMessage('Field recoveryCode incorrect')
+];
+

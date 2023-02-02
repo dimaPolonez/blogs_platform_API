@@ -66,6 +66,24 @@ class authController {
         }
     }
 
+    async createNewPass(req: Request, res: Response) {
+        try {
+
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
+    async updateNewPass(req: Request, res: Response) {
+        try {
+
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
     async confirmEmail(req: Request, res: Response) {
         try {
 
