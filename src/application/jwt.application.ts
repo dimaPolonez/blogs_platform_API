@@ -23,7 +23,7 @@ class jwtApp {
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> {
 
-        const expiresBase: number = 2000; 
+        const expiresBase: number = 20; 
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
