@@ -44,6 +44,18 @@ class userService {
         return objResult[0]
     }
 
+    async update(user: userBDType, authParams: authParams) {
+
+        await USERS.updateOne({_id: user._id}, {
+            $set: {
+                    "activeUser.codeActivated": authParams.codeActivated,
+                    "activeUser.lifeTimeCode": authParams.lifeTimeCode,
+                    "authUser.confirm": authParams.confirm
+            }
+        })
+
+    }
+
     async delete(bodyID: ObjectId):
         Promise<boolean> {
 

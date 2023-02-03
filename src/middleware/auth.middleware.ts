@@ -151,7 +151,7 @@ export const newPassValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(checkedService.recoveryCodePass)
+        .custom(checkedService.activateCodeValid)
         .bail()
         .withMessage('Field recoveryCode incorrect')
 ];

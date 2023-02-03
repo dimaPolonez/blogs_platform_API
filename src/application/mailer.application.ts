@@ -40,6 +40,27 @@ class mailerApp {
             <p> You have activated your account!</p>`
         })
     }
+
+    public async sendMailPass(email: string, codeActive: string) {
+        await this.options({
+            from: 'Blogs_platform_API <testPolonez@yandex.ru>',
+            to: email,
+            subject: 'Password recovery',
+            html: `<h2>Password recovery</h2><p>To finish password recovery please follow the link below: 
+    <a href="https://blogs-platform-api.vercel.app/password-recovery?recoveryCode=${codeActive}">
+    recovery password</a></p>`
+        })
+    }
+
+    public async sendPassActivate(email: string) {
+        await this.options({
+            from: 'Blogs_platform_API <testPolonez@yandex.ru>',
+            to: email,
+            subject: 'Congratulations!',
+            html: `<h2>Congratulations!</h2>
+            <p> You have created new password!</p>`
+        })
+    }
 }
 
 export default new mailerApp();
