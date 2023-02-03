@@ -14,6 +14,7 @@ import guardService from '../services/guard.service';
 import { ObjectId } from 'mongodb';
 import checkedService from '../services/checked.service';
 import bcryptApplication from '../application/bcrypt.application';
+import { convertCompilerOptionsFromJson } from 'typescript';
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -78,6 +79,7 @@ class authController {
                 await userService.update(findUser, authParams)
                 await mailerApplication.sendMailPass(req.body.email, authParams.codeActivated);
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                return
             }
             
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

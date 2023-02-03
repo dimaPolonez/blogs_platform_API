@@ -53,7 +53,6 @@ class userService {
                     "authUser.confirm": authParams.confirm
             }
         })
-
     }
 
     async delete(bodyID: ObjectId):
