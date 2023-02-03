@@ -54,6 +54,20 @@ class authService {
 
     }
 
+    async updatePass(userId: ObjectId, authParams: authParams, newHashPass: string) {
+
+        await USERS.updateOne({_id: userId}, {
+            $set: {
+                authUser: {confirm: authParams.confirm, hushPass: newHashPass},
+                activeUser: {
+                    codeActivated: authParams.codeActivated,
+                    lifeTimeCode: authParams.lifeTimeCode
+                }
+            }
+        });
+
+    }
+
     async getOne(bodyID: ObjectId):
         Promise<false | userBDType> {
 

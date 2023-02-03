@@ -12,6 +12,9 @@ import codeActiveApplication from "../application/codeActive.application";
 import {deviceInfoObject} from "../models/activeDevice.models";
 import guardService from '../services/guard.service';
 import { ObjectId } from 'mongodb';
+import checkedService from '../services/checked.service';
+import bcryptApplication from '../application/bcrypt.application';
+import { convertCompilerOptionsFromJson } from 'typescript';
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -62,6 +65,47 @@ class authController {
                 .cookie('refreshToken', refreshToken, optionsCookie)
                 .json(accessToken);
         } catch(e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
+    async createNewPass(req: Request, res: Response) {
+        try {
+
+            const findUser: userBDType = await authService.getOneToEmail(req.body.email)
+
+            if (findUser) {
+                const authParams: authParams = await codeActiveApplication.createCode();
+                await userService.update(findUser, authParams)
+                await mailerApplication.sendMailPass(req.body.email, authParams.codeActivated);
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                return
+            }
+            
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        }
+    }
+
+    async updateNewPass(req: Request, res: Response) {
+        try {
+            const authParams: authParams = {
+                confirm: true,
+                codeActivated: 'Activated',
+                lifeTimeCode: 'Activated'
+            }
+
+            const userObject: userBDType = await authService.getOneToCode(req.body.recoveryCode);
+
+            const hushPass: string = await bcryptApplication.saltGenerate(req.body.newPassword)
+
+            await authService.updatePass(userObject._id, authParams, hushPass);
+
+            await mailerApplication.sendMailActivate(userObject.infUser.email);
+
+            res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+        } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
