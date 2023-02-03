@@ -96,7 +96,7 @@ class authController {
                 lifeTimeCode: 'Activated'
             }
 
-            const userObject: userBDType = await authService.getOneToCode(req.body.code);
+            const userObject: userBDType = await authService.getOneToCode(req.body.recoveryCode);
 
             const hushPass: string = await bcryptApplication.saltGenerate(req.body.newPassword)
 
