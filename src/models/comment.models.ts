@@ -32,7 +32,7 @@ export type resultCommentObjectType = {
     page: number,
     pageSize: number,
     totalCount: number,
-    items: commentAllMaps []
+    items: Promise<commentAllMaps> []
 }
 
 export type commentObjectResult = {

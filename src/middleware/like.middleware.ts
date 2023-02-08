@@ -3,6 +3,7 @@ import {body} from "express-validator";
 import jwtApplication from "../application/jwt.application";
 import {returnRefreshObject} from "../models/activeDevice.models";
 import {myLikeStatus} from "../models/likes.models";
+import {ObjectId} from "mongodb";
 
 
 export const likeValidator = [
@@ -29,18 +30,18 @@ export const reqUserId = async (
     next: NextFunction
 ) => {
 
-    if (!req.cookies.refreshToken) {
+    if (!req.headers.authorization) {
         req.userId = 'quest';
         next();
         return
     }
 
-    const refreshToken: string = req.cookies.refreshToken;
+    const token: string = req.headers.authorization.substring(7)
 
-    const userRefreshId: returnRefreshObject | null = await jwtApplication.verifyRefreshJwt(refreshToken);
+    const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
 
-    if (userRefreshId) {
-        req.userId = userRefreshId.userId.toString();
+    if (userAccessId) {
+        req.userId = userAccessId.toString();
         next();
         return
     }

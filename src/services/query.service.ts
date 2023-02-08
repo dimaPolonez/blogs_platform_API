@@ -192,17 +192,17 @@ class queryService {
 
         let myUserStatus: myLikeStatus = myLikeStatus.None
 
-        if (userId !== 'quest') {
-            const userObjectId: ObjectId = new ObjectId(userId);
+        const allMaps: Promise<commentAllMaps>[] = comments.map(async (field: commentOfPostBDType)=> {
 
-            const checked: false | likesBDType = await likeService.checked(comments[0]._id, userObjectId)
+            if (userId !== 'quest') {
+                const userObjectId: ObjectId = new ObjectId(userId);
 
-            if (checked) {
-                myUserStatus = checked.user.myStatus;
+                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                }
             }
-        }
-
-        const allMaps: commentAllMaps [] = comments.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,

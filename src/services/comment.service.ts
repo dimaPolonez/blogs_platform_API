@@ -31,6 +31,7 @@ class commentService {
 
             const checked: false | likesBDType = await likeService.checked(find[0]._id, userObjectId)
 
+
             if (checked) {
                 myUserStatus = checked.user.myStatus;
             }
