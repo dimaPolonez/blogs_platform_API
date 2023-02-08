@@ -31,10 +31,6 @@ class likeService {
         await LIKES.updateOne({_id: objectLikeId}, {"user.myStatus": status})
     }
 
-    private async delete(objectLikeId: ObjectId) {
-        await LIKES.deleteOne({_id: objectLikeId})
-    }
-
     public async counterLike(likeStatusBody: string, object: countObject, user: userBDType):
         Promise<likesCounter> {
         let addDate: string = new Date().toISOString();
@@ -66,13 +62,17 @@ class likeService {
                 case ('DislikeDislike'):
                     result.dislikesCount--
                     break
+                case ('NoneDislike'):
+                    result.dislikesCount--
+                    myStatus = myLikeStatus.None
+                    break
+                case ('NoneLike'):
+                    result.likesCount--
+                    myStatus = myLikeStatus.None
+                    break
             }
 
-            if (myStatus === myLikeStatus.None) {
-                await this.delete(findLike._id)
-            } else {
-                await this.update(myStatus, findLike._id)
-            }
+            await this.update(myStatus, findLike._id)
 
         } else {
 
