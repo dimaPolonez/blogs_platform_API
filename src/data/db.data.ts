@@ -9,6 +9,8 @@ import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
 
 dotenv.config();
 
+
+
 export const settings = {
     DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
     JWT_SECRET: process.env.JWT_SECRET || '123',
