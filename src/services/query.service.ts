@@ -8,6 +8,7 @@ import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.mode
 import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
+import { myLikeStatus } from "../models/likes.models";
 
 function sortObject(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
@@ -200,7 +201,7 @@ class queryService {
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
                     dislikesCount: field.likesInfo.dislikesCount,
-                    myStatus: field.likesInfo.myStatus
+                    myStatus: myLikeStatus[0]
                 }
             }
         });
