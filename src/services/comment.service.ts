@@ -100,8 +100,6 @@ class commentService {
             }
         });
 
-        console.log(newObjectLikes[0])
-
         return true;
 
     }

@@ -8,53 +8,43 @@ class likeService {
 
         const likeCaseString: string = likeStatusBody + likesInfo.myStatus;
 
-        console.log(likeCaseString)
-
         let result: likesInfo = { likesCount: likesInfo.likesCount,
                                     dislikesCount: likesInfo.dislikesCount,
                                     myStatus: myLikeStatus[0]};
 
         switch (likeCaseString) {
             case ('LikeLike'):
-                result = {
-                    likesCount: likesInfo.likesCount - 1,
-                    dislikesCount: likesInfo.dislikesCount,
-                    myStatus: myLikeStatus[0]
-                    }
+                result.likesCount--
                 break
             case ('LikeDislike'):
-                result = {
-                    likesCount: likesInfo.likesCount + 1,
-                    dislikesCount: likesInfo.dislikesCount - 1,
-                    myStatus: myLikeStatus[1]
-                    }
+                result.likesCount++
+                result.dislikesCount--
+                result.myStatus = myLikeStatus[1]
                 break
             case ('LikeNone'):
-                result = {
-                    likesCount: likesInfo.likesCount + 1,
-                    dislikesCount: likesInfo.dislikesCount,
-                    myStatus: myLikeStatus[1]
-                    }
+                result.likesCount++
+                result.myStatus = myLikeStatus[1]
                 break
             case ('DislikeLike'):
-                result = {
-                    likesCount: likesInfo.likesCount - 1,
-                    dislikesCount: likesInfo.dislikesCount + 1,
-                    myStatus: myLikeStatus[2]
-                    }
+                result.likesCount--
+                result.dislikesCount++
+                result.myStatus = myLikeStatus[2]
+                break
             case ('DislikeDislike'):
-                result = {
-                    likesCount: likesInfo.likesCount,
-                    dislikesCount: likesInfo.dislikesCount - 1,
-                    myStatus: myLikeStatus[0]
-                    }
+                result.dislikesCount--
                 break
             case ('DislikeNone'):
-                result = {
-                    likesCount: likesInfo.likesCount,
-                    dislikesCount: likesInfo.dislikesCount + 1,
-                    myStatus: myLikeStatus[2]
-                    }  
+                result.dislikesCount++
+                result.myStatus = myLikeStatus[2]
+                break
+            case ('NoneLike'):
+                result.likesCount--
+                result.myStatus = myLikeStatus[0]
+                break
+            case ('NoneDislike'):
+                result.dislikesCount--
+                result.myStatus = myLikeStatus[0]
+                break
         }
 
         return result
