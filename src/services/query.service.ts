@@ -8,7 +8,7 @@ import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.mode
 import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
-import { likesBDType, myLikeStatus } from "../models/likes.models";
+import {likesBDType, myLikeStatus} from "../models/likes.models";
 import likeService from "./like.service";
 
 function sortObject(sortDir: string) {
@@ -192,14 +192,14 @@ class queryService {
 
         let myUserStatus: string = myLikeStatus[0]
 
-        if(userId !== 'quest') {
-                const userObjectId: ObjectId = new ObjectId(userId);
-    
-                const checked: false | likesBDType = await likeService.checked(comments[0]._id, userObjectId)
-                
-                if (checked) {
-                    myUserStatus = checked.user.myStatus;
-                }
+        if (userId !== 'quest') {
+            const userObjectId: ObjectId = new ObjectId(userId);
+
+            const checked: false | likesBDType = await likeService.checked(comments[0]._id, userObjectId)
+
+            if (checked) {
+                myUserStatus = checked.user.myStatus;
+            }
         }
 
         const allMaps: commentAllMaps [] = comments.map((field: commentOfPostBDType) => {

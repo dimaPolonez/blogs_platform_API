@@ -6,10 +6,9 @@ import {postBDType} from '../models/post.models';
 import {userBDType} from '../models/user.models';
 import {commentOfPostBDType} from '../models/comment.models';
 import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
-import { likesBDType } from '../models/likes.models';
+import {likesBDType} from '../models/likes.models';
 
 dotenv.config();
-
 
 
 export const settings = {

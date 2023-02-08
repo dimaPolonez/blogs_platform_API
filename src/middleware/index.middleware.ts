@@ -12,8 +12,8 @@ import {
     newPassValidator,
     passEmailValidator
 } from './auth.middleware';
-import { ipBanner } from './ip.middleware';
-import { likeValidator, reqUserId } from './like.middleware';
+import {ipBanner} from './ip.middleware';
+import {likeValidator, reqUserId} from './like.middleware';
 
 export const errorsValidator = (
     req: Request,
@@ -38,7 +38,7 @@ export const errorsValidator = (
 export const indexMiddleware = {
     BASIC_AUTHORIZATION: basicAuthorization,
     BEARER_AUTHORIZATION: bearerAuthorization,
-    COOKIE_REFRESH:cookieRefresh,
+    COOKIE_REFRESH: cookieRefresh,
     USER_ID: reqUserId,
     IP_BANNER: ipBanner,
     BLOGS_VALIDATOR: blogValidator,

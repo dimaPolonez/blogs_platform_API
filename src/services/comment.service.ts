@@ -3,7 +3,7 @@ import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
-import { countObject, likesBDType, likesCounter, likesInfo, myLikeStatus } from "../models/likes.models";
+import {countObject, likesBDType, likesCounter, likesInfo, myLikeStatus} from "../models/likes.models";
 import likeService from "./like.service";
 
 class commentService {
@@ -26,11 +26,11 @@ class commentService {
 
         let myUserStatus: string = myLikeStatus[0]
 
-        if(userId !== 'quest') {
+        if (userId !== 'quest') {
             const userObjectId: ObjectId = new ObjectId(userId);
 
             const checked: false | likesBDType = await likeService.checked(find[0]._id, userObjectId)
-            
+
             if (checked) {
                 myUserStatus = checked.user.myStatus;
             }
@@ -88,7 +88,7 @@ class commentService {
     }
 
     async commentLike(likeStatus: string, bodyID: ObjectId, user: userBDType):
-    Promise<boolean> {
+        Promise<boolean> {
 
         const find: commentOfPostBDType [] = await this.findComment(bodyID);
 

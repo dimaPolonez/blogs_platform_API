@@ -7,7 +7,7 @@ import authRouter from "./routes/auth.router";
 import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
 import guardRouter from "./routes/quard.routes";
-import { ipBanner } from './middleware/ip.middleware';
+import {ipBanner} from './middleware/ip.middleware';
 
 const PORT = process.env.PORT || 5000;
 
@@ -50,7 +50,7 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
         await ACTIVE_DEVICE.deleteMany({});
         await OBJECT_IP.deleteMany({});
         await LIKES.deleteMany({});
-        
+
         res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

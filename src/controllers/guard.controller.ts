@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import { ObjectId } from 'mongodb';
+import {ObjectId} from 'mongodb';
 import {ERRORS_CODE} from "../data/db.data";
-import { returnActiveDevice } from '../models/activeDevice.models';
-import { paramsId, paramsReqType } from '../models/request.models';
+import {returnActiveDevice} from '../models/activeDevice.models';
+import {paramsId, paramsReqType} from '../models/request.models';
 import guardService from '../services/guard.service';
 
 class guardController {

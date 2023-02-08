@@ -48,9 +48,9 @@ class userService {
 
         await USERS.updateOne({_id: user._id}, {
             $set: {
-                    "activeUser.codeActivated": authParams.codeActivated,
-                    "activeUser.lifeTimeCode": authParams.lifeTimeCode,
-                    "authUser.confirm": authParams.confirm
+                "activeUser.codeActivated": authParams.codeActivated,
+                "activeUser.lifeTimeCode": authParams.lifeTimeCode,
+                "authUser.confirm": authParams.confirm
             }
         })
     }

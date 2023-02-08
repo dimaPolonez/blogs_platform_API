@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
-import { body } from "express-validator";
+import {body} from "express-validator";
 import jwtApplication from "../application/jwt.application";
-import { returnRefreshObject } from "../models/activeDevice.models";
-import { myLikeStatus } from "../models/likes.models";
+import {returnRefreshObject} from "../models/activeDevice.models";
+import {myLikeStatus} from "../models/likes.models";
 
 
 export const likeValidator = [

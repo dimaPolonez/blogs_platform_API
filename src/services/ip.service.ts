@@ -1,28 +1,26 @@
-import { ObjectID } from "bson";
-import { differenceInSeconds } from "date-fns";
-import { OBJECT_IP } from "../data/db.data";
+import {ObjectID} from "bson";
+import {differenceInSeconds} from "date-fns";
+import {OBJECT_IP} from "../data/db.data";
 import {objectIP} from "../models/activeDevice.models";
 
 
 class ipService {
 
     async find(ip: string):
-    Promise<boolean>
-    {
+        Promise<boolean> {
 
-       const find: objectIP [] = await OBJECT_IP.find({ip: ip}).toArray(); 
+        const find: objectIP [] = await OBJECT_IP.find({ip: ip}).toArray();
 
-       if (find.length === 0) {
-        return this.create(ip)
-       }
+        if (find.length === 0) {
+            return this.create(ip)
+        }
 
-       return this.check(find[0])
+        return this.check(find[0])
 
     }
 
     async create(ip: string):
-    Promise<true> 
-    {
+        Promise<true> {
 
         const newDateCreated: Date = new Date()
 
@@ -33,16 +31,15 @@ class ipService {
             tokens: 4
         })
 
-        return true 
+        return true
 
     }
 
     async check(objectIP: objectIP):
-    Promise<boolean> 
-    {
+        Promise<boolean> {
 
         const newDateCreated: Date = new Date()
-        
+
         let seconds: number = differenceInSeconds(newDateCreated, objectIP.lastDate)
 
         if (seconds <= 10) {
@@ -53,7 +50,7 @@ class ipService {
 
                 await OBJECT_IP.updateOne({ip: objectIP.ip}, {
                     $set: {
-                            tokens: newToken
+                        tokens: newToken
                     }
                 })
             } else {
@@ -62,8 +59,8 @@ class ipService {
         } else {
             await OBJECT_IP.updateOne({_id: objectIP._id}, {
                 $set: {
-                        lastDate: newDateCreated,
-                        tokens: 4
+                    lastDate: newDateCreated,
+                    tokens: 4
                 }
             })
 

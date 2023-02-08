@@ -3,7 +3,7 @@ import {body, header, validationResult} from "express-validator";
 import {ObjectId} from "mongodb";
 import jwtApplication from "../application/jwt.application";
 import {ERRORS_CODE, SUPERADMIN} from "../data/db.data";
-import { returnRefreshObject } from "../models/activeDevice.models";
+import {returnRefreshObject} from "../models/activeDevice.models";
 import {userBDType} from "../models/user.models";
 import authService from "../services/auth.service";
 import checkedService from "../services/checked.service";

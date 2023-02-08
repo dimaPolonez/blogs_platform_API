@@ -4,7 +4,7 @@ import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import {paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {commentObjectResult, commentReqType} from "../models/comment.models";
-import { likesReq } from '../models/likes.models';
+import {likesReq} from '../models/likes.models';
 
 class commentController {
 
@@ -52,14 +52,14 @@ class commentController {
 
             const likeStatus: string = req.body.likeStatus;
 
-            const like: boolean = await commentService.commentLike(likeStatus, commentId, req.user); 
+            const like: boolean = await commentService.commentLike(likeStatus, commentId, req.user);
 
             if (like) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
             } else {
                 res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
             }
-        } catch(e) {
+        } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }

@@ -1,19 +1,19 @@
-import { ObjectId } from "mongodb";
-import { LIKES } from "../data/db.data";
-import { countObject, likesBDType, likesCounter, myLikeStatus } from "../models/likes.models";
-import { userBDType } from "../models/user.models";
+import {ObjectId} from "mongodb";
+import {LIKES} from "../data/db.data";
+import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
+import {userBDType} from "../models/user.models";
 
 class likeService {
 
     public async checked(objectId: ObjectId, userId: ObjectId):
-    Promise<false | likesBDType>
-    {
+        Promise<false | likesBDType> {
         const result: likesBDType [] = await LIKES.find({
             $and: [
                 {"user.userId": userId},
                 {"object.typeId": objectId}
-            ]}).toArray();
-        
+            ]
+        }).toArray();
+
         if (result[0]) {
             return result[0]
         } else {
@@ -22,29 +22,26 @@ class likeService {
 
     }
 
-    private async create(objectLike: likesBDType)
-    {
+    private async create(objectLike: likesBDType) {
         await LIKES.insertOne(objectLike)
 
     }
 
-    private async update(status: string, objectLikeId: ObjectId)
-
-    {
-        await LIKES.updateOne({_id:  objectLikeId}, {"user.myStatus": status})
+    private async update(status: string, objectLikeId: ObjectId) {
+        await LIKES.updateOne({_id: objectLikeId}, {"user.myStatus": status})
     }
 
-    private async delete(objectLikeId: ObjectId)
-    {
-        await LIKES.deleteOne({_id:  objectLikeId})
+    private async delete(objectLikeId: ObjectId) {
+        await LIKES.deleteOne({_id: objectLikeId})
     }
 
     public async counterLike(likeStatusBody: string, object: countObject, user: userBDType):
-    Promise<likesCounter>
-    {
+        Promise<likesCounter> {
         let addDate: string = new Date().toISOString();
-        let result: likesCounter = { likesCount: object.likesCount,
-            dislikesCount: object.dislikesCount};
+        let result: likesCounter = {
+            likesCount: object.likesCount,
+            dislikesCount: object.dislikesCount
+        };
         let myStatus: string = myLikeStatus[0]
 
         const find: false | likesBDType = await this.checked(object.typeId, user._id);
@@ -72,9 +69,9 @@ class likeService {
             }
 
             if (myStatus === myLikeStatus[0]) {
-                this.delete(find._id)
+                await this.delete(find._id)
             } else {
-                this.update(myStatus, find._id)
+                await this.update(myStatus, find._id)
             }
 
         } else {
@@ -84,14 +81,14 @@ class likeService {
                     result.likesCount++
                     myStatus = myLikeStatus[1]
                     break
-    
+
                 case ('Dislike'):
                     result.dislikesCount++
                     myStatus = myLikeStatus[2]
                     break
             }
 
-            let objectLike: likesBDType = { 
+            let objectLike: likesBDType = {
                 _id: new ObjectId(),
                 user: {
                     userId: user._id,
@@ -107,7 +104,7 @@ class likeService {
 
             await this.create(objectLike)
         }
-        
+
         return result
     }
 
