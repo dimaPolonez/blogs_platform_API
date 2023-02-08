@@ -36,7 +36,7 @@ class commentService {
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
                     dislikesCount: field.likesInfo.dislikesCount,
-                    myStatus: field.likesInfo.myStatus
+                    myStatus: myLikeStatus[0]
                 }
             }
         });
@@ -170,7 +170,7 @@ class commentService {
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
                     dislikesCount: field.likesInfo.dislikesCount,
-                    myStatus: myLikeStatus[0]
+                    myStatus: field.likesInfo.myStatus
                 }
             }
         });
