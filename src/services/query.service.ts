@@ -192,8 +192,10 @@ class queryService {
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin,
+                },
                 createdAt: field.createdAt,
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,

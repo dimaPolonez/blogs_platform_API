@@ -4,11 +4,15 @@ import { likesInfo } from "./likes.models"
 export type commentOfPostBDType = {
     _id: ObjectId,
     content: string,
-    userId: ObjectId,
-    userLogin: string,
+    commentatorInfo: commInfo,
     postId: ObjectId,
     createdAt: string,
     likesInfo: likesInfo
+}
+
+export type commInfo = {
+    userId: ObjectId,
+    userLogin: string
 }
 
 export type commentReqType = {
@@ -18,8 +22,7 @@ export type commentReqType = {
 export type commentAllMaps = {
     id: ObjectId,
     content: string,
-    userId: ObjectId,
-    userLogin: string,
+    commentatorInfo: commInfo,
     createdAt: string,
     likesInfo: likesInfo
 }
@@ -35,8 +38,7 @@ export type resultCommentObjectType = {
 export type commentObjectResult = {
     id: ObjectId,
     content: string,
-    userId: ObjectId,
-    userLogin: string,
+    commentatorInfo: commInfo,
     createdAt: string,
     likesInfo: likesInfo
 }

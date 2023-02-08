@@ -28,8 +28,10 @@ class commentService {
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin,
+                },
                 createdAt: field.createdAt,
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
@@ -53,7 +55,7 @@ class commentService {
 
         const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
 
-            if (field.userId.toString() === userObject._id.toString()) {
+            if (field.commentatorInfo.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
@@ -112,7 +114,7 @@ class commentService {
         }
 
         const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
-            if (field.userId.toString() === userObject._id.toString()) {
+            if (field.commentatorInfo.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
@@ -141,8 +143,10 @@ class commentService {
         const createdComment = await COMMENTS.insertOne({
             _id: new ObjectId(),
             content: body.content,
-            userId: objectUser._id,
-            userLogin: objectUser.infUser.login,
+            commentatorInfo: {
+                userId: objectUser._id,
+                userLogin: objectUser.infUser.login
+            },
             postId: postId,
             createdAt: newDateCreated,
             likesInfo: {
@@ -158,8 +162,10 @@ class commentService {
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin
+                },
                 createdAt: field.createdAt,
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
