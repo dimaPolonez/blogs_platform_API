@@ -8,53 +8,54 @@ class likeService {
 
         const likeCaseString: string = likeStatusBody + likesInfo.myStatus;
 
-        const result: likesInfo = { likesCount: likesInfo.likesCount,
+        let result: likesInfo = { likesCount: likesInfo.likesCount,
                                     dislikesCount: likesInfo.dislikesCount,
                                     myStatus: myLikeStatus[0]};
 
         switch (likeCaseString) {
             case ('LikeLike'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount--,
                     dislikesCount: likesInfo.dislikesCount,
                     myStatus: myLikeStatus[0]
                     }
                 break
             case ('LikeDislike'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount++,
                     dislikesCount: likesInfo.dislikesCount--,
                     myStatus: myLikeStatus[1]
                     }
                 break
             case ('LikeNone'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount++,
                     dislikesCount: likesInfo.dislikesCount,
                     myStatus: myLikeStatus[1]
                     }
                 break
             case ('DislikeLike'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount--,
                     dislikesCount: likesInfo.dislikesCount++,
                     myStatus: myLikeStatus[2]
                     }
             case ('DislikeDislike'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount,
                     dislikesCount: likesInfo.dislikesCount--,
                     myStatus: myLikeStatus[0]
                     }
                 break
             case ('DislikeNone'):
-                return {
+                result = {
                     likesCount: likesInfo.likesCount,
                     dislikesCount: likesInfo.dislikesCount++,
                     myStatus: myLikeStatus[2]
-                    }
-            default: return result     
+                    }  
         }
+
+        return result
     }
 
 }

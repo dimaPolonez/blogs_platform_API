@@ -16,6 +16,7 @@ commentRouter.put('/:id',
 commentRouter.put('/:id/like-status',
     indexMiddleware.BEARER_AUTHORIZATION,
     indexMiddleware.LIKE_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
     commentController.likeStatus);
 
 commentRouter.delete('/:id',
