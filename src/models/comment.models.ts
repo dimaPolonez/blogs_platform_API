@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb"
+import { likesInfo } from "./likes.models"
 
 export type commentOfPostBDType = {
     _id: ObjectId,
@@ -6,7 +7,8 @@ export type commentOfPostBDType = {
     userId: ObjectId,
     userLogin: string,
     postId: ObjectId,
-    createdAt: string
+    createdAt: string,
+    likesInfo: likesInfo
 }
 
 export type commentReqType = {
@@ -18,7 +20,8 @@ export type commentAllMaps = {
     content: string,
     userId: ObjectId,
     userLogin: string,
-    createdAt: string
+    createdAt: string,
+    likesInfo: likesInfo
 }
 
 export type resultCommentObjectType = {
@@ -34,5 +37,6 @@ export type commentObjectResult = {
     content: string,
     userId: ObjectId,
     userLogin: string,
-    createdAt: string
+    createdAt: string,
+    likesInfo: likesInfo
 }

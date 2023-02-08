@@ -13,6 +13,7 @@ import {
     passEmailValidator
 } from './auth.middleware';
 import { ipBanner } from './ip.middleware';
+import { likeValidator } from './like.middleware';
 
 export const errorsValidator = (
     req: Request,
@@ -43,6 +44,7 @@ export const indexMiddleware = {
     POSTS_VALIDATOR: postValidator,
     USERS_VALIDATOR: usersValidator,
     COMMENT_VALIDATOR: commentValidator,
+    LIKE_VALIDATOR: likeValidator,
     POSTS_OF_BLOG_VALIDATOR: postsOfBlogValidator,
     USER_AUTH: userAuthValidator,
     EMAIL_VALIDATOR: emailValidator,

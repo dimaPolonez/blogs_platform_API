@@ -194,7 +194,12 @@ class queryService {
                 content: field.content,
                 userId: field.userId,
                 userLogin: field.userLogin,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: field.likesInfo.myStatus
+                }
             }
         });
         const allCount: number = await COMMENTS.countDocuments({postId: bodyID});

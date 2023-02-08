@@ -3,6 +3,8 @@ import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
+import { likesInfo, myLikeStatus } from "../models/likes.models";
+import likeService from "./like.service";
 
 class commentService {
 
@@ -28,7 +30,12 @@ class commentService {
                 content: field.content,
                 userId: field.userId,
                 userLogin: field.userLogin,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: field.likesInfo.myStatus
+                }
             }
         });
 
@@ -64,6 +71,35 @@ class commentService {
         });
 
         return ERRORS_CODE.NO_CONTENT_204;
+    }
+
+    async commentLike(likeStatus: string, bodyID: ObjectId):
+    Promise<boolean> {
+
+        const find: commentOfPostBDType [] = await this.findComment(bodyID);
+
+        if (find.length === 0) {
+            return false;
+        }
+
+        const newObjectLikes: Promise<likesInfo>[] = find.map(async (field: commentOfPostBDType) => {
+
+            const result: likesInfo = await likeService.counterLike(likeStatus, field.likesInfo);
+
+            return result;
+
+        })
+
+        await COMMENTS.updateOne({_id: bodyID}, {
+            $set: {
+                "likesInfo.likesCount": (await newObjectLikes[0]).likesCount,
+                "likesInfo.dislikesCount": (await newObjectLikes[0]).dislikesCount,
+                "likesInfo.myStatus": (await newObjectLikes[0]).myStatus
+            }
+        });
+
+        return true;
+
     }
 
     async delete(bodyID: ObjectId, userObject: userBDType):
@@ -108,7 +144,12 @@ class commentService {
             userId: objectUser._id,
             userLogin: objectUser.infUser.login,
             postId: postId,
-            createdAt: newDateCreated
+            createdAt: newDateCreated,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus[0]
+            }
         });
 
         let result: commentOfPostBDType [] = await COMMENTS.find({_id: createdComment.insertedId}).toArray();
@@ -119,7 +160,12 @@ class commentService {
                 content: field.content,
                 userId: field.userId,
                 userLogin: field.userLogin,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: field.likesInfo.myStatus
+                }
             }
         });
 
