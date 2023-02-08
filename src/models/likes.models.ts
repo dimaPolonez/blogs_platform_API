@@ -5,7 +5,7 @@ export type likesBDType = {
     user: {
         userId: ObjectId,
         login: string,
-        myStatus: string
+        myStatus: myLikeStatus
     },
     object: {
         typeId: ObjectId,
@@ -26,9 +26,9 @@ export type likesCounter = {
 }
 
 export enum myLikeStatus {
-    'None',
-    'Like',
-    'Dislike'
+    None = 'None',
+    Like = 'Like',
+    Dislike = 'Dislike'
 }
 
 export type likesReq = {

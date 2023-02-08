@@ -190,7 +190,7 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        let myUserStatus: string = myLikeStatus[0]
+        let myUserStatus: myLikeStatus = myLikeStatus.None
 
         if (userId !== 'quest') {
             const userObjectId: ObjectId = new ObjectId(userId);

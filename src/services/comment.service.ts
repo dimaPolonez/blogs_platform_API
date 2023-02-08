@@ -24,7 +24,7 @@ class commentService {
             return false;
         }
 
-        let myUserStatus: string = myLikeStatus[0]
+        let myUserStatus: myLikeStatus = myLikeStatus.None
 
         if (userId !== 'quest') {
             const userObjectId: ObjectId = new ObjectId(userId);
@@ -164,7 +164,7 @@ class commentService {
             likesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
-                myStatus: myLikeStatus[0]
+                myStatus: myLikeStatus.None
             }
         });
 

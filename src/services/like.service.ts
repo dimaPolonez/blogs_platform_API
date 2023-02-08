@@ -42,12 +42,12 @@ class likeService {
             likesCount: object.likesCount,
             dislikesCount: object.dislikesCount
         };
-        let myStatus: string = myLikeStatus[0]
+        let myStatus: myLikeStatus = myLikeStatus.None
 
-        const find: false | likesBDType = await this.checked(object.typeId, user._id);
+        const findLike: false | likesBDType = await this.checked(object.typeId, user._id);
 
-        if (find) {
-            const likeCaseString = likeStatusBody + find.user.myStatus;
+        if (findLike) {
+            const likeCaseString = likeStatusBody + findLike.user.myStatus;
 
             switch (likeCaseString) {
                 case ('LikeLike'):
@@ -56,22 +56,22 @@ class likeService {
                 case ('LikeDislike'):
                     result.likesCount++
                     result.dislikesCount--
-                    myStatus = myLikeStatus[1]
+                    myStatus = myLikeStatus.Like
                     break
                 case ('DislikeLike'):
                     result.likesCount--
                     result.dislikesCount++
-                    myStatus = myLikeStatus[2]
+                    myStatus = myLikeStatus.Dislike
                     break
                 case ('DislikeDislike'):
                     result.dislikesCount--
                     break
             }
 
-            if (myStatus === myLikeStatus[0]) {
-                await this.delete(find._id)
+            if (myStatus === myLikeStatus.None) {
+                await this.delete(findLike._id)
             } else {
-                await this.update(myStatus, find._id)
+                await this.update(myStatus, findLike._id)
             }
 
         } else {
@@ -79,12 +79,12 @@ class likeService {
             switch (likeStatusBody) {
                 case ('Like'):
                     result.likesCount++
-                    myStatus = myLikeStatus[1]
+                    myStatus = myLikeStatus.Like
                     break
 
                 case ('Dislike'):
                     result.dislikesCount++
-                    myStatus = myLikeStatus[2]
+                    myStatus = myLikeStatus.Dislike
                     break
             }
 
