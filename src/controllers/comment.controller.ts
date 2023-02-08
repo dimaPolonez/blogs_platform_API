@@ -12,7 +12,7 @@ class commentController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const comment: false | commentObjectResult = await commentService.getOne(bodyId);
+            const comment: false | commentObjectResult = await commentService.getOne(bodyId, req.userId);
 
             if (comment) {
                 res.status(ERRORS_CODE.OK_200).json(comment);
@@ -52,7 +52,7 @@ class commentController {
 
             const likeStatus: string = req.body.likeStatus;
 
-            const like: boolean = await commentService.commentLike(likeStatus, commentId); 
+            const like: boolean = await commentService.commentLike(likeStatus, commentId, req.user); 
 
             if (like) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

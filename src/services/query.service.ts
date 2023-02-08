@@ -8,7 +8,8 @@ import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.mode
 import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
-import { myLikeStatus } from "../models/likes.models";
+import { likesBDType, myLikeStatus } from "../models/likes.models";
+import likeService from "./like.service";
 
 function sortObject(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
@@ -175,7 +176,7 @@ class queryService {
         return resultObject
     }
 
-    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag):
+    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag, userId: string):
         Promise<false | resultCommentObjectType> {
 
         const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray()
@@ -189,6 +190,18 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
+        let myUserStatus: string = myLikeStatus[0]
+
+        if(userId !== 'quest') {
+                const userObjectId: ObjectId = new ObjectId(userId);
+    
+                const checked: false | likesBDType = await likeService.checked(comments[0]._id, userObjectId)
+                
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                }
+        }
+
         const allMaps: commentAllMaps [] = comments.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
@@ -201,7 +214,7 @@ class queryService {
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
                     dislikesCount: field.likesInfo.dislikesCount,
-                    myStatus: myLikeStatus[0]
+                    myStatus: myUserStatus
                 }
             }
         });

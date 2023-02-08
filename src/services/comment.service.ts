@@ -3,7 +3,7 @@ import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
-import { likesInfo, myLikeStatus } from "../models/likes.models";
+import { countObject, likesBDType, likesCounter, likesInfo, myLikeStatus } from "../models/likes.models";
 import likeService from "./like.service";
 
 class commentService {
@@ -15,13 +15,25 @@ class commentService {
         return result
     }
 
-    async getOne(bodyID: ObjectId):
+    async getOne(bodyID: ObjectId, userId: string):
         Promise<false | commentObjectResult> {
 
         const find: commentOfPostBDType [] = await this.findComment(bodyID);
 
         if (find.length === 0) {
             return false;
+        }
+
+        let myUserStatus: string = myLikeStatus[0]
+
+        if(userId !== 'quest') {
+            const userObjectId: ObjectId = new ObjectId(userId);
+
+            const checked: false | likesBDType = await likeService.checked(find[0]._id, userObjectId)
+            
+            if (checked) {
+                myUserStatus = checked.user.myStatus;
+            }
         }
 
         const objResult: commentObjectResult [] = find.map((field: commentOfPostBDType) => {
@@ -36,7 +48,7 @@ class commentService {
                 likesInfo: {
                     likesCount: field.likesInfo.likesCount,
                     dislikesCount: field.likesInfo.dislikesCount,
-                    myStatus: myLikeStatus[0]
+                    myStatus: myUserStatus
                 }
             }
         });
@@ -75,7 +87,7 @@ class commentService {
         return ERRORS_CODE.NO_CONTENT_204;
     }
 
-    async commentLike(likeStatus: string, bodyID: ObjectId):
+    async commentLike(likeStatus: string, bodyID: ObjectId, user: userBDType):
     Promise<boolean> {
 
         const find: commentOfPostBDType [] = await this.findComment(bodyID);
@@ -84,19 +96,19 @@ class commentService {
             return false;
         }
 
-        const newObjectLikes: Promise<likesInfo>[] = find.map(async (field: commentOfPostBDType) => {
+        const countObject: countObject = {
+            typeId: find[0]._id,
+            type: 'comment',
+            likesCount: find[0].likesInfo.likesCount,
+            dislikesCount: find[0].likesInfo.dislikesCount
+        }
 
-            const result: likesInfo = await likeService.counterLike(likeStatus, field.likesInfo);
-
-            return result;
-
-        })
+        const newObjectLikes: likesCounter = await likeService.counterLike(likeStatus, countObject, user);
 
         await COMMENTS.updateOne({_id: bodyID}, {
             $set: {
-                "likesInfo.likesCount": (await newObjectLikes[0]).likesCount,
-                "likesInfo.dislikesCount": (await newObjectLikes[0]).dislikesCount,
-                "likesInfo.myStatus": (await newObjectLikes[0]).myStatus
+                "likesInfo.likesCount": newObjectLikes.likesCount,
+                "likesInfo.dislikesCount": newObjectLikes.dislikesCount,
             }
         });
 

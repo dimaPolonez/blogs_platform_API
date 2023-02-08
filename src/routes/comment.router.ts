@@ -5,6 +5,7 @@ import commentController from "../controllers/comment.controller";
 const commentRouter = Router({});
 
 commentRouter.get('/:id',
+    indexMiddleware.USER_ID,
     commentController.getOne)
 
 commentRouter.put('/:id',

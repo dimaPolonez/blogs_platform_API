@@ -64,7 +64,9 @@ postRouter.get('/', async (req: queryReqType<queryReqPag>, res: Response) => {
     }
 })
 
-postRouter.get('/:id/comments', async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
+postRouter.get('/:id/comments',
+    indexMiddleware.USER_ID,  
+    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
     try {
 
         let queryAll: notStringQueryReqPag = {
@@ -76,7 +78,7 @@ postRouter.get('/:id/comments', async (req: paramsAndQueryReqType<paramsId, quer
 
         const postId: ObjectId = new ObjectId(req.params.id);
 
-        const comments: false | resultCommentObjectType = await queryService.getAllCommentsOfBlog(postId, queryAll);
+        const comments: false | resultCommentObjectType = await queryService.getAllCommentsOfBlog(postId, queryAll, req.userId);
         if (comments) {
             res.status(ERRORS_CODE.OK_200).json(comments);
         } else {
