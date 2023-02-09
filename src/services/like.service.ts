@@ -25,7 +25,7 @@ class likeService {
         await LIKES.insertOne(objectLike)
     }
 
-    private async update(status: string, objectLikeId: ObjectId) {
+    private async update(status: myLikeStatus, objectLikeId: ObjectId) {
         await LIKES.updateOne({_id: objectLikeId}, {"user.myStatus": status})
     }
 
