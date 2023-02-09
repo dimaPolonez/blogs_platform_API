@@ -1,32 +1,30 @@
-import { isAfter } from "date-fns";
+import {isAfter} from "date-fns";
 import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE, ERRORS_CODE} from "../data/db.data";
 import {activeDeviceBDType, deviceInfoObject, returnActiveDevice} from "../models/activeDevice.models";
-import { userBDType } from "../models/user.models";
+import {userBDType} from "../models/user.models";
 
 
 class guardService {
 
     async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
-        Promise<ObjectId>
-        {
-            const dateNow: string = new Date().toISOString();
+        Promise<ObjectId> {
+        const dateNow: string = new Date().toISOString();
 
-            const deviceId = await ACTIVE_DEVICE.insertOne({
-                _id: new ObjectId(),
-                userId: userId,
-                ip: deviceInfo.ip,
-                title: deviceInfo.title,
-                lastActiveDate: dateNow,
-                expiresTime: expiresTime
-            })
+        const deviceId = await ACTIVE_DEVICE.insertOne({
+            _id: new ObjectId(),
+            userId: userId,
+            ip: deviceInfo.ip,
+            title: deviceInfo.title,
+            lastActiveDate: dateNow,
+            expiresTime: expiresTime
+        })
 
-            return deviceId.insertedId
+        return deviceId.insertedId
     }
 
     async allActiveDevice(userId: ObjectId):
-    Promise<returnActiveDevice []>
-    {
+        Promise<returnActiveDevice []> {
         const idUser: ObjectId = new ObjectId(userId);
 
         const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: idUser}).toArray();
@@ -43,8 +41,7 @@ class guardService {
     }
 
     async checkedActiveSession(sessionId: ObjectId):
-    Promise<boolean>
-    {
+        Promise<boolean> {
 
         const idObject: ObjectId = new ObjectId(sessionId);
 
@@ -70,10 +67,10 @@ class guardService {
 
     }
 
-    async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string){
+    async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) {
 
         const dateNow: string = new Date().toISOString();
-        
+
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
             $set: {
                 ip: deviceInfoObject.ip,
@@ -84,12 +81,14 @@ class guardService {
         });
     }
 
-    async killAllSessions(ssesionId: ObjectId, userObject: userBDType){
+    async killAllSessions(ssesionId: ObjectId, userObject: userBDType) {
 
-        await ACTIVE_DEVICE.deleteMany({$and: [
-            {_id: {$ne: ssesionId}},
-            {userId: userObject._id}
-        ]})
+        await ACTIVE_DEVICE.deleteMany({
+            $and: [
+                {_id: {$ne: ssesionId}},
+                {userId: userObject._id}
+            ]
+        })
     }
 
     async killOneSessionLogout(sessionId: ObjectId) {
@@ -98,8 +97,7 @@ class guardService {
     }
 
     async killOneSession(sessionId: ObjectId, userObject: userBDType):
-    Promise<number>
-    {
+        Promise<number> {
 
         const findDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({_id: sessionId}).toArray();
 
@@ -114,7 +112,7 @@ class guardService {
                 return false
             }
         })
- 
+
         if (!bearer[0]) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }

@@ -8,6 +8,8 @@ import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.mode
 import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
+import {likesBDType, myLikeStatus} from "../models/likes.models";
+import likeService from "./like.service";
 
 function sortObject(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1;
@@ -174,7 +176,7 @@ class queryService {
         return resultObject
     }
 
-    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag):
+    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag, userId: string):
         Promise<false | resultCommentObjectType> {
 
         const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray()
@@ -188,15 +190,38 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps: commentAllMaps [] = comments.map((field: commentOfPostBDType) => {
+        let myUserStatus: myLikeStatus = myLikeStatus.None
+
+
+
+        const allMaps: commentAllMaps [] = await Promise.all(comments.map(async (field: commentOfPostBDType) => {
+
+            if (userId !== 'quest') {
+            const userObjectId: ObjectId = new ObjectId(userId);
+
+            const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                } else {
+                    myUserStatus = myLikeStatus.None
+                }
+            }
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
-                createdAt: field.createdAt
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin,
+                },
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: myUserStatus
+                }
             }
-        });
+        }));
         const allCount: number = await COMMENTS.countDocuments({postId: bodyID});
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 

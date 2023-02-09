@@ -5,6 +5,7 @@ import commentController from "../controllers/comment.controller";
 const commentRouter = Router({});
 
 commentRouter.get('/:id',
+    indexMiddleware.USER_ID,
     commentController.getOne)
 
 commentRouter.put('/:id',
@@ -12,6 +13,12 @@ commentRouter.put('/:id',
     indexMiddleware.COMMENT_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     commentController.update);
+
+commentRouter.put('/:id/like-status',
+    indexMiddleware.BEARER_AUTHORIZATION,
+    indexMiddleware.LIKE_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    commentController.likeStatus);
 
 commentRouter.delete('/:id',
     indexMiddleware.BEARER_AUTHORIZATION,

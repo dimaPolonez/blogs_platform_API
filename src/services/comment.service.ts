@@ -3,6 +3,8 @@ import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
+import {countObject, likesBDType, likesCounter, likesInfo, myLikeStatus} from "../models/likes.models";
+import likeService from "./like.service";
 
 class commentService {
 
@@ -13,7 +15,7 @@ class commentService {
         return result
     }
 
-    async getOne(bodyID: ObjectId):
+    async getOne(bodyID: ObjectId, userId: string):
         Promise<false | commentObjectResult> {
 
         const find: commentOfPostBDType [] = await this.findComment(bodyID);
@@ -22,13 +24,33 @@ class commentService {
             return false;
         }
 
+        let myUserStatus: myLikeStatus = myLikeStatus.None
+
+        if (userId !== 'quest') {
+            const userObjectId: ObjectId = new ObjectId(userId);
+
+            const checked: false | likesBDType = await likeService.checked(find[0]._id, userObjectId)
+
+
+            if (checked) {
+                myUserStatus = checked.user.myStatus;
+            }
+        }
+
         const objResult: commentObjectResult [] = find.map((field: commentOfPostBDType) => {
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
-                createdAt: field.createdAt
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin,
+                },
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: myUserStatus
+                }
             }
         });
 
@@ -46,7 +68,7 @@ class commentService {
 
         const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
 
-            if (field.userId.toString() === userObject._id.toString()) {
+            if (field.commentatorInfo.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
@@ -66,6 +88,35 @@ class commentService {
         return ERRORS_CODE.NO_CONTENT_204;
     }
 
+    async commentLike(likeStatus: string, bodyID: ObjectId, user: userBDType):
+        Promise<boolean> {
+
+        const find: commentOfPostBDType [] = await this.findComment(bodyID);
+
+        if (find.length === 0) {
+            return false;
+        }
+
+        const countObject: countObject = {
+            typeId: find[0]._id,
+            type: 'comment',
+            likesCount: find[0].likesInfo.likesCount,
+            dislikesCount: find[0].likesInfo.dislikesCount
+        }
+
+        const newObjectLikes: likesCounter = await likeService.counterLike(likeStatus, countObject, user);
+
+        await COMMENTS.updateOne({_id: bodyID}, {
+            $set: {
+                "likesInfo.likesCount": newObjectLikes.likesCount,
+                "likesInfo.dislikesCount": newObjectLikes.dislikesCount,
+            }
+        });
+
+        return true;
+
+    }
+
     async delete(bodyID: ObjectId, userObject: userBDType):
         Promise<number> {
 
@@ -76,7 +127,7 @@ class commentService {
         }
 
         const bearer: boolean [] = find.map((field: commentOfPostBDType) => {
-            if (field.userId.toString() === userObject._id.toString()) {
+            if (field.commentatorInfo.userId.toString() === userObject._id.toString()) {
                 return true
             } else {
                 return false
@@ -105,10 +156,17 @@ class commentService {
         const createdComment = await COMMENTS.insertOne({
             _id: new ObjectId(),
             content: body.content,
-            userId: objectUser._id,
-            userLogin: objectUser.infUser.login,
+            commentatorInfo: {
+                userId: objectUser._id,
+                userLogin: objectUser.infUser.login
+            },
             postId: postId,
-            createdAt: newDateCreated
+            createdAt: newDateCreated,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None
+            }
         });
 
         let result: commentOfPostBDType [] = await COMMENTS.find({_id: createdComment.insertedId}).toArray();
@@ -117,9 +175,16 @@ class commentService {
             return {
                 id: field._id,
                 content: field.content,
-                userId: field.userId,
-                userLogin: field.userLogin,
-                createdAt: field.createdAt
+                commentatorInfo: {
+                    userId: field.commentatorInfo.userId,
+                    userLogin: field.commentatorInfo.userLogin
+                },
+                createdAt: field.createdAt,
+                likesInfo: {
+                    likesCount: field.likesInfo.likesCount,
+                    dislikesCount: field.likesInfo.dislikesCount,
+                    myStatus: field.likesInfo.myStatus
+                }
             }
         });
 

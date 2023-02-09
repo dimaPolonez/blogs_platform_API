@@ -11,10 +11,10 @@ import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
 import {deviceInfoObject} from "../models/activeDevice.models";
 import guardService from '../services/guard.service';
-import { ObjectId } from 'mongodb';
+import {ObjectId} from 'mongodb';
 import checkedService from '../services/checked.service';
 import bcryptApplication from '../application/bcrypt.application';
-import { convertCompilerOptionsFromJson } from 'typescript';
+import {convertCompilerOptionsFromJson} from 'typescript';
 
 const optionsCookie: object = {
     httpOnly: true,
@@ -49,7 +49,7 @@ class authController {
         }
     }
 
-    async refreshToken(req: Request, res: Response){
+    async refreshToken(req: Request, res: Response) {
         try {
 
             const deviceInfo: deviceInfoObject = {
@@ -64,7 +64,7 @@ class authController {
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', refreshToken, optionsCookie)
                 .json(accessToken);
-        } catch(e) {
+        } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
     }
@@ -81,7 +81,7 @@ class authController {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
                 return
             }
-            
+
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
@@ -157,7 +157,7 @@ class authController {
         }
     }
 
-    async logout(req: Request, res: Response){
+    async logout(req: Request, res: Response) {
         try {
 
             const sessionId: ObjectId = new ObjectId(req.sessionId);

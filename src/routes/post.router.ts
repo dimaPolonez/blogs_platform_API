@@ -64,27 +64,29 @@ postRouter.get('/', async (req: queryReqType<queryReqPag>, res: Response) => {
     }
 })
 
-postRouter.get('/:id/comments', async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
-    try {
+postRouter.get('/:id/comments',
+    indexMiddleware.USER_ID,
+    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
+        try {
 
-        let queryAll: notStringQueryReqPag = {
-            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
-            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
-            pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
-            pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
+            let queryAll: notStringQueryReqPag = {
+                sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+                sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
+                pageNumber: req.query.pageNumber ? +(req.query.pageNumber) : 1,
+                pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
+            }
+
+            const postId: ObjectId = new ObjectId(req.params.id);
+
+            const comments: false | resultCommentObjectType = await queryService.getAllCommentsOfBlog(postId, queryAll, req.userId);
+            if (comments) {
+                res.status(ERRORS_CODE.OK_200).json(comments);
+            } else {
+                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            }
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
-
-        const postId: ObjectId = new ObjectId(req.params.id);
-
-        const comments: false | resultCommentObjectType = await queryService.getAllCommentsOfBlog(postId, queryAll);
-        if (comments) {
-            res.status(ERRORS_CODE.OK_200).json(comments);
-        } else {
-            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
-        }
-    } catch (e) {
-        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
-    }
-})
+    })
 
 export default postRouter;

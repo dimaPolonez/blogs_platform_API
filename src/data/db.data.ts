@@ -6,8 +6,10 @@ import {postBDType} from '../models/post.models';
 import {userBDType} from '../models/user.models';
 import {commentOfPostBDType} from '../models/comment.models';
 import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
+import {likesBDType} from '../models/likes.models';
 
 dotenv.config();
+
 
 export const settings = {
     DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
@@ -36,6 +38,7 @@ export const USERS = db.collection<userBDType>('users');
 export const COMMENTS = db.collection<commentOfPostBDType>('comments');
 export const ACTIVE_DEVICE = db.collection<activeDeviceBDType>('refreshTokensActive');
 export const OBJECT_IP = db.collection<objectIP>('objectIP');
+export const LIKES = db.collection<likesBDType>('likes');
 
 export const ERRORS_CODE = {
     OK_200: 200,
