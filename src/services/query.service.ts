@@ -201,9 +201,9 @@ class queryService {
 
             const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
 
-            if (checked) {
-                myUserStatus = checked.user.myStatus;
-            }
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                }
             }
             return {
                 id: field._id,
