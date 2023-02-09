@@ -16,7 +16,9 @@ import {resultCommentObjectType} from "../models/comment.models";
 const postRouter = Router({});
 
 postRouter.get(
-    '/:id', postController.getOne);
+    '/:id', 
+    indexMiddleware.USER_ID,
+    postController.getOne);
 
 postRouter.post(
     '/',
@@ -34,6 +36,12 @@ postRouter.put(
     postController.update
 );
 
+postRouter.put('/:id/like-status',
+    indexMiddleware.BEARER_AUTHORIZATION,
+    indexMiddleware.LIKE_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    postController.likeStatus);
+
 postRouter.delete(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
@@ -46,8 +54,10 @@ postRouter.post('/:id/comments',
     indexMiddleware.ERRORS_VALIDATOR,
     postController.createCommentOfPost);
 
-postRouter.get('/', async (req: queryReqType<queryReqPag>, res: Response) => {
-    try {
+postRouter.get('/', 
+    indexMiddleware.USER_ID,
+    async (req: queryReqType<queryReqPag>, res: Response) => {
+        try {
 
         let queryAll: notStringQueryReqPag = {
             sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
@@ -56,13 +66,13 @@ postRouter.get('/', async (req: queryReqType<queryReqPag>, res: Response) => {
             pageSize: req.query.pageSize ? +req.query.pageSize : 10
         }
 
-        const posts: resultPostObjectType = await queryService.getAllPosts(queryAll);
+        const posts: resultPostObjectType = await queryService.getAllPosts(queryAll, req.userId);
 
         res.status(ERRORS_CODE.OK_200).json(posts);
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
     }
-})
+    })
 
 postRouter.get('/:id/comments',
     indexMiddleware.USER_ID,

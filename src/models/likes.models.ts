@@ -20,6 +20,19 @@ export type likesInfo = {
     myStatus: string
 }
 
+export type likesInfoPost = {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: string,
+    newestLikes: newestLikes []
+}
+
+export type newestLikes = {
+    addedAt: string,
+    userId: ObjectId,
+    login: string
+}
+
 export type likesCounter = {
     likesCount: number,
     dislikesCount: number

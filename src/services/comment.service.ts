@@ -3,7 +3,7 @@ import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
-import {countObject, likesBDType, likesCounter, likesInfo, myLikeStatus} from "../models/likes.models";
+import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
 import likeService from "./like.service";
 
 class commentService {
