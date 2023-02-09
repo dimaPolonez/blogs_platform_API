@@ -49,6 +49,7 @@ class likeService {
 
             switch (likeCaseString) {
                 case ('LikeLike'):
+                    result.likesCount--
                     myStatus = myLikeStatus.None
                     break
                 case ('LikeDislike'):
@@ -70,6 +71,7 @@ class likeService {
                     myStatus = myLikeStatus.Dislike
                     break
                 case ('DislikeDislike'):
+                    result.dislikesCount--
                     myStatus = myLikeStatus.None
                     break
                 case ('NoneDislike'):
