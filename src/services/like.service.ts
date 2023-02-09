@@ -52,9 +52,17 @@ class likeService {
                     result.dislikesCount--
                     myStatus = myLikeStatus.Like
                     break
+                case ('LikeNone'):
+                    result.likesCount++
+                    myStatus = myLikeStatus.Like
+                    break
                 case ('DislikeLike'):
                     result.likesCount--
                     result.dislikesCount++
+                    myStatus = myLikeStatus.Dislike
+                    break
+                case ('DislikeNone'):
+                    result.dislikesCount--
                     myStatus = myLikeStatus.Dislike
                     break
                 case ('DislikeDislike'):
