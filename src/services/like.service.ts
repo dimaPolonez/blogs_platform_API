@@ -14,17 +14,15 @@ class likeService {
             ]
         }).toArray();
 
-        if (result[0]) {
-            return result[0]
-        } else {
+        if (result.length === 0) {
             return false
-        }
-
+        } 
+        
+        return result[0]
     }
 
     private async create(objectLike: likesBDType) {
         await LIKES.insertOne(objectLike)
-
     }
 
     private async update(status: string, objectLikeId: ObjectId) {
