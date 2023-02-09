@@ -192,16 +192,18 @@ class queryService {
 
         let myUserStatus: myLikeStatus = myLikeStatus.None
 
-        const allMaps: Promise<commentAllMaps>[] = comments.map(async (field: commentOfPostBDType)=> {
+
+
+        const allMaps: commentAllMaps [] = await Promise.all(comments.map(async (field: commentOfPostBDType) => {
 
             if (userId !== 'quest') {
-                const userObjectId: ObjectId = new ObjectId(userId);
+            const userObjectId: ObjectId = new ObjectId(userId);
 
-                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+            const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
 
-                if (checked) {
-                    myUserStatus = checked.user.myStatus;
-                }
+            if (checked) {
+                myUserStatus = checked.user.myStatus;
+            }
             }
             return {
                 id: field._id,
@@ -217,7 +219,7 @@ class queryService {
                     myStatus: myUserStatus
                 }
             }
-        });
+        }));
         const allCount: number = await COMMENTS.countDocuments({postId: bodyID});
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
