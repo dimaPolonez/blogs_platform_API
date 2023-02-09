@@ -203,6 +203,8 @@ class queryService {
 
                 if (checked) {
                     myUserStatus = checked.user.myStatus;
+                } else {
+                    myUserStatus = myLikeStatus.None
                 }
             }
             return {
