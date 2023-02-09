@@ -26,7 +26,11 @@ class likeService {
     }
 
     private async update(status: myLikeStatus, objectLikeId: ObjectId) {
-        await LIKES.updateOne({_id: objectLikeId}, {"user.myStatus": status})
+        await LIKES.updateOne({_id: objectLikeId}, {
+            $set:{
+                "user.myStatus": status
+            }})
+        
     }
 
     public async counterLike(likeStatusBody: string, object: countObject, user: userBDType):
