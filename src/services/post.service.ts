@@ -58,12 +58,12 @@ class postService {
                 blogId: field.blogId,
                 blogName: field.blogName,
                 createdAt: field.createdAt,
-                extendedLikesInfo: [{
-                    likesCount: field.extendedLikesInfo[0].likesCount,
-                    dislikesCount: field.extendedLikesInfo[0].dislikesCount,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
                     myStatus: myUserStatus,
                     newestLikes: allMaps
-                }]
+                }
             }
         });
 
@@ -90,7 +90,7 @@ class postService {
             blogId: blogId,
             blogName: blogName[0],
             createdAt: newDateCreated,
-            extendedLikesInfo: [{
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: myLikeStatus.None,
@@ -99,7 +99,7 @@ class postService {
                     login: '',
                     userId: new ObjectId()
                 }]
-            }]
+            }
         });
 
         let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
@@ -113,16 +113,16 @@ class postService {
                 blogId: field.blogId,
                 blogName: field.blogName,
                 createdAt: field.createdAt,
-                extendedLikesInfo: [{
-                    likesCount: field.extendedLikesInfo[0].likesCount,
-                    dislikesCount: field.extendedLikesInfo[0].dislikesCount,
-                    myStatus: field.extendedLikesInfo[0].myStatus,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
+                    myStatus: field.extendedLikesInfo.myStatus,
                     newestLikes: [{
-                        userId: field.extendedLikesInfo[0].newestLikes[0].userId,
-                        login: field.extendedLikesInfo[0].newestLikes[0].login,
-                        addedAt: field.extendedLikesInfo[0].newestLikes[0].addedAt
+                        userId: field.extendedLikesInfo.newestLikes[0].userId,
+                        login: field.extendedLikesInfo.newestLikes[0].login,
+                        addedAt: field.extendedLikesInfo.newestLikes[0].addedAt
                     }]
-                }]
+                }
             }
         });
 
@@ -170,16 +170,16 @@ class postService {
         const countObject: countObject = {
             typeId: find[0]._id,
             type: 'post',
-            likesCount: find[0].extendedLikesInfo[0].likesCount,
-            dislikesCount: find[0].extendedLikesInfo[0].dislikesCount
+            likesCount: find[0].extendedLikesInfo.likesCount,
+            dislikesCount: find[0].extendedLikesInfo.dislikesCount
         }
 
         const newObjectLikes: likesCounter = await likeService.counterLike(likeStatus, countObject, user);
 
         await POSTS.updateOne({_id: bodyID}, {
             $set: {
-                "likesInfo.likesCount": newObjectLikes.likesCount,
-                "likesInfo.dislikesCount": newObjectLikes.dislikesCount,
+                "extendedLikesInfo.likesCount": newObjectLikes.likesCount,
+                "extendedLikesInfo.dislikesCount": newObjectLikes.dislikesCount,
             }
         });
 
@@ -224,7 +224,7 @@ class postService {
             blogId: bodyID,
             blogName: blogName[0],
             createdAt: newDateCreated,
-            extendedLikesInfo: [{
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: myLikeStatus.None,
@@ -233,7 +233,7 @@ class postService {
                     login: '',
                     userId: new ObjectId()
                 }]
-            }]
+            }
         });
 
         let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
@@ -247,16 +247,16 @@ class postService {
                 blogId: field.blogId,
                 blogName: field.blogName,
                 createdAt: field.createdAt,
-                extendedLikesInfo: [{
-                    likesCount: field.extendedLikesInfo[0].likesCount,
-                    dislikesCount: field.extendedLikesInfo[0].dislikesCount,
-                    myStatus: field.extendedLikesInfo[0].myStatus,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
+                    myStatus: field.extendedLikesInfo.myStatus,
                     newestLikes: [{
-                        userId: field.extendedLikesInfo[0].newestLikes[0].userId,
-                        login: field.extendedLikesInfo[0].newestLikes[0].login,
-                        addedAt: field.extendedLikesInfo[0].newestLikes[0].addedAt
+                        userId: field.extendedLikesInfo.newestLikes[0].userId,
+                        login: field.extendedLikesInfo.newestLikes[0].login,
+                        addedAt: field.extendedLikesInfo.newestLikes[0].addedAt
                     }]
-                }]
+                }
             }
         });
 

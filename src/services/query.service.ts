@@ -99,12 +99,12 @@ class queryService {
                     blogId: field.blogId,
                     blogName: field.blogName,
                     createdAt: field.createdAt,
-                    extendedLikesInfo: [{
-                        likesCount: field.extendedLikesInfo[0].likesCount,
-                        dislikesCount: field.extendedLikesInfo[0].dislikesCount,
+                    extendedLikesInfo: {
+                        likesCount: field.extendedLikesInfo.likesCount,
+                        dislikesCount: field.extendedLikesInfo.dislikesCount,
                         myStatus: myUserStatus,
                         newestLikes: allMaps
-                    }]
+                    }
                 }
             }));
 
@@ -173,12 +173,12 @@ class queryService {
                     blogId: field.blogId,
                     blogName: field.blogName,
                     createdAt: field.createdAt,
-                    extendedLikesInfo: [{
-                        likesCount: field.extendedLikesInfo[0].likesCount,
-                        dislikesCount: field.extendedLikesInfo[0].dislikesCount,
+                    extendedLikesInfo: {
+                        likesCount: field.extendedLikesInfo.likesCount,
+                        dislikesCount: field.extendedLikesInfo.dislikesCount,
                         myStatus: myUserStatus,
                         newestLikes: allMaps
-                    }]
+                    }
                 }
             }));
 
