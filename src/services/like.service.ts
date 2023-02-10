@@ -35,7 +35,7 @@ class likeService {
 
     public async counterLike(likeStatusBody: string, object: countObject, user: userBDType):
         Promise<likesCounter> {
-        let addDate: string = new Date().toISOString();
+        let addDate: string = new Date().toString();
         let result: likesCounter = {
             likesCount: object.likesCount,
             dislikesCount: object.dislikesCount
