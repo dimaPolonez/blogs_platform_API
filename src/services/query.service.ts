@@ -138,9 +138,9 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-            let myUserStatus: myLikeStatus = myLikeStatus.None
-
             const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
+                
+                let myUserStatus: myLikeStatus = myLikeStatus.None
 
                 if (userId !== 'quest') {
                     const userObjectId: ObjectId = new ObjectId(userId);
