@@ -123,8 +123,7 @@ class queryService {
         return resultObject
     }
 
-    async getAllPostsOfBlog
-    (blogParamsId: ObjectId, queryAll: notStringQueryReqPag, userId: ObjectId | null):
+    async getAllPostsOfBlog (blogParamsId: ObjectId, queryAll: notStringQueryReqPag, userId: ObjectId | null):
         Promise<resultPostObjectType | null> {
 
         const findBlog: blogBDType [] = await BLOGS.find({_id: blogParamsId}).toArray()
@@ -140,14 +139,21 @@ class queryService {
 
             const allPostMapping: postAllMaps [] = await Promise.all(postsOfFindBlog.map(async (fieldPost: postBDType) => {
 
-                const allLikeUserMapping: newestLikes[] | null = await likeService.userLikeMaper()
+                let userLikeStatus: myLikeStatus = myLikeStatus.None
+                let allLikeUserMapping: newestLikes[] | [] = []
 
-                if (!allLikeUserMapping) {
-                    const userLikeStatus: myLikeStatus = myLikeStatus.None
+                if (userId) {
+                    const likeUserArray: null | likesBDType = await likeService.checked(fieldPost._id, userId)
 
-                    const allLikeUserMapping: [] = []
-                } else {
-                    
+                    if(likeUserArray) {
+                        userLikeStatus = likeUserArray.user.myStatus;
+                    }
+                }
+
+                const resultUserLikeMapping: newestLikes[] | null = await likeService.userLikeMaper(fieldPost._id)
+
+                if (resultUserLikeMapping) {
+                    allLikeUserMapping = resultUserLikeMapping
                 }
 
                 return {
@@ -171,7 +177,7 @@ class queryService {
         const allCount: number = await POSTS.countDocuments({blogId: blogParamsId});
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultPostObjectType = {
+        const allPostsOfBlog: resultPostObjectType = {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
@@ -179,7 +185,7 @@ class queryService {
             items:  allPostMapping
         }
 
-        return resultObject
+        return allPostsOfBlog
 
     }
 

@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import {LIKES} from "../data/db.data";
-import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
+import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../models/likes.models";
 import {userBDType} from "../models/user.models";
 
 class likeService {
@@ -119,8 +119,10 @@ class likeService {
         return result
     }
 
-    public async threeUser(postLikeId: ObjectId) {
-
+    public async threeUser(postLikeId: ObjectId):
+        Promise<likesBDType [] | null>
+    
+    {
         const likeUserArray: likesBDType [] =  await LIKES.find({
             $and: [
                 {"object.typeId": postLikeId},
@@ -129,9 +131,32 @@ class likeService {
         
         }).limit(3).sort({addedAt: -1}).toArray();
 
+        if (likeUserArray.length === 0) {
+            return null
+        }
+
         return likeUserArray
     }
 
+    public async userLikeMaper(objectId: ObjectId):
+        Promise<newestLikes[] | null>
+    {
+                const threeUserArray: likesBDType [] | null =  await this.threeUser(objectId)
+
+                if (!threeUserArray) {
+                    return null
+                }
+
+                const allLikeUserMapping: newestLikes [] = threeUserArray.map((fieldLikeUser: likesBDType) => {
+
+                return {    
+                        addedAt: fieldLikeUser.addedAt,
+                        userId: fieldLikeUser.user.userId,
+                        login: fieldLikeUser.user.login
+                    }})
+
+                return allLikeUserMapping
+    }
 }
 
 export default new likeService();
