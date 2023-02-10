@@ -79,9 +79,9 @@ class queryService {
                 }
                 }
 
-                const threeUser: likesBDType [] =  await likeService.threeUser(posts[0]._id)
+                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
     
-                const allMaps: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
+                const allMapsLikes: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
     
                     return {    
                                 addedAt: field.addedAt,
@@ -104,7 +104,7 @@ class queryService {
                         likesCount: field.extendedLikesInfo.likesCount,
                         dislikesCount: field.extendedLikesInfo.dislikesCount,
                         myStatus: myUserStatus,
-                        newestLikes: allMaps
+                        newestLikes: allMapsLikes
                     }
                 }
             }));
@@ -154,9 +154,9 @@ class queryService {
                 }
                 }
 
-                const threeUser: likesBDType [] =  await likeService.threeUser(posts[0]._id)
+                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
     
-                const allMaps: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
+                const allMapsLikes: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
     
                     return {    
                                 addedAt: field.addedAt,
@@ -179,7 +179,7 @@ class queryService {
                         likesCount: field.extendedLikesInfo.likesCount,
                         dislikesCount: field.extendedLikesInfo.dislikesCount,
                         myStatus: myUserStatus,
-                        newestLikes: allMaps
+                        newestLikes: allMapsLikes
                     }
                 }
             }));
