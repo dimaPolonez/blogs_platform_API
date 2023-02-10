@@ -120,7 +120,7 @@ class likeService {
 
     public async threeUser(postLikeId: ObjectId) {
 
-        const likesArray: likesBDType [] =  await LIKES.find({"object.typeId": postLikeId}).limit(3).sort('1').toArray();
+        const likesArray: likesBDType [] =  await LIKES.find({"object.typeId": postLikeId}).limit(3).sort({addedAt: -1}).toArray();
 
         return likesArray
     }
