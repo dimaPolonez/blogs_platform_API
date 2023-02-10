@@ -97,7 +97,7 @@ class postService {
                 newestLikes: [{
                     addedAt: '',
                     login: '',
-                    userId: new ObjectId('')
+                    userId: new ObjectId()
                 }]
             }]
         });
