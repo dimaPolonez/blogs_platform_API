@@ -63,9 +63,9 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-            let myUserStatus: myLikeStatus = myLikeStatus.None
-
             const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
+
+                let myUserStatus: myLikeStatus = myLikeStatus.None 
 
                 if (userId !== 'quest') {
                     const userObjectId: ObjectId = new ObjectId(userId);
@@ -81,7 +81,7 @@ class queryService {
 
                 const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
     
-                const allMapsLikes: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
+                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
     
                     return {    
                                 addedAt: field.addedAt,
@@ -90,7 +90,7 @@ class queryService {
                             }
                         
                     }
-                ));
+                )
 
                 return {
                     id: field._id,
@@ -156,7 +156,7 @@ class queryService {
 
                 const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
     
-                const allMapsLikes: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
+                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
     
                     return {    
                                 addedAt: field.addedAt,
@@ -165,7 +165,7 @@ class queryService {
                             }
                         
                     }
-                ));
+                )
 
                 return {
                     id: field._id,
