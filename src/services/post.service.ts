@@ -94,11 +94,7 @@ class postService {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: myLikeStatus.None,
-                newestLikes: [{
-                    addedAt: '',
-                    login: '',
-                    userId: new ObjectId()
-                }]
+                newestLikes: []
             }
         });
 
@@ -117,11 +113,7 @@ class postService {
                     likesCount: field.extendedLikesInfo.likesCount,
                     dislikesCount: field.extendedLikesInfo.dislikesCount,
                     myStatus: field.extendedLikesInfo.myStatus,
-                    newestLikes: [{
-                        userId: field.extendedLikesInfo.newestLikes[0].userId,
-                        login: field.extendedLikesInfo.newestLikes[0].login,
-                        addedAt: field.extendedLikesInfo.newestLikes[0].addedAt
-                    }]
+                    newestLikes: []
                 }
             }
         });
@@ -228,11 +220,7 @@ class postService {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: myLikeStatus.None,
-                newestLikes: [{
-                    addedAt: '',
-                    login: '',
-                    userId: new ObjectId()
-                }]
+                newestLikes: []
             }
         });
 
@@ -251,11 +239,7 @@ class postService {
                     likesCount: field.extendedLikesInfo.likesCount,
                     dislikesCount: field.extendedLikesInfo.dislikesCount,
                     myStatus: field.extendedLikesInfo.myStatus,
-                    newestLikes: [{
-                        userId: field.extendedLikesInfo.newestLikes[0].userId,
-                        login: field.extendedLikesInfo.newestLikes[0].login,
-                        addedAt: field.extendedLikesInfo.newestLikes[0].addedAt
-                    }]
+                    newestLikes: []
                 }
             }
         });
