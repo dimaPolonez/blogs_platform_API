@@ -83,9 +83,10 @@ class queryService {
     
                 const allMaps: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
     
-                    return {    userId: field.user.userId,
-                                login: field.user.login,
-                                addedAt: field.addedAt
+                    return {    
+                                addedAt: field.addedAt,
+                                userId: field.user.userId,
+                                login: field.user.login
                             }
                         
                     }
@@ -157,9 +158,10 @@ class queryService {
     
                 const allMaps: newestLikes [] = await Promise.all(threeUser.map((field: likesBDType) => {
     
-                    return {    userId: field.user.userId,
-                                login: field.user.login,
-                                addedAt: field.addedAt
+                    return {    
+                                addedAt: field.addedAt,
+                                userId: field.user.userId,
+                                login: field.user.login
                             }
                         
                     }

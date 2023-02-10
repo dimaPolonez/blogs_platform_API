@@ -41,9 +41,10 @@ class postService {
 
         const allMaps: newestLikes [] = threeUser.map((field: likesBDType) => {
 
-                return {    userId: field.user.userId,
-                            login: field.user.login,
-                            addedAt: field.addedAt
+                return {    
+                            addedAt: field.addedAt,
+                            userId: field.user.userId,
+                            login: field.user.login
                         }
                     
                 }
