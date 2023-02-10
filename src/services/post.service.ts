@@ -1,7 +1,10 @@
 import {BLOGS, POSTS} from "../data/db.data";
 import {ObjectId} from "mongodb";
-import {postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
+import {postAllMaps, postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
 import {blogBDType} from "../models/blog.models";
+import { userBDType } from "../models/user.models";
+import {countObject, likesBDType, likesCounter, likesInfoPost, myLikeStatus, newestLikes} from "../models/likes.models";
+import likeService from "./like.service";
 
 class postService {
 
@@ -12,7 +15,7 @@ class postService {
         return result
     }
 
-    async getOne(bodyID: ObjectId):
+    async getOne(bodyID: ObjectId, userId: string):
         Promise<false | postObjectResult> {
 
         const find: postBDType [] = await this.findPost(bodyID);
@@ -20,6 +23,32 @@ class postService {
         if (find.length === 0) {
             return false;
         }
+
+        let myUserStatus: myLikeStatus = myLikeStatus.None
+
+        if (userId !== 'quest') {
+            const userObjectId: ObjectId = new ObjectId(userId);
+
+            const checked: false | likesBDType = await likeService.checked(find[0]._id, userObjectId)
+
+
+            if (checked) {
+                myUserStatus = checked.user.myStatus;
+            }
+        }
+
+        const threeUser: likesBDType [] =  await likeService.threeUser(find[0]._id)
+
+        const allMaps: newestLikes [] = threeUser.map((field: likesBDType) => {
+
+                return {    
+                            addedAt: field.addedAt,
+                            userId: field.user.userId,
+                            login: field.user.login
+                        }
+                    
+                }
+            );
 
         const objResult: postObjectResult [] = find.map((field: postBDType) => {
             return {
@@ -29,7 +58,13 @@ class postService {
                 content: field.content,
                 blogId: field.blogId,
                 blogName: field.blogName,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
+                    myStatus: myUserStatus,
+                    newestLikes: allMaps
+                }
             }
         });
 
@@ -55,7 +90,13 @@ class postService {
             content: body.content,
             blogId: blogId,
             blogName: blogName[0],
-            createdAt: newDateCreated
+            createdAt: newDateCreated,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None,
+                newestLikes: []
+            }
         });
 
         let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
@@ -68,7 +109,13 @@ class postService {
                 content: field.content,
                 blogId: field.blogId,
                 blogName: field.blogName,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
+                    myStatus: field.extendedLikesInfo.myStatus,
+                    newestLikes: []
+                }
             }
         });
 
@@ -102,6 +149,35 @@ class postService {
         });
 
         return true;
+    }
+
+    async postLike(likeStatus: string, bodyID: ObjectId, user: userBDType):
+        Promise<boolean> {
+
+        const find: postBDType [] = await this.findPost(bodyID);
+
+            if (find.length === 0) {
+                return false;
+            }
+
+        const countObject: countObject = {
+            typeId: find[0]._id,
+            type: 'post',
+            likesCount: find[0].extendedLikesInfo.likesCount,
+            dislikesCount: find[0].extendedLikesInfo.dislikesCount
+        }
+
+        const newObjectLikes: likesCounter = await likeService.counterLike(likeStatus, countObject, user);
+
+        await POSTS.updateOne({_id: bodyID}, {
+            $set: {
+                "extendedLikesInfo.likesCount": newObjectLikes.likesCount,
+                "extendedLikesInfo.dislikesCount": newObjectLikes.dislikesCount,
+            }
+        });
+
+        return true;
+
     }
 
     async delete(bodyID: ObjectId):
@@ -140,7 +216,13 @@ class postService {
             content: body.content,
             blogId: bodyID,
             blogName: blogName[0],
-            createdAt: newDateCreated
+            createdAt: newDateCreated,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None,
+                newestLikes: []
+            }
         });
 
         let result: postBDType [] = await POSTS.find({_id: createdPost.insertedId}).toArray();
@@ -153,7 +235,13 @@ class postService {
                 content: field.content,
                 blogId: field.blogId,
                 blogName: field.blogName,
-                createdAt: field.createdAt
+                createdAt: field.createdAt,
+                extendedLikesInfo: {
+                    likesCount: field.extendedLikesInfo.likesCount,
+                    dislikesCount: field.extendedLikesInfo.dislikesCount,
+                    myStatus: field.extendedLikesInfo.myStatus,
+                    newestLikes: []
+                }
             }
         });
 

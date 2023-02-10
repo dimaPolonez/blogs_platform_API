@@ -8,7 +8,7 @@ import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.mode
 import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
-import {likesBDType, myLikeStatus} from "../models/likes.models";
+import {likesBDType, myLikeStatus, newestLikes} from "../models/likes.models";
 import likeService from "./like.service";
 
 function sortObject(sortDir: string) {
@@ -56,24 +56,58 @@ class queryService {
         return resultObject
     }
 
-    async getAllPosts(queryAll: notStringQueryReqPag): Promise<resultPostObjectType> {
+    async getAllPosts(queryAll: notStringQueryReqPag, userId: string): Promise<resultPostObjectType> {
 
         const posts: postBDType [] = await POSTS.find({})
             .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps: postAllMaps [] = posts.map((field: postBDType) => {
-            return {
-                id: field._id,
-                title: field.title,
-                shortDescription: field.shortDescription,
-                content: field.content,
-                blogId: field.blogId,
-                blogName: field.blogName,
-                createdAt: field.createdAt
-            }
-        });
+            const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
+
+                let myUserStatus: myLikeStatus = myLikeStatus.None 
+
+                if (userId !== 'quest') {
+                    const userObjectId: ObjectId = new ObjectId(userId);
+
+                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                } else {
+                    myUserStatus = myLikeStatus.None
+                }
+                }
+
+                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
+    
+                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
+    
+                    return {    
+                                addedAt: field.addedAt,
+                                userId: field.user.userId,
+                                login: field.user.login
+                            }
+                        
+                    }
+                )
+
+                return {
+                    id: field._id,
+                    title: field.title,
+                    shortDescription: field.shortDescription,
+                    content: field.content,
+                    blogId: field.blogId,
+                    blogName: field.blogName,
+                    createdAt: field.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: field.extendedLikesInfo.likesCount,
+                        dislikesCount: field.extendedLikesInfo.dislikesCount,
+                        myStatus: myUserStatus,
+                        newestLikes: allMapsLikes
+                    }
+                }
+            }));
 
         const allCount: number = await POSTS.countDocuments({});
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
@@ -90,7 +124,7 @@ class queryService {
     }
 
     async getAllPostsOfBlog
-    (bodyID: ObjectId, queryAll: notStringQueryReqPag):
+    (bodyID: ObjectId, queryAll: notStringQueryReqPag, userId:string):
         Promise<resultPostObjectType | false> {
 
         const result: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray()
@@ -104,17 +138,53 @@ class queryService {
             .limit(queryAll.pageSize)
             .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
 
-        const allMaps: postAllMaps [] = posts.map((field: postBDType) => {
-            return {
-                id: field._id,
-                title: field.title,
-                shortDescription: field.shortDescription,
-                content: field.content,
-                blogId: bodyID,
-                blogName: field.blogName,
-                createdAt: field.createdAt
-            }
-        });
+            const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
+                
+                let myUserStatus: myLikeStatus = myLikeStatus.None
+
+                if (userId !== 'quest') {
+                    const userObjectId: ObjectId = new ObjectId(userId);
+
+                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+
+                if (checked) {
+                    myUserStatus = checked.user.myStatus;
+                } else {
+                    myUserStatus = myLikeStatus.None
+                }
+                }
+
+                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
+    
+                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
+    
+                    return {    
+                                addedAt: field.addedAt,
+                                userId: field.user.userId,
+                                login: field.user.login
+                            }
+                        
+                    }
+                )
+
+                return {
+                    id: field._id,
+                    title: field.title,
+                    shortDescription: field.shortDescription,
+                    content: field.content,
+                    blogId: field.blogId,
+                    blogName: field.blogName,
+                    createdAt: field.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: field.extendedLikesInfo.likesCount,
+                        dislikesCount: field.extendedLikesInfo.dislikesCount,
+                        myStatus: myUserStatus,
+                        newestLikes: allMapsLikes
+                    }
+                }
+            }));
+
+
         const allCount: number = await POSTS.countDocuments({blogId: bodyID});
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 

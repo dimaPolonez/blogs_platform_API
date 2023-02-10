@@ -48,7 +48,9 @@ blogRouter.post(
 );
 
 
-blogRouter.get('/:id/posts', async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
+blogRouter.get('/:id/posts',
+indexMiddleware.USER_ID,
+async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
     try {
 
         let queryAll: notStringQueryReqPag = {
@@ -60,7 +62,7 @@ blogRouter.get('/:id/posts', async (req: paramsAndQueryReqType<paramsId, queryRe
 
         const bodyId: ObjectId = new ObjectId(req.params.id);
 
-        const post: false | resultPostObjectType = await queryService.getAllPostsOfBlog(bodyId, queryAll);
+        const post: false | resultPostObjectType = await queryService.getAllPostsOfBlog(bodyId, queryAll, req.userId);
 
         if (post) {
             res.status(ERRORS_CODE.OK_200).json(post);

@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import { likesInfoPost, newestLikes } from "./likes.models";
 
 export type postBDType = {
     _id: ObjectId,
@@ -7,7 +8,8 @@ export type postBDType = {
     content: string,
     blogId: ObjectId,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: likesInfoPost
 }
 
 export type postReqType = {
@@ -30,7 +32,8 @@ export type postAllMaps = {
     content: string,
     blogId: ObjectId,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: likesInfoPost
 }
 
 export type resultPostObjectType = {
@@ -48,5 +51,6 @@ export type postObjectResult = {
     content: string,
     blogId: ObjectId,
     blogName: string,
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: likesInfoPost
 }
