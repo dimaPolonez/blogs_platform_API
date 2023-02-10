@@ -1,7 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import {body} from "express-validator";
 import jwtApplication from "../application/jwt.application";
-import {returnRefreshObject} from "../models/activeDevice.models";
 import {myLikeStatus} from "../models/likes.models";
 import {ObjectId} from "mongodb";
 
@@ -31,21 +30,21 @@ export const reqUserId = async (
 ) => {
 
     if (!req.headers.authorization) {
-        req.userId = 'quest';
+        req.userId = null;
         next();
         return
     }
 
-    const token: string = req.headers.authorization.substring(7)
+    const accessToken: string = req.headers.authorization.substring(7)
 
-    const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
+    const userObjectId: ObjectId | null = await jwtApplication.verifyAccessJwt(accessToken);
 
-    if (userAccessId) {
-        req.userId = userAccessId.toString();
+    if (userObjectId) {
+        req.userId = userObjectId;
         next();
         return
     }
-    req.userId = 'quest';
+    req.userId = null;
     next();
     return
 }

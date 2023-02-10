@@ -60,12 +60,12 @@ async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
             pageSize: req.query.pageSize ? +req.query.pageSize : 10
         }
 
-        const bodyId: ObjectId = new ObjectId(req.params.id);
+        const blogParamsId: ObjectId = new ObjectId(req.params.id);
 
-        const post: false | resultPostObjectType = await queryService.getAllPostsOfBlog(bodyId, queryAll, req.userId);
+        const posts: null | resultPostObjectType = await queryService.getAllPostsOfBlog(blogParamsId, queryAll, req.userId);
 
-        if (post) {
-            res.status(ERRORS_CODE.OK_200).json(post);
+        if (posts) {
+            res.status(ERRORS_CODE.OK_200).json(posts);
         } else {
             res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
         }

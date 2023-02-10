@@ -6,19 +6,20 @@ import {userBDType} from "../models/user.models";
 class likeService {
 
     public async checked(objectId: ObjectId, userId: ObjectId):
-        Promise<false | likesBDType> {
-        const result: likesBDType [] = await LIKES.find({
+        Promise<null | likesBDType> {
+
+        const findUserLike: likesBDType | null = await LIKES.findOne({
             $and: [
                 {"user.userId": userId},
                 {"object.typeId": objectId}
             ]
-        }).toArray();
+        })
 
-        if (result.length === 0) {
-            return false
+        if (!findUserLike) {
+            return null
         } 
         
-        return result[0]
+        return findUserLike
     }
 
     private async create(objectLike: likesBDType) {
@@ -120,7 +121,7 @@ class likeService {
 
     public async threeUser(postLikeId: ObjectId) {
 
-        const likesArray: likesBDType [] =  await LIKES.find({
+        const likeUserArray: likesBDType [] =  await LIKES.find({
             $and: [
                 {"object.typeId": postLikeId},
                 {"user.myStatus": myLikeStatus.Like}
@@ -128,7 +129,7 @@ class likeService {
         
         }).limit(3).sort({addedAt: -1}).toArray();
 
-        return likesArray
+        return likeUserArray
     }
 
 }

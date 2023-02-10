@@ -7,7 +7,6 @@ import authRouter from "./routes/auth.router";
 import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
 import guardRouter from "./routes/quard.routes";
-import {ipBanner} from './middleware/ip.middleware';
 
 const PORT = process.env.PORT || 5000;
 
