@@ -13,7 +13,7 @@ class blogController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog: false | blogObjectResult = await blogService.getOne(bodyId);
+            const blog: false | blogObjectResult = await blogService.getOneBlog(bodyId);
 
             if (blog) {
                 res.status(ERRORS_CODE.OK_200).json(blog);
@@ -27,7 +27,7 @@ class blogController {
 
     async create(req: bodyReqType<blogReqType>, res: Response) {
         try {
-            const blog: blogObjectResult = await blogService.create(req.body);
+            const blog: blogObjectResult = await blogService.createNewBlog(req.body);
 
             if (blog) {
                 res.status(ERRORS_CODE.CREATED_201).json(blog);
@@ -43,7 +43,7 @@ class blogController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog: boolean = await blogService.update(bodyId, req.body);
+            const blog: boolean = await blogService.updateBlog(bodyId, req.body);
 
             if (blog) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
@@ -59,7 +59,7 @@ class blogController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const blog: boolean = await blogService.delete(bodyId);
+            const blog: boolean = await blogService.deleteBlog(bodyId);
 
             if (blog) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

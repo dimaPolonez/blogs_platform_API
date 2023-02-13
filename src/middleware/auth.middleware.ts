@@ -50,7 +50,7 @@ export const bearerAuthorization = async (
 
     if (userAccessId) {
         const getId: ObjectId = new ObjectId(userAccessId)
-        const findUser: false | userBDType = await authService.getOne(getId);
+        const findUser: null | userBDType = await authService.findOneUserToId(getId);
         if (findUser) {
             req.user = findUser;
             next();
@@ -79,7 +79,7 @@ export const cookieRefresh = async (
 
     if (userRefreshId) {
         const getId: ObjectId = new ObjectId(userRefreshId.userId)
-        const findUser: false | userBDType = await authService.getOne(getId);
+        const findUser: null | userBDType = await authService.findOneUserToId(getId);
         if (findUser) {
             req.user = findUser;
             req.sessionId = userRefreshId.sessionId;

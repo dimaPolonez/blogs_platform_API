@@ -9,19 +9,23 @@ import likeService from "./like.service";
 class postService {
 
     async findPost(bodyID: ObjectId):
-        Promise<postBDType []> {
-        const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray();
+        Promise<postBDType | null> {
+        const findOnePost: postBDType | null = await POSTS.findOne({_id: bodyID});
 
-        return result
+        if (!findOnePost) {
+            return null
+        }
+
+        return findOnePost
     }
 
-    async getOne(bodyID: ObjectId, userId: string):
-        Promise<false | postObjectResult> {
+    async getOne(bodyID: ObjectId, userId: ObjectId | null):
+        Promise<null | postObjectResult> {
 
-        const find: postBDType [] = await this.findPost(bodyID);
+        const findOnePost: postBDType | null = await this.findPost(bodyID);
 
-        if (find.length === 0) {
-            return false;
+        if (!findOnePost) {
+            return null;
         }
 
         let myUserStatus: myLikeStatus = myLikeStatus.None
@@ -37,7 +41,7 @@ class postService {
             }
         }
 
-        const threeUser: likesBDType [] =  await likeService.threeUser(find[0]._id)
+        const threeUser: likesBDType [] | null =  await likeService.threeUser(find[0]._id)
 
         const allMaps: newestLikes [] = threeUser.map((field: likesBDType) => {
 

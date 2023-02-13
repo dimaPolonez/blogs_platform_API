@@ -43,7 +43,7 @@ class likeService {
         };
         let myStatus: myLikeStatus = myLikeStatus.None
 
-        const findLike: false | likesBDType = await this.checked(object.typeId, user._id);
+        const findLike: null | likesBDType = await this.checked(object.typeId, user._id);
 
         if (findLike) {
             const likeCaseString = likeStatusBody + findLike.user.myStatus;

@@ -7,41 +7,32 @@ import {userBDType} from "../models/user.models";
 
 class authService {
 
-    async auth(body: authReqType):
-        Promise<false | userBDType> {
-
-        const findName: userBDType [] = await USERS.find(
+    public async authUser(body: authReqType):
+        Promise<null | userBDType> 
+    {
+        const findNameUser: userBDType | null = await USERS.findOne(
             {
                 $or: [
                     {"infUser.login": body.loginOrEmail},
                     {"infUser.email": body.loginOrEmail}
                 ]
             })
-            .toArray();
 
-        if (findName.length === 0) {
-            return false
+        if (!findNameUser || !findNameUser.authUser.confirm) {
+            return null
         }
 
-        const checkConfirm: boolean [] = findName.map((f) => f.authUser.confirm);
-
-        if (checkConfirm[0] === false) {
-            return false
-        }
-
-        const hushPassDB: string [] = findName.map((f) => f.authUser.hushPass);
-
-        const result: boolean = await bcryptApplication.hushCompare(body.password, hushPassDB[0]);
+        const result: boolean = await bcryptApplication.hushCompare(body.password, findNameUser.authUser.hushPass);
 
         if (!result) {
-            return false
+            return null
         }
 
-        return findName[0]
+        return findNameUser
     }
 
-    async confirm(user: userBDType, authParams: authParams) {
-
+    public async confirmUserEmail(user: userBDType, authParams: authParams)
+    {
         await USERS.updateOne({_id: user._id}, {
             $set: {
                 authUser: {confirm: authParams.confirm, hushPass: user.authUser.hushPass},
@@ -54,8 +45,8 @@ class authService {
 
     }
 
-    async updatePass(userId: ObjectId, authParams: authParams, newHashPass: string) {
-
+    public async updateUserPass(userId: ObjectId, authParams: authParams, newHashPass: string) 
+    {
         await USERS.updateOne({_id: userId}, {
             $set: {
                 authUser: {confirm: authParams.confirm, hushPass: newHashPass},
@@ -68,32 +59,40 @@ class authService {
 
     }
 
-    async getOne(bodyID: ObjectId):
-        Promise<false | userBDType> {
+    public async findOneUserToId(bodyID: ObjectId):
+        Promise<null | userBDType> 
+    {
+        const findUserById: userBDType | null = await USERS.findOne({_id: bodyID});
 
-        const find: userBDType [] = await USERS.find({_id: bodyID}).toArray();
-
-        if (find.length === 0) {
-            return false;
+        if (!findUserById) {
+            return null;
         }
 
-        return find[0]
+        return findUserById
     }
 
-    async getOneToCode(code: string):
-        Promise<userBDType> {
+    public async findOneUserToCode(code: string):
+        Promise<null | userBDType> 
+    {
+        const findUserByCode: userBDType | null = await USERS.findOne({"activeUser.codeActivated": code});
 
-        const find: userBDType [] = await USERS.find({"activeUser.codeActivated": code}).toArray();
+        if (!findUserByCode) {
+            return null
+        }
 
-        return find[0]
+        return findUserByCode
     }
 
-    async getOneToEmail(email: string):
-        Promise<userBDType> {
+    public async findOneUserToEmail(email: string):
+        Promise<null | userBDType> 
+    {
+        const findUserByEmail: userBDType | null = await USERS.findOne({"infUser.email": email});
 
-        const find: userBDType [] = await USERS.find({"infUser.email": email}).toArray();
-
-        return find[0]
+        if (!findUserByEmail) {
+            return null
+        }
+        
+        return findUserByEmail
     }
 }
 

@@ -3,70 +3,66 @@ import {ObjectId} from "mongodb";
 import {blogBDType, blogObjectResult, blogReqType} from "../models/blog.models";
 
 class blogService {
-    async findBlog(bodyID: ObjectId):
-        Promise<blogBDType []> {
-        const result: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray();
 
-        return result
-    }
+    private async findBlogToId(bodyID: ObjectId):
+        Promise<null | blogBDType>
+    {
+        const findBlogById: null | blogBDType = await BLOGS.findOne({_id: bodyID});
 
-    async getOne(bodyID: ObjectId):
-        Promise<false | blogObjectResult> {
-
-        const find: blogBDType [] = await this.findBlog(bodyID);
-
-        if (find.length === 0) {
-            return false;
+        if (!findBlogById) {
+            return null
         }
 
-        const blog: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray();
-
-        const objResult: blogObjectResult [] = blog.map((field: blogBDType) => {
-            return {
-                id: field._id,
-                name: field.name,
-                description: field.description,
-                websiteUrl: field.websiteUrl,
-                createdAt: field.createdAt
-            }
-        });
-
-        return objResult[0]
+        return findBlogById
     }
 
-    async create(body: blogReqType):
-        Promise<blogObjectResult> {
-        const newDateCreated: string = new Date().toISOString();
+    public async getOneBlog(bodyID: ObjectId):
+        Promise<null | blogObjectResult> 
+    {
+        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
 
-        const createdBlog = await BLOGS.insertOne({
-            _id: new ObjectId(),
+        if (!findBlog) {
+            return null;
+        }
+
+        return {
+                id: findBlog._id,
+                name: findBlog.name,
+                description: findBlog.description,
+                websiteUrl: findBlog.websiteUrl,
+                createdAt: findBlog.createdAt
+            }
+    }
+
+    public async createNewBlog(body: blogReqType):
+        Promise<blogObjectResult> 
+    {
+        const newGenerateId: ObjectId = new ObjectId();
+        const nowDate: string = new Date().toISOString();
+
+        await BLOGS.insertOne({
+                                _id: newGenerateId,
+                                name: body.name,
+                                description: body.description,
+                                websiteUrl: body.websiteUrl,
+                                createdAt: nowDate
+                            });
+
+        return {
+            id: newGenerateId,
             name: body.name,
             description: body.description,
             websiteUrl: body.websiteUrl,
-            createdAt: newDateCreated
-        });
-
-        let result: blogBDType [] = await BLOGS.find({_id: createdBlog.insertedId}).toArray();
-
-        const objResult: blogObjectResult [] = result.map((field: blogBDType) => {
-            return {
-                id: field._id,
-                name: field.name,
-                description: field.description,
-                websiteUrl: field.websiteUrl,
-                createdAt: field.createdAt
-            }
-        });
-
-        return objResult[0]
+            createdAt: nowDate
+        }
     }
 
-    async update(bodyID: ObjectId, body: blogReqType):
-        Promise<boolean> {
+    public async updateBlog(bodyID: ObjectId, body: blogReqType):
+        Promise<boolean> 
+    {
+        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
 
-        const find: blogBDType [] = await this.findBlog(bodyID);
-
-        if (find.length === 0) {
+        if (!findBlog) {
             return false;
         }
 
@@ -81,12 +77,13 @@ class blogService {
         return true;
     }
 
-    async delete(bodyID: ObjectId):
-        Promise<boolean> {
+    public async deleteBlog(bodyID: ObjectId):
+        Promise<boolean> 
+    {
 
-        const find: blogBDType [] = await this.findBlog(bodyID);
+        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
 
-        if (find.length === 0) {
+        if (!findBlog) {
             return false;
         }
 

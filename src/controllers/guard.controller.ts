@@ -10,7 +10,9 @@ class guardController {
     async getAllSessions(req: Request, res: Response) {
         try {
 
-            const activeDevice: returnActiveDevice [] = await guardService.allActiveDevice(req.user._id);
+            const userID: ObjectId = new ObjectId(req.user._id);
+
+            const activeDevice: returnActiveDevice [] = await guardService.allActiveDevice(userID);
 
             res.status(ERRORS_CODE.OK_200).json(activeDevice)
         } catch (e) {

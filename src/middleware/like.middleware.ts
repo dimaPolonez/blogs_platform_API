@@ -46,5 +46,4 @@ export const reqUserId = async (
     }
     req.userId = null;
     next();
-    return
 }

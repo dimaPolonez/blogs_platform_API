@@ -25,7 +25,7 @@ class authController {
 
     async authorization(req: bodyReqType<authReqType>, res: Response) {
         try {
-            const auth: false | userBDType = await authService.auth(req.body)
+            const auth: null | userBDType = await authService.authUser(req.body)
 
             if (auth) {
 
@@ -72,7 +72,7 @@ class authController {
     async createNewPass(req: Request, res: Response) {
         try {
 
-            const findUser: userBDType = await authService.getOneToEmail(req.body.email)
+            const findUser: null | userBDType = await authService.findOneUserToEmail(req.body.email)
 
             if (findUser) {
                 const authParams: authParams = await codeActiveApplication.createCode();
@@ -96,11 +96,11 @@ class authController {
                 lifeTimeCode: 'Activated'
             }
 
-            const userObject: userBDType = await authService.getOneToCode(req.body.recoveryCode);
+            const userObject: null | userBDType = await authService.findOneUserToCode(req.body.recoveryCode);
 
             const hushPass: string = await bcryptApplication.saltGenerate(req.body.newPassword)
 
-            await authService.updatePass(userObject._id, authParams, hushPass);
+            await authService.updateUserPass(userObject._id, authParams, hushPass);
 
             await mailerApplication.sendMailActivate(userObject.infUser.email);
 
@@ -119,9 +119,9 @@ class authController {
                 lifeTimeCode: 'Activated'
             }
 
-            const userObject: userBDType = await authService.getOneToCode(req.body.code);
+            const userObject: null | userBDType = await authService.findOneUserToCode(req.body.code);
 
-            await authService.confirm(userObject, authParams);
+            await authService.confirmUserEmail(userObject, authParams);
 
             await mailerApplication.sendMailActivate(userObject.infUser.email);
 
@@ -146,10 +146,10 @@ class authController {
 
     async resendingEmail(req: Request, res: Response) {
         try {
-            const userObject: userBDType = await authService.getOneToEmail(req.body.email);
+            const userObject: null | userBDType = await authService.findOneUserToEmail(req.body.email);
             const authParams: authParams = await codeActiveApplication.createCode();
 
-            await authService.confirm(userObject, authParams);
+            await authService.confirmUserEmail(userObject, authParams);
             await mailerApplication.sendMailCode(req.body.email, authParams.codeActivated);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
         } catch (e) {

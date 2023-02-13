@@ -1,65 +1,62 @@
 import {userBDType} from "../models/user.models";
 import {USERS} from "../data/db.data";
 import {isAfter} from "date-fns";
+import authService from "./auth.service";
 
 class checkedService {
 
-    public async loginUniq(value: string) {
+    public async loginUniq(value: string):
+        Promise<boolean>
+    {
+        const findUser: null | userBDType = await USERS.findOne({"infUser.login": value});
 
-        const findUser: userBDType [] = await USERS.find({"infUser.login": value}).toArray();
-
-        if (findUser.length !== 0) {
+        if (!findUser) {
             throw new Error('This login already exists in the system')
-        } else {
-            return true
         }
+
+        return true
     }
 
-    public async emailUniq(value: string) {
+    public async emailUniq(value: string):
+        Promise<boolean>
+    {
+        const findUser: null | userBDType = await USERS.findOne({"infUser.email": value});
 
-        const findUser: userBDType [] = await USERS.find({"infUser.email": value}).toArray();
-
-        if (findUser.length !== 0) {
+        if (!findUser) {
             throw new Error('This email already exists in the system')
-        } else {
-            return true
         }
+
+        return true
     }
 
-    public async activateCodeValid(value: string) {
+    public async activateCodeValid(value: string):
+        Promise<boolean>
+    {
+        const findUser: null | userBDType = await USERS.findOne({"activeUser.codeActivated": value});
 
-        const findUser: userBDType [] = await USERS.find({"activeUser.codeActivated": value}).toArray();
-
-        if (findUser.length === 0) {
+        if (!findUser) {
             throw new Error('Code is not valid')
         }
 
-        const result: boolean [] = findUser.map((f: userBDType) => {
-            const nowDate = new Date();
+        const date = Date.parse(findUser.activeUser.lifeTimeCode)
 
-            const date = Date.parse(f.activeUser.lifeTimeCode)
-
-            return isAfter(date, nowDate)
-        });
-
-        if (!result[0]) {
+        if (isAfter(date, new Date())) {
             throw new Error('Code is not valid')
-        } else {
-            return true
         }
+        
+        return true
     }
 
-    public async emailToBase(value: string) {
+    public async emailToBase(value: string):
+        Promise<boolean>
+    {
+        const findUser: null | userBDType = await authService.findOneUserToEmail(value);
 
-        const findUser: userBDType [] = await USERS.find({"infUser.email": value}).toArray();
-
-        if (findUser.length === 0) {
+        if (!findUser) {
             throw new Error('Email is not registration')
         }
 
-        const result: string [] = findUser.map((f: userBDType) => f.activeUser.codeActivated);
-
-        if (result[0] === 'Activated') {
+        if (!(findUser.activeUser.codeActivated === 'Activated')){
             throw new Error('Account activated')
         }
 

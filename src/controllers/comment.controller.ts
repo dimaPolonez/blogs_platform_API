@@ -12,13 +12,14 @@ class commentController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const comment: false | commentObjectResult = await commentService.getOne(bodyId, req.userId);
+            const comment: null | commentObjectResult = await commentService.getOneComment(bodyId, req.userId);
 
             if (comment) {
                 res.status(ERRORS_CODE.OK_200).json(comment);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
         }
@@ -28,7 +29,7 @@ class commentController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const comment: number = await commentService.update(bodyId, req.body, req.user);
+            const comment: number = await commentService.updateComment(bodyId, req.body, req.user);
 
             switch (comment) {
                 case (204):
@@ -65,7 +66,7 @@ class commentController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const comment: number = await commentService.delete(bodyId, req.user);
+            const comment: number = await commentService.deleteComment(bodyId, req.user);
 
             switch (comment) {
                 case (204):
