@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import bcryptApplication from "../application/bcrypt.application";
+import BcryptApp from "../application/bcrypt.application";
 import {USERS} from "../data/db.data";
 import {authParams, authReqType} from "../models/auth.models";
 import {userBDType} from "../models/user.models";
@@ -22,7 +22,7 @@ class AuthService {
             return null
         }
 
-        const result: boolean = await bcryptApplication.hushCompare(body.password, findNameUser.authUser.hushPass);
+        const result: boolean = await BcryptApp.hushCompare(body.password, findNameUser.authUser.hushPass)
 
         if (!result) {
             return null
@@ -55,17 +55,17 @@ class AuthService {
                     lifeTimeCode: authParams.lifeTimeCode
                 }
             }
-        });
+        })
 
     }
 
     public async findOneUserToId(bodyID: ObjectId):
         Promise<null | userBDType> 
     {
-        const findUserById: userBDType | null = await USERS.findOne({_id: bodyID});
+        const findUserById: userBDType | null = await USERS.findOne({_id: bodyID})
 
         if (!findUserById) {
-            return null;
+            return null
         }
 
         return findUserById
@@ -74,7 +74,7 @@ class AuthService {
     public async findOneUserToCode(code: string):
         Promise<null | userBDType> 
     {
-        const findUserByCode: userBDType | null = await USERS.findOne({"activeUser.codeActivated": code});
+        const findUserByCode: userBDType | null = await USERS.findOne({"activeUser.codeActivated": code})
 
         if (!findUserByCode) {
             return null
@@ -86,7 +86,7 @@ class AuthService {
     public async findOneUserToEmail(email: string):
         Promise<null | userBDType> 
     {
-        const findUserByEmail: userBDType | null = await USERS.findOne({"infUser.email": email});
+        const findUserByEmail: userBDType | null = await USERS.findOne({"infUser.email": email})
 
         if (!findUserByEmail) {
             return null
@@ -96,4 +96,4 @@ class AuthService {
     }
 }
 
-export default new AuthService();
+export default new AuthService()

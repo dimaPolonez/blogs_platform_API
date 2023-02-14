@@ -7,7 +7,7 @@ class BlogService {
     public async findBlogById(bodyID: ObjectId):
         Promise<null | blogBDType>
     {
-        const findBlogById: null | blogBDType = await BLOGS.findOne({_id: bodyID});
+        const findBlogById: null | blogBDType = await BLOGS.findOne({_id: bodyID})
 
         if (!findBlogById) {
             return null
@@ -16,13 +16,15 @@ class BlogService {
         return findBlogById
     }
 
-    public async getOneBlog(bodyID: ObjectId):
+    public async getOneBlog(blogURIId: string):
         Promise<null | blogObjectResult> 
     {
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
+        const bodyID: ObjectId = new ObjectId(blogURIId)
+
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
 
         if (!findBlog) {
-            return null;
+            return null
         }
 
         return {
@@ -37,8 +39,9 @@ class BlogService {
     public async createNewBlog(body: blogReqType):
         Promise<blogObjectResult> 
     {
-        const newGenerateId: ObjectId = new ObjectId();
-        const nowDate: string = new Date().toISOString();
+        const newGenerateId: ObjectId = new ObjectId()
+
+        const nowDate: string = new Date().toISOString()
 
         await BLOGS.insertOne({
                                 _id: newGenerateId,
@@ -46,7 +49,7 @@ class BlogService {
                                 description: body.description,
                                 websiteUrl: body.websiteUrl,
                                 createdAt: nowDate
-                            });
+                            })
 
         return {
             id: newGenerateId,
@@ -57,13 +60,15 @@ class BlogService {
         }
     }
 
-    public async updateBlog(bodyID: ObjectId, body: blogReqType):
+    public async updateBlog(blogURIId: string, body: blogReqType):
         Promise<boolean> 
     {
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
+        const bodyID: ObjectId = new ObjectId(blogURIId)
+
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
 
         if (!findBlog) {
-            return false;
+            return false
         }
 
         await BLOGS.updateOne({_id: bodyID}, {
@@ -72,25 +77,26 @@ class BlogService {
                 description: body.description,
                 websiteUrl: body.websiteUrl
             }
-        });
+        })
 
-        return true;
+        return true
     }
 
-    public async deleteBlog(bodyID: ObjectId):
+    public async deleteBlog(blogURIId: string):
         Promise<boolean> 
     {
+        const bodyID: ObjectId = new ObjectId(blogURIId)
 
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
 
         if (!findBlog) {
-            return false;
+            return false
         }
 
-        await BLOGS.deleteOne({_id: bodyID});
+        await BLOGS.deleteOne({_id: bodyID})
 
-        return true;
+        return true
     }
 }
 
-export default new BlogService();
+export default new BlogService()

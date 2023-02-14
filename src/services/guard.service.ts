@@ -10,7 +10,7 @@ class GuardService {
     public async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
         Promise<ObjectId>
     {
-        const newGenerateId: ObjectId = new ObjectId();
+        const newGenerateId: ObjectId = new ObjectId()
 
         await ACTIVE_DEVICE.insertOne({
                                         _id: newGenerateId,
@@ -24,10 +24,10 @@ class GuardService {
         return newGenerateId
     }
 
-    public async allActiveDevice(userId: ObjectId):
+    public async allActiveSessions(userID: ObjectId):
         Promise<null | returnActiveDevice> 
     {
-        const allActiveDevice: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({userId: userId})
+        const allActiveDevice: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({userId: userID})
 
         if (!allActiveDevice) {
             return null
@@ -71,11 +71,11 @@ class GuardService {
                                                         });
     }
 
-    public async killAllSessions(ssesionId: ObjectId, userObject: userBDType) 
+    public async killAllSessions(sessionId: ObjectId, userObject: userBDType) 
     {
         await ACTIVE_DEVICE.deleteMany({
                                             $and: [
-                                                {_id: {$ne: ssesionId}},
+                                                {_id: {$ne: sessionId}},
                                                 {userId: userObject._id}
                                             ]
                                         })
@@ -86,9 +86,11 @@ class GuardService {
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
     }
 
-    public async killOneSession(sessionId: ObjectId, userObject: userBDType):
+    public async killOneSession(sessionURIId: string, userObject: userBDType):
         Promise<number> 
     {
+        const sessionId: ObjectId = new ObjectId(sessionURIId)
+
         const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
@@ -101,9 +103,9 @@ class GuardService {
 
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
 
-        return ERRORS_CODE.NO_CONTENT_204;
+        return ERRORS_CODE.NO_CONTENT_204
     }
 
 }
 
-export default new GuardService();
+export default new GuardService()

@@ -1,20 +1,23 @@
 import {Router} from "express";
-import guardController from "../controllers/guard.controller";
+import GuardController from "../controllers/guard.controller";
 import {indexMiddleware} from "../middleware/index.middleware";
 
 
-const guardRouter = Router({});
+const guardRouter = Router({})
 
 guardRouter.get('/devices',
     indexMiddleware.COOKIE_REFRESH,
-    guardController.getAllSessions);
+    GuardController.getAllSessions
+)
 
 guardRouter.delete('/devices',
     indexMiddleware.COOKIE_REFRESH,
-    guardController.killAllSessions);
+    GuardController.killAllSessions
+)
 
 guardRouter.delete('/devices/:id',
     indexMiddleware.COOKIE_REFRESH,
-    guardController.killOneSession);
+    GuardController.killOneSession
+)
 
-export default guardRouter;
+export default guardRouter

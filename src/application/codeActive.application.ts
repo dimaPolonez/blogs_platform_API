@@ -3,7 +3,7 @@ import add from "date-fns/add";
 import {authParams} from "../models/auth.models";
 
 
-class ActiveCodeService {
+class ActiveCodeApp {
 
     public async createCode():
         Promise<authParams> 
@@ -25,8 +25,8 @@ class ActiveCodeService {
             minutes: 10
         }).toString()
 
-        return lifetime;
+        return lifetime
     }
 }
 
-export default new ActiveCodeService();
+export default new ActiveCodeApp()

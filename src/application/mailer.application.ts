@@ -11,9 +11,9 @@ class MailerApp {
                 user: settings.MAIL_URL_USER,
                 pass: settings.MAIL_URL_PASS
             }
-        });
+        })
 
-        await transporter.sendMail(objectMail);
+        await transporter.sendMail(objectMail)
     }
 
     public async sendMailCode(email: string, codeActive: string) 
@@ -39,4 +39,4 @@ class MailerApp {
     }
 }
 
-export default new MailerApp();
+export default new MailerApp()

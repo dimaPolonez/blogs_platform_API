@@ -59,11 +59,11 @@ class LikeService {
         
         let myStatus: myLikeStatus = myLikeStatus.None
 
-        const findLike: null | likesBDType = await this.checkedLike(object.typeId, user._id);
+        const findLike: null | likesBDType = await this.checkedLike(object.typeId, user._id)
 
         if (findLike) {
 
-            const likeCaseString = likeStatusBody + findLike.user.myStatus;
+            const likeCaseString = likeStatusBody + findLike.user.myStatus
 
             switch (likeCaseString) {
                 case ('LikeLike'):
@@ -162,4 +162,4 @@ class LikeService {
     }
 }
 
-export default new LikeService();
+export default new LikeService()

@@ -1,17 +1,17 @@
 import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
-import bcryptApplication from "../application/bcrypt.application";
+import BcryptApp from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
 import {authParams} from "../models/auth.models";
 
 class UserService {
 
-    public async createUser(body: userReqType, authParams: authParams):
+    public async createUser(body: userReqType):
         Promise<userObjectResult> 
     {
-        const hushPass: string = await bcryptApplication.saltGenerate(body.password)
+        const hushPass: string = await BcryptApp.saltGenerate(body.password)
 
-        const userObjectId: ObjectId = new ObjectId();
+        const userObjectId: ObjectId = new ObjectId()
 
         await USERS.insertOne({
                                 _id: userObjectId,
@@ -21,14 +21,14 @@ class UserService {
                                     createdAt: new Date().toISOString()
                                 },
                                 activeUser: {
-                                    codeActivated: authParams.codeActivated,
-                                    lifeTimeCode: authParams.lifeTimeCode
+                                    codeActivated: 'Activated',
+                                    lifeTimeCode: 'Activated'
                                 },
                                 authUser: {
-                                    confirm: authParams.confirm,
+                                    confirm: true,
                                     hushPass: hushPass
                                 }
-                            });
+                            })
         return {
                     id: userObjectId,
                     login: body.login,
@@ -48,19 +48,21 @@ class UserService {
         })
     }
 
-    public async deleteUser(bodyID: ObjectId):
+    public async deleteUser(userURIId: string):
         Promise<boolean> 
     {
-        const findUser: null | userBDType = await USERS.findOne({_id: bodyID});
+        const bodyID: ObjectId = new ObjectId(userURIId)
+
+        const findUser: null | userBDType = await USERS.findOne({_id: bodyID})
 
         if (!findUser) {
-            return false;
+            return false
         }
 
-        await USERS.deleteOne({_id: bodyID});
+        await USERS.deleteOne({_id: bodyID})
         
         return true
     }
 }
 
-export default new UserService();
+export default new UserService()

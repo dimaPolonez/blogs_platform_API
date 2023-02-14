@@ -1,14 +1,14 @@
 import {userBDType} from "../models/user.models";
 import {USERS} from "../data/db.data";
 import {isAfter} from "date-fns";
-import authService from "./auth.service";
+import AuthService from "./auth.service";
 
 class CheckedService {
 
     public async loginUniq(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"infUser.login": value});
+        const findUser: null | userBDType = await USERS.findOne({"infUser.login": value})
 
         if (!findUser) {
             throw new Error('This login already exists in the system')
@@ -20,7 +20,7 @@ class CheckedService {
     public async emailUniq(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"infUser.email": value});
+        const findUser: null | userBDType = await USERS.findOne({"infUser.email": value})
 
         if (!findUser) {
             throw new Error('This email already exists in the system')
@@ -32,7 +32,7 @@ class CheckedService {
     public async activateCodeValid(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"activeUser.codeActivated": value});
+        const findUser: null | userBDType = await USERS.findOne({"activeUser.codeActivated": value})
 
         if (!findUser) {
             throw new Error('Code is not valid')
@@ -50,7 +50,7 @@ class CheckedService {
     public async emailToBase(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await authService.findOneUserToEmail(value);
+        const findUser: null | userBDType = await AuthService.findOneUserToEmail(value)
 
         if (!findUser) {
             throw new Error('Email is not registration')
@@ -65,4 +65,4 @@ class CheckedService {
 
 }
 
-export default new CheckedService();
+export default new CheckedService()

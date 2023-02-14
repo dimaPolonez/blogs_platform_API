@@ -42,7 +42,7 @@ class IpService {
 
             if (objectIP.tokens > 0){
 
-                let newToken: number = objectIP.tokens - 1;
+                let newToken: number = objectIP.tokens - 1
 
                 await OBJECT_IP.updateOne({ip: objectIP.ip}, {
                     $set: {
@@ -67,4 +67,4 @@ class IpService {
     }
 }
 
-export default new IpService();
+export default new IpService()

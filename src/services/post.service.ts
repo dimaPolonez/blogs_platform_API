@@ -4,15 +4,15 @@ import {postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../m
 import {blogBDType} from "../models/blog.models";
 import { userBDType } from "../models/user.models";
 import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../models/likes.models";
-import likeService from "./like.service";
-import blogService from "./blog.service";
+import LikeService from "./like.service";
+import BlogService from "./blog.service";
 
 class PostService {
 
     public async findPost(bodyID: ObjectId):
         Promise<postBDType | null> 
     {
-        const findOnePost: postBDType | null = await POSTS.findOne({_id: bodyID});
+        const findOnePost: postBDType | null = await POSTS.findOne({_id: bodyID})
 
         if (!findOnePost) {
             return null
@@ -21,30 +21,31 @@ class PostService {
         return findOnePost
     }
 
-    public async getOnePost(bodyID: ObjectId, userId: ObjectId | null):
+    public async getOnePost(postURIId: string, userId: ObjectId | null):
         Promise<null | postObjectResult> 
     {
+        const bodyID: ObjectId = new ObjectId(postURIId)
 
-        const findOnePost: postBDType | null = await this.findPost(bodyID);
+        const findOnePost: postBDType | null = await this.findPost(bodyID)
 
         if (!findOnePost) {
-            return null;
+            return null
         }
 
         let myUserStatus: myLikeStatus = myLikeStatus.None
         let allMapsUserLikesArray: newestLikes [] | [] = []
 
         if (userId) {
-            const userObjectId: ObjectId = new ObjectId(userId);
+            const userObjectId: ObjectId = new ObjectId(userId)
 
-            const checked: null | likesBDType = await likeService.checkedLike(findOnePost._id, userObjectId)
+            const checked: null | likesBDType = await LikeService.checkedLike(findOnePost._id, userObjectId)
 
             if (checked) {
-                myUserStatus = checked.user.myStatus;
+                myUserStatus = checked.user.myStatus
             }
         }
 
-        const threeUserLikesArray: likesBDType [] | null =  await likeService.threeUserLikesArray(findOnePost._id)
+        const threeUserLikesArray: likesBDType [] | null =  await LikeService.threeUserLikesArray(findOnePost._id)
 
         if (threeUserLikesArray) {
 
@@ -86,7 +87,7 @@ class PostService {
 
         const postNewId: ObjectId = new ObjectId();
 
-        const blogFind: null | blogBDType = await blogService.findBlogById(blogId);
+        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId);
 
         if (blogFind) {
             blogName = blogFind.name
@@ -108,7 +109,7 @@ class PostService {
                                     myStatus: myLikeStatus.None,
                                     newestLikes: []
                                 }
-                            });
+                            })
 
 
         return {
@@ -128,20 +129,22 @@ class PostService {
             }
     }
 
-    public async updatePost(bodyID: ObjectId, body: postReqType):
+    public async updatePost(postURIId: string, body: postReqType):
         Promise<boolean> 
     {
+        const bodyID: ObjectId = new ObjectId(postURIId)
+
         const blogId: ObjectId = new ObjectId(body.blogId)
 
         let blogName: string = ''
 
-        const findPost: null | postBDType = await this.findPost(bodyID);
+        const findPost: null | postBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
         }
 
-        const blogFind: null | blogBDType = await blogService.findBlogById(blogId)
+        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -155,16 +158,17 @@ class PostService {
                                                     blogId: blogId,
                                                     blogName: blogName
                                                 }
-                                            });
+                                            })
 
         return true
     }
 
-    public async postLike(likeStatus: string, bodyID: ObjectId, user: userBDType):
+    public async postLike(likeStatus: string, postURIId: string, user: userBDType):
         Promise<boolean> 
     {
+        const bodyID: ObjectId = new ObjectId(postURIId)
 
-        const findPost: null | postBDType = await this.findPost(bodyID);
+        const findPost: null | postBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
@@ -177,40 +181,44 @@ class PostService {
             dislikesCount: findPost.extendedLikesInfo.dislikesCount
         }
 
-        const newObjectLikes: likesCounter = await likeService.counterLike(likeStatus, countObject, user);
+        const newObjectLikes: likesCounter = await LikeService.counterLike(likeStatus, countObject, user)
 
         await POSTS.updateOne({_id: bodyID}, {
                                                 $set: {
                                                     "extendedLikesInfo.likesCount": newObjectLikes.likesCount,
                                                     "extendedLikesInfo.dislikesCount": newObjectLikes.dislikesCount,
                                                 }
-                                            });
+                                            })
 
         return true
     }
 
-    public async deletePost(bodyID: ObjectId):
+    public async deletePost(postURIId: string):
         Promise<boolean> 
     {
-        const findPost: null | postBDType = await this.findPost(bodyID);
+        const bodyID: ObjectId = new ObjectId(postURIId)
+
+        const findPost: null | postBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
         }
 
-        await POSTS.deleteOne({_id: bodyID});
+        await POSTS.deleteOne({_id: bodyID})
 
         return true
     }
 
-    public async createOnePostOfBlog(bodyID: ObjectId, body: postOfBlogReqType):
+    public async createOnePostOfBlog(blogURIId: string, body: postOfBlogReqType):
         Promise<null | postObjectResult> 
     {
         let blogName: string = ''
 
-        const postNewId: ObjectId = new ObjectId();
+        const postNewId: ObjectId = new ObjectId()
 
-        const blogFind: null | blogBDType = await blogService.findBlogById(bodyID)
+        const bodyID: ObjectId = new ObjectId(blogURIId)
+
+        const blogFind: null | blogBDType = await BlogService.findBlogById(bodyID)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -230,7 +238,7 @@ class PostService {
                                                     myStatus: myLikeStatus.None,
                                                     newestLikes: []
                                                     }
-                                });
+                                })
         return {
                 id: postNewId,
                 title: body.title,
@@ -249,4 +257,4 @@ class PostService {
     }
 }
 
-export default new PostService();
+export default new PostService()
