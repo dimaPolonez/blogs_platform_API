@@ -81,13 +81,13 @@ class PostService {
     public async createPost(body: postReqType):
         Promise<postObjectResult> 
     {
-        const blogId: ObjectId = new ObjectId(body.blogId);
+        const blogId: ObjectId = new ObjectId(body.blogId)
 
         let blogName: string = ''
 
-        const postNewId: ObjectId = new ObjectId();
+        const postNewId: ObjectId = new ObjectId()
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId);
+        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
