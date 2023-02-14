@@ -6,7 +6,7 @@ import {authParams} from "../models/auth.models";
 
 class UserService {
 
-    public async createUser(body: userReqType):
+    public async createUser(body: userReqType, authParams: authParams):
         Promise<userObjectResult> 
     {
         const hushPass: string = await BcryptApp.saltGenerate(body.password)
@@ -21,11 +21,11 @@ class UserService {
                                     createdAt: new Date().toISOString()
                                 },
                                 activeUser: {
-                                    codeActivated: 'Activated',
-                                    lifeTimeCode: 'Activated'
+                                    codeActivated: authParams.codeActivated,
+                                    lifeTimeCode: authParams.lifeTimeCode
                                 },
                                 authUser: {
-                                    confirm: true,
+                                    confirm: authParams.confirm,
                                     hushPass: hushPass
                                 }
                             })

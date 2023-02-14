@@ -3,13 +3,21 @@ import {ERRORS_CODE} from "../data/db.data";
 import UserService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
+import { authParams } from "../models/auth.models";
 
 class UserController {
 
     public async createUser(req: bodyReqType<userReqType>, res: Response) 
     {
         try {
-            const user: userObjectResult = await UserService.createUser(req.body)
+
+            const authParams: authParams = {
+                confirm: true,
+                codeActivated: 'Activated',
+                lifeTimeCode: 'Activated'
+            } 
+
+            const user: userObjectResult = await UserService.createUser(req.body, authParams)
 
             res.status(ERRORS_CODE.CREATED_201).json(user)
 
