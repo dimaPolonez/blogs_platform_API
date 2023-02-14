@@ -10,8 +10,8 @@ class CheckedService {
     {
         const findUser: null | userBDType = await USERS.findOne({"infUser.login": value})
 
-        if (!findUser) {
-            throw new Error('This login already exists in the system')
+        if (findUser) {
+            return false
         }
 
         return true
@@ -22,8 +22,8 @@ class CheckedService {
     {
         const findUser: null | userBDType = await USERS.findOne({"infUser.email": value})
 
-        if (!findUser) {
-            throw new Error('This email already exists in the system')
+        if (findUser) {
+            return false
         }
 
         return true
