@@ -8,11 +8,9 @@ export const ipBanner = async (
     next: NextFunction
 ) => {
 
-    const endPoint: string = (req.path).slice(1);
-
     let ipPath: string = req.ip + req.path;
 
-    let result: boolean = await ipService.find(ipPath);
+    let result: boolean = await ipService.findIP(ipPath);
 
     if (result) {
         next();

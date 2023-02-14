@@ -5,7 +5,7 @@ import {activeDeviceBDType, deviceInfoObject, returnActiveDevice} from "../model
 import {userBDType} from "../models/user.models";
 
 
-class guardService {
+class GuardService {
 
     public async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
         Promise<ObjectId>
@@ -106,4 +106,4 @@ class guardService {
 
 }
 
-export default new guardService();
+export default new GuardService();

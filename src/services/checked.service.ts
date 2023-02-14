@@ -3,7 +3,7 @@ import {USERS} from "../data/db.data";
 import {isAfter} from "date-fns";
 import authService from "./auth.service";
 
-class checkedService {
+class CheckedService {
 
     public async loginUniq(value: string):
         Promise<boolean>
@@ -65,4 +65,4 @@ class checkedService {
 
 }
 
-export default new checkedService();
+export default new CheckedService();

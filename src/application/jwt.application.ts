@@ -7,22 +7,21 @@ import {deviceInfoObject, returnRefreshObject} from "../models/activeDevice.mode
 import guardService from "../services/guard.service";
 import {add} from 'date-fns';
 
-class jwtApp {
+class JwtApp {
 
-    public async createAccessJwt(user: userBDType): Promise<tokensObjectType> {
+    public async createAccessJwt(user: userBDType): 
+        Promise<tokensObjectType> 
+    {
+        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 540});
 
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 5400});
-
-        const objToken: tokensObjectType = {
+        return {
             accessToken: accessToken,
         }
-
-        return objToken
     }
 
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
-        Promise<string> {
-
+        Promise<string> 
+    {
         const expiresBase: number = 5400;
 
         const expiresTime: string = add(new Date(), {
@@ -32,16 +31,16 @@ class jwtApp {
         const deviceId: ObjectId = await guardService.addNewDevice(user._id, deviceInfoObject, expiresTime);
 
         const refreshToken: string = jwt.sign({
-            deviceId: deviceId,
-            userId: user._id
-        }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+                                                deviceId: deviceId,
+                                                userId: user._id
+                                            }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
 
         return refreshToken
     }
 
     public async updateRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
-        Promise<string> {
-
+        Promise<string> 
+    {
         const deviceId: ObjectId = new ObjectId(sessionId);
 
         const expiresBase: number = 5400;
@@ -53,47 +52,48 @@ class jwtApp {
         await guardService.updateExpiredSession(deviceId, deviceInfoObject, expiresTime);
 
         const refreshToken: string = jwt.sign({
-            deviceId: deviceId,
-            userId: user._id
-        }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
+                                                deviceId: deviceId,
+                                                userId: user._id
+                                            }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase});
 
         return refreshToken
     }
 
     public async verifyAccessJwt(token: string):
-        Promise<ObjectId | null> {
+        Promise<ObjectId | null> 
+    {
         try {
-            const result: any = jwt.verify(token, settings.JWT_SECRET)
+            const validAccess: any = jwt.verify(token, settings.JWT_SECRET)
 
-            return result.userId
+            return validAccess.userId
         } catch (e) {
             return null
         }
     }
 
     public async verifyRefreshJwt(token: string):
-        Promise<returnRefreshObject | null> {
+        Promise<returnRefreshObject | null> 
+    {
         try {
-
-            const result: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
+            const validAccess: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
 
             const refreshObject: returnRefreshObject = {
-                userId: result.userId,
-                sessionId: result.deviceId
+                userId: validAccess.userId,
+                sessionId: validAccess.deviceId
             }
 
             const checkedActiveSession: boolean = await guardService.checkedActiveSession(refreshObject.sessionId);
 
-            if (checkedActiveSession) {
-                return refreshObject
+            if (!checkedActiveSession) {
+                return null
             }
 
-            return null
-
+            return refreshObject
+        
         } catch (e) {
             return null
         }
     }
 }
 
-export default new jwtApp();
+export default new JwtApp();

@@ -17,7 +17,7 @@ class userController {
                 lifeTimeCode: 'Activated'
             }
 
-            const user: userObjectResult = await userService.create(req.body, authParams);
+            const user: userObjectResult = await userService.createUser(req.body, authParams);
             res.status(ERRORS_CODE.CREATED_201).json(user);
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
@@ -28,7 +28,7 @@ class userController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const user: boolean = await userService.delete(bodyId);
+            const user: boolean = await userService.deleteUser(bodyId);
 
             if (user) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

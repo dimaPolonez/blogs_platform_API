@@ -4,48 +4,41 @@ import bcryptApplication from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
 import {authParams} from "../models/auth.models";
 
-class userService {
+class UserService {
 
-    async create(body: userReqType, authParams: authParams):
-        Promise<userObjectResult> {
-
-        const newDateCreated: string = new Date().toISOString();
-
+    public async createUser(body: userReqType, authParams: authParams):
+        Promise<userObjectResult> 
+    {
         const hushPass: string = await bcryptApplication.saltGenerate(body.password)
 
-        const createdUser = await USERS.insertOne({
-            _id: new ObjectId(),
-            infUser: {
-                login: body.login,
-                email: body.email,
-                createdAt: newDateCreated
-            },
-            activeUser: {
-                codeActivated: authParams.codeActivated,
-                lifeTimeCode: authParams.lifeTimeCode
-            },
-            authUser: {
-                confirm: authParams.confirm,
-                hushPass: hushPass
-            }
-        });
+        const userObjectId: ObjectId = new ObjectId();
 
-        let result: userBDType [] = await USERS.find({_id: createdUser.insertedId}).toArray();
-
-        const objResult: userObjectResult [] = result.map((field: userBDType) => {
-            return {
-                id: field._id,
-                login: field.infUser.login,
-                email: field.infUser.email,
-                createdAt: field.infUser.createdAt
-            }
-        });
-
-        return objResult[0]
+        await USERS.insertOne({
+                                _id: userObjectId,
+                                infUser: {
+                                    login: body.login,
+                                    email: body.email,
+                                    createdAt: new Date().toISOString()
+                                },
+                                activeUser: {
+                                    codeActivated: authParams.codeActivated,
+                                    lifeTimeCode: authParams.lifeTimeCode
+                                },
+                                authUser: {
+                                    confirm: authParams.confirm,
+                                    hushPass: hushPass
+                                }
+                            });
+        return {
+                    id: userObjectId,
+                    login: body.login,
+                    email: body.email,
+                    createdAt: new Date().toISOString()
+                }
     }
 
-    async update(user: userBDType, authParams: authParams) {
-
+    public async updateUser(user: userBDType, authParams: authParams) 
+    {
         await USERS.updateOne({_id: user._id}, {
             $set: {
                 "activeUser.codeActivated": authParams.codeActivated,
@@ -55,19 +48,19 @@ class userService {
         })
     }
 
-    async delete(bodyID: ObjectId):
-        Promise<boolean> {
+    public async deleteUser(bodyID: ObjectId):
+        Promise<boolean> 
+    {
+        const findUser: null | userBDType = await USERS.findOne({_id: bodyID});
 
-        const find: userBDType [] = await USERS.find({_id: bodyID}).toArray();
-
-        if (find.length === 0) {
+        if (!findUser) {
             return false;
         }
 
         await USERS.deleteOne({_id: bodyID});
-
-        return true;
+        
+        return true
     }
 }
 
-export default new userService();
+export default new UserService();

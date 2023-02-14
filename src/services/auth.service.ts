@@ -5,7 +5,7 @@ import {authParams, authReqType} from "../models/auth.models";
 import {userBDType} from "../models/user.models";
 
 
-class authService {
+class AuthService {
 
     public async authUser(body: authReqType):
         Promise<null | userBDType> 
@@ -96,4 +96,4 @@ class authService {
     }
 }
 
-export default new authService();
+export default new AuthService();

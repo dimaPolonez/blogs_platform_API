@@ -6,7 +6,7 @@ import {postBDType, postOfBlogReqType} from "../models/post.models";
 import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
 import likeService from "./like.service";
 
-class commentService {
+class CommentService {
 
     private async findComment(bodyID: ObjectId):
         Promise<null | commentOfPostBDType>
@@ -34,7 +34,7 @@ class commentService {
         if (userId) {
             const userObjectId: ObjectId = new ObjectId(userId);
 
-            const checked: null | likesBDType = await likeService.checked(findComment._id, userObjectId)
+            const checked: null | likesBDType = await likeService.checkedLike(findComment._id, userObjectId)
 
             if (checked) {
                 myUserStatus = checked.user.myStatus;
@@ -171,4 +171,4 @@ class commentService {
 
 }
 
-export default new commentService();
+export default new CommentService();

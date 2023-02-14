@@ -3,11 +3,11 @@ import add from "date-fns/add";
 import {authParams} from "../models/auth.models";
 
 
-class activeCodeService {
+class ActiveCodeService {
 
     public async createCode():
-        Promise<authParams> {
-
+        Promise<authParams> 
+    {
         const authParams: authParams = {
             confirm: false,
             codeActivated: uuidv4(),
@@ -18,8 +18,8 @@ class activeCodeService {
     }
 
     private async createTime():
-        Promise<string> {
-
+        Promise<string> 
+    {
         const lifetime: string = add(new Date(), {
             hours: 1,
             minutes: 10
@@ -29,4 +29,4 @@ class activeCodeService {
     }
 }
 
-export default new activeCodeService();
+export default new ActiveCodeService();

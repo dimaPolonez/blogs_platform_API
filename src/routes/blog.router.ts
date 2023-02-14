@@ -1,7 +1,7 @@
 import {Response, Router} from 'express';
 import blogController from '../controllers/blog.controller';
 import {indexMiddleware} from '../middleware/index.middleware';
-import queryService from "../services/query.service";
+import QueryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import {
@@ -85,7 +85,7 @@ blogRouter.get('/', async (req: queryReqType<queryReqPagOfSearchName>, res: Resp
             pageSize: req.query.pageSize ? +req.query.pageSize : 10
         }
 
-        const blogs: resultBlogObjectType = await queryService.getAllBlogs(queryAll);
+        const blogs: resultBlogObjectType = await QueryService.getAllBlogs(queryAll);
         res.status(ERRORS_CODE.OK_200).json(blogs);
     } catch (e) {
         res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);

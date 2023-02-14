@@ -13,7 +13,7 @@ class postController {
     async getOne(req: paramsReqType<paramsId>, res: Response) {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
-            const post: false | postObjectResult = await postService.getOne(bodyId, req.userId);
+            const post: false | postObjectResult = await postService.getOnePost(bodyId, req.userId);
 
             if (post) {
                 res.status(ERRORS_CODE.OK_200).json(post);
@@ -27,7 +27,7 @@ class postController {
 
     async create(req: bodyReqType<postReqType>, res: Response) {
         try {
-            const post: postObjectResult = await postService.create(req.body);
+            const post: postObjectResult = await postService.createPost(req.body);
 
             if (post) {
                 res.status(ERRORS_CODE.CREATED_201).json(post);
@@ -43,7 +43,7 @@ class postController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const post: boolean = await postService.update(bodyId, req.body);
+            const post: boolean = await postService.updatePost(bodyId, req.body);
 
             if (post) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
@@ -77,7 +77,7 @@ class postController {
         try {
             const bodyId: ObjectId = new ObjectId(req.params.id);
 
-            const post: boolean = await postService.delete(bodyId);
+            const post: boolean = await postService.deletePost(bodyId);
 
             if (post) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

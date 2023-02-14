@@ -5,7 +5,7 @@ import {ERRORS_CODE} from '../data/db.data';
 import {authMeType, authReqType, tokensObjectType} from "../models/auth.models";
 import {bodyReqType} from "../models/request.models";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
-import authService from '../services/auth.service';
+import AuthService from '../services/auth.service';
 import userService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import codeActiveApplication from "../application/codeActive.application";
@@ -21,11 +21,11 @@ const optionsCookie: object = {
     secure: true
 }
 
-class authController {
+class AuthController {
 
     async authorization(req: bodyReqType<authReqType>, res: Response) {
         try {
-            const auth: null | userBDType = await authService.authUser(req.body)
+            const auth: null | userBDType = await AuthService.authUser(req.body)
 
             if (auth) {
 
@@ -76,7 +76,7 @@ class authController {
 
             if (findUser) {
                 const authParams: authParams = await codeActiveApplication.createCode();
-                await userService.update(findUser, authParams)
+                await userService.updateUser(findUser, authParams)
                 await mailerApplication.sendMailPass(req.body.email, authParams.codeActivated);
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
                 return
@@ -135,7 +135,7 @@ class authController {
         try {
             const authParams: authParams = await codeActiveApplication.createCode();
 
-            const user: userObjectResult = await userService.create(req.body, authParams);
+            const user: userObjectResult = await userService.createUser(req.body, authParams);
 
             await mailerApplication.sendMailCode(user.email, authParams.codeActivated);
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204);

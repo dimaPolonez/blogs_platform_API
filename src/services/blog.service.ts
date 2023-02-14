@@ -2,9 +2,9 @@ import {BLOGS} from '../data/db.data';
 import {ObjectId} from "mongodb";
 import {blogBDType, blogObjectResult, blogReqType} from "../models/blog.models";
 
-class blogService {
+class BlogService {
 
-    private async findBlogToId(bodyID: ObjectId):
+    public async findBlogById(bodyID: ObjectId):
         Promise<null | blogBDType>
     {
         const findBlogById: null | blogBDType = await BLOGS.findOne({_id: bodyID});
@@ -19,7 +19,7 @@ class blogService {
     public async getOneBlog(bodyID: ObjectId):
         Promise<null | blogObjectResult> 
     {
-        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
 
         if (!findBlog) {
             return null;
@@ -60,7 +60,7 @@ class blogService {
     public async updateBlog(bodyID: ObjectId, body: blogReqType):
         Promise<boolean> 
     {
-        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
 
         if (!findBlog) {
             return false;
@@ -81,7 +81,7 @@ class blogService {
         Promise<boolean> 
     {
 
-        const findBlog: null | blogBDType = await this.findBlogToId(bodyID);
+        const findBlog: null | blogBDType = await this.findBlogById(bodyID);
 
         if (!findBlog) {
             return false;
@@ -93,4 +93,4 @@ class blogService {
     }
 }
 
-export default new blogService();
+export default new BlogService();
