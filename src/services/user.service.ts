@@ -13,12 +13,14 @@ class UserService {
 
         const userObjectId: ObjectId = new ObjectId()
 
+        const nowDate = new Date().toISOString()
+
         await USERS.insertOne({
                                 _id: userObjectId,
                                 infUser: {
                                     login: body.login,
                                     email: body.email,
-                                    createdAt: new Date().toISOString()
+                                    createdAt: nowDate
                                 },
                                 activeUser: {
                                     codeActivated: authParams.codeActivated,
@@ -33,7 +35,7 @@ class UserService {
                     id: userObjectId,
                     login: body.login,
                     email: body.email,
-                    createdAt: new Date().toISOString()
+                    createdAt: nowDate
                 }
     }
 

@@ -93,6 +93,8 @@ class PostService {
             blogName = blogFind.name
         }
 
+        const nowDate = new Date().toISOString()
+
         
 
         await POSTS.insertOne({
@@ -102,7 +104,7 @@ class PostService {
                                 content: body.content,
                                 blogId: blogId,
                                 blogName: blogName,
-                                createdAt: new Date().toISOString(),
+                                createdAt: nowDate,
                                 extendedLikesInfo: {
                                     likesCount: 0,
                                     dislikesCount: 0,
@@ -119,7 +121,7 @@ class PostService {
                 content: body.content,
                 blogId: blogId,
                 blogName: blogName,
-                createdAt: new Date().toISOString(),
+                createdAt: nowDate,
                 extendedLikesInfo: {
                     likesCount: 0,
                     dislikesCount: 0,
@@ -218,6 +220,8 @@ class PostService {
 
         const bodyID: ObjectId = new ObjectId(blogURIId)
 
+        const nowDate = new Date().toISOString()
+
         const blogFind: null | blogBDType = await BlogService.findBlogById(bodyID)
 
         if (blogFind) {
@@ -231,7 +235,7 @@ class PostService {
                                 content: body.content,
                                 blogId: bodyID,
                                 blogName: blogName,
-                                createdAt: new Date().toISOString(),
+                                createdAt: nowDate,
                                 extendedLikesInfo: {
                                                     likesCount: 0,
                                                     dislikesCount: 0,
@@ -246,7 +250,7 @@ class PostService {
                 content: body.content,
                 blogId: bodyID,
                 blogName: blogName,
-                createdAt: new Date().toISOString(),
+                createdAt: nowDate,
                 extendedLikesInfo: {
                     likesCount: 0,
                     dislikesCount: 0,

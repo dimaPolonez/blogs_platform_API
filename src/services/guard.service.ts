@@ -12,12 +12,14 @@ class GuardService {
     {
         const newGenerateId: ObjectId = new ObjectId()
 
+        const nowDate: string = new Date().toISOString()
+
         await ACTIVE_DEVICE.insertOne({
                                         _id: newGenerateId,
                                         userId: userId,
                                         ip: deviceInfo.ip,
                                         title: deviceInfo.title,
-                                        lastActiveDate: new Date().toISOString(),
+                                        lastActiveDate: nowDate,
                                         expiresTime: expiresTime
                                     })
 
@@ -61,11 +63,13 @@ class GuardService {
 
     public async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 
     {
+        const nowDate: string = new Date().toISOString()
+
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
                                                             $set: {
                                                                 ip: deviceInfoObject.ip,
                                                                 title: deviceInfoObject.title,
-                                                                lastActiveDate: new Date().toISOString(),
+                                                                lastActiveDate: nowDate,
                                                                 expiresTime: expires
                                                             }
                                                         });
