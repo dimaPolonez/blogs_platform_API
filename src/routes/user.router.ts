@@ -17,11 +17,13 @@ userRouter.post('/',
 
 userRouter.delete('/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.ERRORS_VALIDATOR,
     UserController.deleteUser
 )
 
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.ERRORS_VALIDATOR,
     async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => 
 {
         try {

@@ -8,50 +8,51 @@ import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
 import guardRouter from "./routes/quard.routes";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000
 
-export const app = express();
+export const app = express()
 
 async function startApp() {
-    try {
-        await startBD();
+
+        await startBD()
+
         app.listen(PORT, () => {
             console.log(`Example app listening on port ${PORT}`)
         })
-    } catch (e) {
-        console.log(e)
-    }
 }
 
 startApp()
 
-app.use(express.json());
-app.use(cookieParser());
+app.use(express.json())
+app.use(cookieParser())
 app.set('trust proxy', true)
 
-app.use('/blogs', blogRouter);
-app.use('/posts', postRouter);
-app.use('/users', userRouter);
-app.use('/comments', commentRouter);
-app.use('/auth', authRouter);
-app.use('/security', guardRouter);
+app.use('/blogs', blogRouter)
+app.use('/posts', postRouter)
+app.use('/users', userRouter)
+app.use('/comments', commentRouter)
+app.use('/auth', authRouter)
+app.use('/security', guardRouter)
 
-app.get('/', async (req: Request, res: Response) => {
-    res.json('Server start!');
+app.get('/', async (req: Request, res: Response) => 
+{
+    res.json('Server start!')
 })
 
-app.delete('/testing/all-data', async (req: Request, res: Response) => {
+app.delete('/testing/all-data', async (req: Request, res: Response) => 
+{
     try {
-        await BLOGS.deleteMany({});
-        await POSTS.deleteMany({});
-        await USERS.deleteMany({});
-        await COMMENTS.deleteMany({});
-        await ACTIVE_DEVICE.deleteMany({});
-        await OBJECT_IP.deleteMany({});
-        await LIKES.deleteMany({});
+        await BLOGS.deleteMany({})
+        await POSTS.deleteMany({})
+        await USERS.deleteMany({})
+        await COMMENTS.deleteMany({})
+        await ACTIVE_DEVICE.deleteMany({})
+        await OBJECT_IP.deleteMany({})
+        await LIKES.deleteMany({})
 
         res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+
     } catch (e) {
-        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
     }
 })

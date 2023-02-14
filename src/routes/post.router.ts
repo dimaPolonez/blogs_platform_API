@@ -46,6 +46,7 @@ postRouter.put('/:id/like-status',
 postRouter.delete(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.ERRORS_VALIDATOR,
     PostController.deletePost
 )
 

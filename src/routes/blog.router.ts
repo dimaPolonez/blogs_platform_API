@@ -36,6 +36,7 @@ blogRouter.put(
 blogRouter.delete(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.ERRORS_VALIDATOR,
     BlogController.deleteBlog
 )
 

@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import {body} from "express-validator";
-import jwtApplication from "../application/jwt.application";
+import JwtApp from "../application/jwt.application";
 import {myLikeStatus} from "../models/likes.models";
 import {ObjectId} from "mongodb";
 
@@ -14,36 +14,35 @@ export const likeValidator = [
         .notEmpty()
         .bail()
         .withMessage('Field likeStatus incorrect')
-        .custom(async (value) => {
+        .custom((value) => {
             if (Object.values(myLikeStatus).includes(value)) {
                 return true
-            } else {
-                throw new Error('Field likeStatus incorrect');
             }
+            throw new Error('Field likeStatus incorrect')
         })
-];
+]
 
 export const reqUserId = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+) => 
+{
+    req.userId = null
 
     if (!req.headers.authorization) {
-        req.userId = null;
-        next();
+        next()
         return
     }
 
     const accessToken: string = req.headers.authorization.substring(7)
 
-    const userObjectId: ObjectId | null = await jwtApplication.verifyAccessJwt(accessToken);
+    const userObjectId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
 
     if (userObjectId) {
-        req.userId = userObjectId;
-        next();
+        req.userId = userObjectId
+        next()
         return
     }
-    req.userId = null;
-    next();
+    next()
 }

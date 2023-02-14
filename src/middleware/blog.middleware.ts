@@ -33,4 +33,4 @@ export const blogValidator = [
         .isURL()
         .bail()
         .withMessage('Field websiteUrl incorrect'),
-];
+]

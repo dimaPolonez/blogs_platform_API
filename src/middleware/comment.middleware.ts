@@ -11,4 +11,4 @@ export const commentValidator = [
         .isLength({min: 20, max: 300})
         .bail()
         .withMessage('Field content incorrect')
-];
+]

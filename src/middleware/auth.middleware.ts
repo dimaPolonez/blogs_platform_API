@@ -1,19 +1,19 @@
 import {Request, Response, NextFunction} from "express";
-import {body, header, validationResult} from "express-validator";
+import {body, header} from "express-validator";
 import {ObjectId} from "mongodb";
-import jwtApplication from "../application/jwt.application";
-import {ERRORS_CODE, SUPERADMIN} from "../data/db.data";
+import JwtApp from "../application/jwt.application";
+import {ERRORS_CODE} from "../data/db.data";
 import {returnRefreshObject} from "../models/activeDevice.models";
 import {userBDType} from "../models/user.models";
-import authService from "../services/auth.service";
-import checkedService from "../services/checked.service";
+import AuthService from "../services/auth.service";
+import CheckedService from "../services/checked.service";
 
 export const basicAuthorization = (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-    const errors = validationResult(req);
+) => 
+{
     header('authorization')
         .isString()
         .bail()
@@ -21,75 +21,81 @@ export const basicAuthorization = (
         .bail()
         .notEmpty()
         .bail()
-        .withMessage('Field authorization incorrect');
+        .withMessage('Field authorization incorrect')
 
-    if (
-        req.headers.authorization !== `Basic ${SUPERADMIN[0].logPass}` ||
-        !errors.isEmpty()
-    ) {
-        res.status(401).json('Unauthorized');
-    } else {
-        next();
-    }
-};
+    if (req.headers.authorization === `Basic YWRtaW46cXdlcnR5`) {
+        next()
+        return 
+    } 
+
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
+}
 
 export const bearerAuthorization = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-
+) => 
+{
     if (!req.headers.authorization) {
-        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
     }
 
-    const token: string = req.headers.authorization.substring(7)
+    const accessToken: string = req.headers.authorization.substring(7)
 
-    const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
+    const userAccessId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
 
     if (userAccessId) {
-        const getId: ObjectId = new ObjectId(userAccessId)
-        const findUser: null | userBDType = await authService.findOneUserToId(getId);
+
+        const findUser: null | userBDType = await AuthService.findOneUserToId(userAccessId)
+
         if (findUser) {
-            req.user = findUser;
-            next();
+            req.user = findUser
+            next()
             return
         }
-        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
         return
     }
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
+
 }
 
 export const cookieRefresh = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-
+) => 
+{
     if (!req.cookies.refreshToken) {
-        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+        res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
     }
 
-    const refreshToken: string = req.cookies.refreshToken;
+    const refreshToken: string = req.cookies.refreshToken
 
-    const userRefreshId: returnRefreshObject | null = await jwtApplication.verifyRefreshJwt(refreshToken);
+    const userRefreshId: returnRefreshObject | null = await JwtApp.verifyRefreshJwt(refreshToken)
 
     if (userRefreshId) {
-        const getId: ObjectId = new ObjectId(userRefreshId.userId)
-        const findUser: null | userBDType = await authService.findOneUserToId(getId);
+
+        const findUser: null | userBDType = await AuthService.findOneUserToId(userRefreshId.userId)
+
         if (findUser) {
-            req.user = findUser;
-            req.sessionId = userRefreshId.sessionId;
-            next();
+            req.user = findUser
+            req.sessionId = userRefreshId.sessionId
+            next()
             return
         }
-        res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+
+        res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
         return
     }
-    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized');
+
+    res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
+
 }
 
 export const codeValidator = [
@@ -100,10 +106,10 @@ export const codeValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(checkedService.activateCodeValid)
+        .custom(CheckedService.activateCodeValid)
         .bail()
         .withMessage('Field code incorrect')
-];
+]
 
 export const emailValidator = [
     body('email')
@@ -115,10 +121,10 @@ export const emailValidator = [
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
-        .custom(checkedService.emailToBase)
+        .custom(CheckedService.emailToBase)
         .bail()
-        .withMessage('Field email incorrect'),
-];
+        .withMessage('Field email incorrect')
+]
 
 export const passEmailValidator = [
     body('email')
@@ -129,8 +135,8 @@ export const passEmailValidator = [
         .notEmpty()
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-        .withMessage('Field email incorrect'),
-];
+        .withMessage('Field email incorrect')
+]
 
 export const newPassValidator = [
     body('newPassword')
@@ -143,7 +149,6 @@ export const newPassValidator = [
         .isLength({min: 6, max: 20})
         .bail()
         .withMessage('Field newPassword incorrect'),
-
     body('recoveryCode')
         .isString()
         .bail()
@@ -151,8 +156,8 @@ export const newPassValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(checkedService.activateCodeValid)
+        .custom(CheckedService.activateCodeValid)
         .bail()
         .withMessage('Field recoveryCode incorrect')
-];
+]
 
