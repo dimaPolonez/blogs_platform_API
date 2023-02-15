@@ -77,8 +77,11 @@ class GuardService {
                                                         });
     }
 
-    public async killAllSessions(sessionId: ObjectId, userObject: userBDType) 
+    public async killAllSessions(id: ObjectId, userObject: userBDType) 
     {
+        const sessionId: ObjectId = new ObjectId(id)
+
+
         await ACTIVE_DEVICE.deleteMany({
                                             $and: [
                                                 {_id: {$ne: sessionId}},
@@ -87,8 +90,10 @@ class GuardService {
                                         })
     }
 
-    public async killOneSessionLogout(sessionId: ObjectId) 
+    public async killOneSessionLogout(id: ObjectId) 
     {
+        const sessionId: ObjectId = new ObjectId(id)
+        
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
     }
 
