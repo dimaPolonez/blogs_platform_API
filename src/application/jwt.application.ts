@@ -41,18 +41,16 @@ class JwtApp {
     public async updateRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
         Promise<string> 
     {
-        const deviceId: ObjectId = new ObjectId(sessionId)
-
         const expiresBase: number = 5400
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
         }).toString()
 
-        await GuardService.updateExpiredSession(deviceId, deviceInfoObject, expiresTime)
+        await GuardService.updateExpiredSession(sessionId, deviceInfoObject, expiresTime)
 
         const refreshToken: string = jwt.sign({
-                                                deviceId: deviceId,
+                                                deviceId: sessionId,
                                                 userId: user._id
                                             }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
 
