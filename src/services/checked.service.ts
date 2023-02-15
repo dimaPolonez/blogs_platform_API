@@ -41,10 +41,10 @@ class CheckedService {
         const date = Date.parse(findUser.activeUser.lifeTimeCode)
 
         if (isAfter(date, new Date())) {
+            return true
+        } else {
             throw new Error('Code is not valid')
         }
-        
-        return true
     }
 
     public async emailToBase(value: string):
