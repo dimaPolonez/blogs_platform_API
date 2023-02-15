@@ -43,9 +43,11 @@ class GuardService {
         return returnObject
     }
 
-    async checkedActiveSession(sessionId: ObjectId):
+    async checkedActiveSession(reqID: ObjectId):
         Promise<boolean> 
     {
+        const sessionId: ObjectId = new ObjectId(reqID)
+
         const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
@@ -61,8 +63,10 @@ class GuardService {
         }
     }
 
-    public async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 
+    public async updateExpiredSession(reqID: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 
     {
+        const sessionId: ObjectId = new ObjectId(reqID)
+        
         const nowDate: string = new Date().toISOString()
 
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
