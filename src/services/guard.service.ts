@@ -27,20 +27,20 @@ class GuardService {
     }
 
     public async allActiveSessions(userID: ObjectId):
-        Promise<null | returnActiveDevice> 
+        Promise<returnActiveDevice[]> 
     {
-        const allActiveDevice: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({userId: userID})
+        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userID}).toArray()
 
-        if (!allActiveDevice) {
-            return null
-        }
+        const returnObject: returnActiveDevice [] = allActiveDevice.map((fieldDevice: activeDeviceBDType) => {
+            return {
+                deviceId: fieldDevice._id,
+                ip: fieldDevice.ip,
+                lastActiveDate: fieldDevice.lastActiveDate,
+                title: fieldDevice.title
+            }
+        })
 
-        return {
-                    deviceId: allActiveDevice._id,
-                    ip: allActiveDevice.ip,
-                    lastActiveDate: allActiveDevice.lastActiveDate,
-                    title: allActiveDevice.title
-                }
+        return returnObject
     }
 
     async checkedActiveSession(sessionId: ObjectId):
