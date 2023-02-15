@@ -105,13 +105,13 @@ class GuardService {
 
         if (findActiveSession._id.toString() === userObject._id.toString()) {
 
-            await ACTIVE_DEVICE.deleteOne({_id: sessionId})
-
-            return ERRORS_CODE.NO_CONTENT_204
-            
-        } else {
-            return ERRORS_CODE.NOT_YOUR_OWN_403
+            return ERRORS_CODE.NOT_YOUR_OWN_403            
         }
+
+        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
+
+        return ERRORS_CODE.NO_CONTENT_204
+            
     }
 
 }
