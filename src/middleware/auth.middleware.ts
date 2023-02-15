@@ -87,7 +87,7 @@ export const cookieRefresh = async (
 
         if (findUser) {
             req.user = findUser
-            req.sessionId = new ObjectId(userRefreshId.sessionId)
+            req.sessionId = userRefreshId.sessionId
             next()
             return
         }
