@@ -1,110 +1,110 @@
 import {Response} from 'express';
-import postService from '../services/post.service';
+import PostService from '../services/post.service';
 import {ERRORS_CODE} from "../data/db.data";
-import {ObjectId} from "mongodb";
-import commentService from "../services/comment.service";
+import CommentService from "../services/comment.service";
 import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
 import {commentObjectResult} from "../models/comment.models";
 import { likesReq } from '../models/likes.models';
 
-class postController {
+class PostController {
 
-    async getOne(req: paramsReqType<paramsId>, res: Response) {
+    public async getOnePost(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
-            const post: false | postObjectResult = await postService.getOne(bodyId, req.userId);
+            const post: null | postObjectResult = await PostService.getOnePost(req.params.id, req.userId)
 
             if (post) {
-                res.status(ERRORS_CODE.OK_200).json(post);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                res.status(ERRORS_CODE.OK_200).json(post)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async create(req: bodyReqType<postReqType>, res: Response) {
+    public async createPost(req: bodyReqType<postReqType>, res: Response) 
+    {
         try {
-            const post: postObjectResult = await postService.create(req.body);
+            const post: postObjectResult = await PostService.createPost(req.body)
 
-            if (post) {
-                res.status(ERRORS_CODE.CREATED_201).json(post);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
-            }
+            res.status(ERRORS_CODE.CREATED_201).json(post)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async update(req: paramsAndBodyReqType<paramsId, postReqType>, res: Response) {
+    public async updatePost(req: paramsAndBodyReqType<paramsId, postReqType>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const updatedPost: boolean = await PostService.updatePost(req.params.id, req.body)
 
-            const post: boolean = await postService.update(bodyId, req.body);
-
-            if (post) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (updatedPost) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async likeStatus(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) {
+    public async likeStatusPost(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) 
+    {
         try {
-            const postId: ObjectId = new ObjectId(req.params.id);
+            const likedPost: boolean = await PostService.postLike(req.body.likeStatus, req.params.id, req.user)
 
-            const likeStatus: string = req.body.likeStatus;
-
-            const like: boolean = await postService.postLike(likeStatus, postId, req.user);
-
-            if (like) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (likedPost) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async delete(req: paramsReqType<paramsId>, res: Response) {
+    public async deletePost(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const deletedPost: boolean = await PostService.deletePost(req.params.id)
 
-            const post: boolean = await postService.delete(bodyId);
-
-            if (post) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (deletedPost) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async createCommentOfPost(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) {
+    public async createCommentOfPost(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) 
+    {
         try {
-            const postId: ObjectId = new ObjectId(req.params.id);
-
-            const comment: false | commentObjectResult = await commentService.createCommentOfPost(postId, req.body, req.user);
+            const comment: null | commentObjectResult = await CommentService.createCommentOfPost(req.params.id, req.body, req.user)
 
             if (comment) {
-                res.status(ERRORS_CODE.CREATED_201).json(comment);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                res.status(ERRORS_CODE.CREATED_201).json(comment)
+                return
             }
 
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 }
 
-export default new postController();
+export default new PostController()

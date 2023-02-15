@@ -1,84 +1,83 @@
 import {Response} from 'express';
-import commentService from "../services/comment.service";
+import CommentService from "../services/comment.service";
 import {ERRORS_CODE} from "../data/db.data";
-import {ObjectId} from "mongodb";
 import {paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {commentObjectResult, commentReqType} from "../models/comment.models";
 import {likesReq} from '../models/likes.models';
 
-class commentController {
+class CommentController {
 
-    async getOne(req: paramsReqType<paramsId>, res: Response) {
+    public async getOneComment(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
-
-            const comment: false | commentObjectResult = await commentService.getOne(bodyId, req.userId);
+            const comment: null | commentObjectResult = await CommentService.getOneComment(req.params.id, req.userId)
 
             if (comment) {
-                res.status(ERRORS_CODE.OK_200).json(comment);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                res.status(ERRORS_CODE.OK_200).json(comment)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async update(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) {
+    public async updateComment(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
-
-            const comment: number = await commentService.update(bodyId, req.body, req.user);
+            const comment: number = await CommentService.updateComment(req.params.id, req.body, req.user)
 
             switch (comment) {
                 case (204):
-                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
                 case (403):
-                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403);
+                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403)
                 case (404):
-                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
             }
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async likeStatus(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) {
+    public async likeStatusComment(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) 
+    {
         try {
-            const commentId: ObjectId = new ObjectId(req.params.id);
+            const likedComment: boolean = await CommentService.commentLike(req.body.likeStatus, req.params.id, req.user)
 
-            const likeStatus: string = req.body.likeStatus;
-
-            const like: boolean = await commentService.commentLike(likeStatus, commentId, req.user);
-
-            if (like) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (likedComment) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async delete(req: paramsReqType<paramsId>, res: Response) {
+    async deleteComment(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const deletedComment: number = await CommentService.deleteComment(req.params.id, req.user)
 
-            const comment: number = await commentService.delete(bodyId, req.user);
-
-            switch (comment) {
+            switch (deletedComment) {
                 case (204):
-                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
+                    return res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
                 case (403):
-                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403);
+                    return res.sendStatus(ERRORS_CODE.NOT_YOUR_OWN_403)
                 case (404):
-                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                    return res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
             }
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 }
 
-export default new commentController();
+export default new CommentController()

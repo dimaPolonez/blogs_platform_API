@@ -9,30 +9,32 @@ import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.mode
 import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
 import {ObjectId} from "mongodb";
 import {likesBDType, myLikeStatus, newestLikes} from "../models/likes.models";
-import likeService from "./like.service";
+import LikeService from "./like.service";
+import BlogService from "./blog.service";
+import PostService from "./post.service";
 
-function sortObject(sortDir: string) {
-    return (sortDir === 'desc') ? -1 : 1;
+function sortObject(sortDir: string)
+{
+    return (sortDir === 'desc') ? -1 : 1
 }
 
-function skippedObject(pageNum: number, pageSize: number): number {
-    return (pageNum - 1) * pageSize;
+function skippedObject(pageNum: number, pageSize: number)
+{
+    return (pageNum - 1) * pageSize
 }
 
-class queryService {
+class QueryService {
 
-    async getAllBlogs(
-        queryAll: notStringQueryReqPagOfSearchName):
-        Promise<resultBlogObjectType> {
+    public async getAllBlogs(queryAll: notStringQueryReqPagOfSearchName):
+        Promise<resultBlogObjectType> 
+    {
+        const allBlogs: blogBDType [] = await BLOGS
+                                                .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
+                                                .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+                                                .limit(queryAll.pageSize)
+                                                .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray()
 
-        const blogs: blogBDType [] = await BLOGS
-            .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
-            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-            .limit(queryAll.pageSize)
-            .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray();
-
-
-        const allMaps: blogAllMaps [] = blogs.map((field: blogBDType) => {
+        const allMapsBlog: blogAllMaps [] = allBlogs.map((field: blogBDType) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -40,271 +42,245 @@ class queryService {
                 websiteUrl: field.websiteUrl,
                 createdAt: field.createdAt
             }
-        });
+        })
 
-        const allCount: number = await BLOGS.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')});
+        const allCount: number = await BLOGS.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')})
+
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultBlogObjectType = {
+        return {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
             totalCount: allCount,
-            items: allMaps
+            items: allMapsBlog
         }
-
-        return resultObject
     }
 
-    async getAllPosts(queryAll: notStringQueryReqPag, userId: string): Promise<resultPostObjectType> {
+    public async getAllPosts(queryAll: notStringQueryReqPag, userId: ObjectId | null): 
+        Promise<resultPostObjectType> 
+    {
+        const allPostsFind: postBDType [] = await POSTS.find({})
+                                                                .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+                                                                .limit(queryAll.pageSize)
+                                                                .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const posts: postBDType [] = await POSTS.find({})
-            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-            .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
+        const allPostMapping: postAllMaps [] = await Promise.all(allPostsFind.map(async (fieldPost: postBDType) => {
 
-            const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
+                let userLikeStatus: myLikeStatus = myLikeStatus.None
+                let allLikeUserMapping: newestLikes[] | [] = []
 
-                let myUserStatus: myLikeStatus = myLikeStatus.None 
+                if (userId) {
+                    const likeUserArray: null | likesBDType = await LikeService.checkedLike(fieldPost._id, userId)
 
-                if (userId !== 'quest') {
-                    const userObjectId: ObjectId = new ObjectId(userId);
-
-                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
-
-                if (checked) {
-                    myUserStatus = checked.user.myStatus;
-                } else {
-                    myUserStatus = myLikeStatus.None
-                }
-                }
-
-                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
-    
-                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
-    
-                    return {    
-                                addedAt: field.addedAt,
-                                userId: field.user.userId,
-                                login: field.user.login
-                            }
-                        
+                    if (likeUserArray) {
+                        userLikeStatus = likeUserArray.user.myStatus
                     }
-                )
+                }
+
+                const resultUserLikeMapping: newestLikes[] | null = await LikeService.userLikeMaper(fieldPost._id)
+
+                if (resultUserLikeMapping) {
+                    allLikeUserMapping = resultUserLikeMapping
+                }
 
                 return {
-                    id: field._id,
-                    title: field.title,
-                    shortDescription: field.shortDescription,
-                    content: field.content,
-                    blogId: field.blogId,
-                    blogName: field.blogName,
-                    createdAt: field.createdAt,
+                    id: fieldPost._id,
+                    title: fieldPost.title,
+                    shortDescription: fieldPost.shortDescription,
+                    content: fieldPost.content,
+                    blogId: fieldPost.blogId,
+                    blogName: fieldPost.blogName,
+                    createdAt: fieldPost.createdAt,
                     extendedLikesInfo: {
-                        likesCount: field.extendedLikesInfo.likesCount,
-                        dislikesCount: field.extendedLikesInfo.dislikesCount,
-                        myStatus: myUserStatus,
-                        newestLikes: allMapsLikes
+                        likesCount: fieldPost.extendedLikesInfo.likesCount,
+                        dislikesCount: fieldPost.extendedLikesInfo.dislikesCount,
+                        myStatus: userLikeStatus,
+                        newestLikes: allLikeUserMapping
                     }
                 }
-            }));
+        }))
 
-        const allCount: number = await POSTS.countDocuments({});
+        const allCount: number = await POSTS.countDocuments({})
+
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultPostObjectType = {
+        return {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
             totalCount: allCount,
-            items: allMaps
+            items: allPostMapping
         }
-
-        return resultObject
     }
 
-    async getAllPostsOfBlog
-    (bodyID: ObjectId, queryAll: notStringQueryReqPag, userId:string):
-        Promise<resultPostObjectType | false> {
+    public async getAllPostsOfBlog (blogURIId: string, queryAll: notStringQueryReqPag, userId: ObjectId | null):
+        Promise<resultPostObjectType | null> 
+    {
+        const blogParamsId: ObjectId = new ObjectId(blogURIId)
 
-        const result: blogBDType [] = await BLOGS.find({_id: bodyID}).toArray()
+        const blogFind: null | blogBDType = await BlogService.findBlogById(blogParamsId)
 
-        if (result.length === 0) {
-            return false;
+        if (!blogFind) {
+            return null
         }
 
-        const posts: postBDType [] = await POSTS.find({blogId: bodyID})
-            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-            .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
+        const postsOfFindBlog: postBDType [] = await POSTS.find({blogId: blogParamsId})
+                                                                                        .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+                                                                                        .limit(queryAll.pageSize)
+                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-            const allMaps: postAllMaps [] = await Promise.all(posts.map(async (field: postBDType) => {
-                
-                let myUserStatus: myLikeStatus = myLikeStatus.None
+        const allPostMapping: postAllMaps [] = await Promise.all(postsOfFindBlog.map(async (fieldPost: postBDType) => {
 
-                if (userId !== 'quest') {
-                    const userObjectId: ObjectId = new ObjectId(userId);
+                let userLikeStatus: myLikeStatus = myLikeStatus.None
+                let allLikeUserMapping: newestLikes[] | [] = []
 
-                const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
+                if (userId) {
+                    const likeUserArray: null | likesBDType = await LikeService.checkedLike(fieldPost._id, userId)
 
-                if (checked) {
-                    myUserStatus = checked.user.myStatus;
-                } else {
-                    myUserStatus = myLikeStatus.None
-                }
-                }
-
-                const threeUser: likesBDType [] =  await likeService.threeUser(field._id)
-    
-                const allMapsLikes: newestLikes [] = threeUser.map((field: likesBDType) => {
-    
-                    return {    
-                                addedAt: field.addedAt,
-                                userId: field.user.userId,
-                                login: field.user.login
-                            }
-                        
+                    if(likeUserArray) {
+                        userLikeStatus = likeUserArray.user.myStatus
                     }
-                )
+                }
+
+                const resultUserLikeMapping: newestLikes[] | null = await LikeService.userLikeMaper(fieldPost._id)
+
+                if (resultUserLikeMapping) {
+                    allLikeUserMapping = resultUserLikeMapping
+                }
 
                 return {
-                    id: field._id,
-                    title: field.title,
-                    shortDescription: field.shortDescription,
-                    content: field.content,
-                    blogId: field.blogId,
-                    blogName: field.blogName,
-                    createdAt: field.createdAt,
+                    id: fieldPost._id,
+                    title: fieldPost.title,
+                    shortDescription: fieldPost.shortDescription,
+                    content: fieldPost.content,
+                    blogId: fieldPost.blogId,
+                    blogName: fieldPost.blogName,
+                    createdAt: fieldPost.createdAt,
                     extendedLikesInfo: {
-                        likesCount: field.extendedLikesInfo.likesCount,
-                        dislikesCount: field.extendedLikesInfo.dislikesCount,
-                        myStatus: myUserStatus,
-                        newestLikes: allMapsLikes
+                        likesCount: fieldPost.extendedLikesInfo.likesCount,
+                        dislikesCount: fieldPost.extendedLikesInfo.dislikesCount,
+                        myStatus: userLikeStatus,
+                        newestLikes: allLikeUserMapping
                     }
                 }
-            }));
+        }))
 
-
-        const allCount: number = await POSTS.countDocuments({blogId: bodyID});
+        const allCount: number = await POSTS.countDocuments({blogId: blogParamsId})
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultPostObjectType = {
+        const allPostsOfBlog: resultPostObjectType = {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
             totalCount: allCount,
-            items: allMaps
+            items:  allPostMapping
         }
 
-        return resultObject
-
+        return allPostsOfBlog
     }
 
-    async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
-        Promise<resultUserObjectType> {
+    public async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
+        Promise<resultUserObjectType> 
+    {
+        const usersAll: userBDType [] = await USERS
+                                                    .find(
+                                                        {
+                                                            $or: [
+                                                                {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                                                                {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
+                                                            ]
+                                                        }
+                                                    )
+                                                    .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+                                                    .limit(queryAll.pageSize)
+                                                    .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const users: userBDType [] = await USERS
-            .find(
-                {
-                    $or: [
-                        {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
-                        {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
-                    ]
-                }
-            )
-            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-            .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
-
-        const allMaps: userAllMaps [] = users.map((field: userBDType) => {
+        const allMapsUsers: userAllMaps [] = usersAll.map((fieldUser: userBDType) => {
             return {
-                id: field._id,
-                login: field.infUser.login,
-                email: field.infUser.email,
-                createdAt: field.infUser.createdAt
+                id: fieldUser._id,
+                login: fieldUser.infUser.login,
+                email: fieldUser.infUser.email,
+                createdAt: fieldUser.infUser.createdAt
             }
-        });
+        })
 
         const allCount: number = await USERS.countDocuments(
-            {
-                $or: [
-                    {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
-                    {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
-                ]
-            });
+                                                            {
+                                                                $or: [
+                                                                    {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                                                                    {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
+                                                                ]
+                                                            })
 
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultUserObjectType = {
+        return {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
             totalCount: allCount,
-            items: allMaps
+            items: allMapsUsers
         }
-
-        return resultObject
     }
 
-    async getAllCommentsOfBlog(bodyID: ObjectId, queryAll: notStringQueryReqPag, userId: string):
-        Promise<false | resultCommentObjectType> {
+    public async getAllCommentsOfPost(postURIId: string, queryAll: notStringQueryReqPag, userId: ObjectId | null):
+        Promise<null | resultCommentObjectType> 
+    {
+        const postID: ObjectId = new ObjectId(postURIId)
 
-        const result: postBDType [] = await POSTS.find({_id: bodyID}).toArray()
+        const findPost: null | postBDType = await PostService.findPost(postID)
 
-        if (result.length === 0) {
-            return false;
+        if (!findPost) {
+            return null
         }
 
-        const comments: commentOfPostBDType [] = await COMMENTS.find({postId: bodyID})
-            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-            .limit(queryAll.pageSize)
-            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray();
+        const comments: commentOfPostBDType [] = await COMMENTS.find({postId: postID})
+                                                                                        .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+                                                                                        .limit(queryAll.pageSize)
+                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        let myUserStatus: myLikeStatus = myLikeStatus.None
+        const allMapsComments: commentAllMaps [] = await Promise.all(comments.map(async (fieldComment: commentOfPostBDType) => {
 
+            let myUserStatus: myLikeStatus = myLikeStatus.None
 
+            if (userId) {
 
-        const allMaps: commentAllMaps [] = await Promise.all(comments.map(async (field: commentOfPostBDType) => {
+            const checkLikeComment: null | likesBDType = await LikeService.checkedLike(fieldComment._id, userId)
 
-            if (userId !== 'quest') {
-            const userObjectId: ObjectId = new ObjectId(userId);
-
-            const checked: false | likesBDType = await likeService.checked(field._id, userObjectId)
-
-                if (checked) {
-                    myUserStatus = checked.user.myStatus;
-                } else {
-                    myUserStatus = myLikeStatus.None
+                if (checkLikeComment) {
+                    myUserStatus = checkLikeComment.user.myStatus
                 }
             }
+
             return {
-                id: field._id,
-                content: field.content,
+                id: fieldComment._id,
+                content: fieldComment.content,
                 commentatorInfo: {
-                    userId: field.commentatorInfo.userId,
-                    userLogin: field.commentatorInfo.userLogin,
+                    userId: fieldComment.commentatorInfo.userId,
+                    userLogin: fieldComment.commentatorInfo.userLogin,
                 },
-                createdAt: field.createdAt,
+                createdAt: fieldComment.createdAt,
                 likesInfo: {
-                    likesCount: field.likesInfo.likesCount,
-                    dislikesCount: field.likesInfo.dislikesCount,
+                    likesCount: fieldComment.likesInfo.likesCount,
+                    dislikesCount: fieldComment.likesInfo.dislikesCount,
                     myStatus: myUserStatus
                 }
             }
-        }));
-        const allCount: number = await COMMENTS.countDocuments({postId: bodyID});
+        }))
+
+        const allCount: number = await COMMENTS.countDocuments({postId: postID})
+
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const resultObject: resultCommentObjectType = {
+        return {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
             totalCount: allCount,
-            items: allMaps
+            items: allMapsComments
         }
-
-        return resultObject
     }
 }
 
-export default new queryService();
+export default new QueryService()

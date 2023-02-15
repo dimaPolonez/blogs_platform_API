@@ -1,136 +1,168 @@
 import {ObjectId} from "mongodb";
 import {LIKES} from "../data/db.data";
-import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
+import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../models/likes.models";
 import {userBDType} from "../models/user.models";
 
-class likeService {
+class LikeService {
 
-    public async checked(objectId: ObjectId, userId: ObjectId):
-        Promise<false | likesBDType> {
-        const result: likesBDType [] = await LIKES.find({
-            $and: [
-                {"user.userId": userId},
-                {"object.typeId": objectId}
-            ]
-        }).toArray();
+    public async checkedLike(objectId: ObjectId, userId: ObjectId):
+        Promise<null | likesBDType> 
+    {
 
-        if (result.length === 0) {
-            return false
+        const findUserLike: likesBDType | null = await LIKES.findOne({
+                                                                        $and: [
+                                                                            {"user.userId": userId},
+                                                                            {"object.typeId": objectId}
+                                                                        ]
+                                                                    })
+        if (!findUserLike) {
+            return null
         } 
         
-        return result[0]
+        return findUserLike
     }
 
-    private async create(objectLike: likesBDType) {
-        await LIKES.insertOne(objectLike)
+    private async createLike(user: userBDType, object: countObject, likeStatus: myLikeStatus) 
+    {
+        await LIKES.insertOne({
+                                _id: new ObjectId(),
+                                user: {
+                                    userId: user._id,
+                                    login: user.infUser.login,
+                                    myStatus: likeStatus
+                                },
+                                object: {
+                                    type: object.type,
+                                    typeId: object.typeId
+                                },
+                                addedAt: new Date().toISOString()
+                            })
     }
 
-    private async update(status: myLikeStatus, objectLikeId: ObjectId) {
+    private async updateLike(status: myLikeStatus, objectLikeId: ObjectId) 
+    {
         await LIKES.updateOne({_id: objectLikeId}, {
-            $set:{
-                "user.myStatus": status
-            }})
+                                                    $set:{
+                                                        "user.myStatus": status
+                                                    }})
         
     }
 
     public async counterLike(likeStatusBody: string, object: countObject, user: userBDType):
-        Promise<likesCounter> {
-        let addDate: string = new Date().toISOString();
-        let result: likesCounter = {
+        Promise<likesCounter> 
+    {
+
+        let userLikesCount: likesCounter = {
             likesCount: object.likesCount,
             dislikesCount: object.dislikesCount
-        };
+        }
+        
         let myStatus: myLikeStatus = myLikeStatus.None
 
-        const findLike: false | likesBDType = await this.checked(object.typeId, user._id);
+        const findLike: null | likesBDType = await this.checkedLike(object.typeId, user._id)
 
         if (findLike) {
-            const likeCaseString = likeStatusBody + findLike.user.myStatus;
+
+            const likeCaseString = likeStatusBody + findLike.user.myStatus
 
             switch (likeCaseString) {
                 case ('LikeLike'):
                     myStatus = myLikeStatus.Like
                     break
                 case ('LikeDislike'):
-                    result.likesCount++
-                    result.dislikesCount--
+                    userLikesCount.likesCount++
+                    userLikesCount.dislikesCount--
                     myStatus = myLikeStatus.Like
                     break
                 case ('LikeNone'):
-                    result.likesCount++
+                    userLikesCount.likesCount++
                     myStatus = myLikeStatus.Like
                     break
                 case ('DislikeLike'):
-                    result.likesCount--
-                    result.dislikesCount++
+                    userLikesCount.likesCount--
+                    userLikesCount.dislikesCount++
                     myStatus = myLikeStatus.Dislike
                     break
                 case ('DislikeNone'):
-                    result.dislikesCount++
+                    userLikesCount.dislikesCount++
                     myStatus = myLikeStatus.Dislike
                     break
                 case ('DislikeDislike'):
                     myStatus = myLikeStatus.Dislike
                     break
                 case ('NoneDislike'):
-                    result.dislikesCount--
+                    userLikesCount.dislikesCount--
                     myStatus = myLikeStatus.None
                     break
                 case ('NoneLike'):
-                    result.likesCount--
+                    userLikesCount.likesCount--
                     myStatus = myLikeStatus.None
                     break
             }
 
-            await this.update(myStatus, findLike._id)
+            await this.updateLike(myStatus, findLike._id)
 
         } else {
-
+            
             switch (likeStatusBody) {
                 case ('Like'):
-                    result.likesCount++
+                    userLikesCount.likesCount++
                     myStatus = myLikeStatus.Like
                     break
-
+    
                 case ('Dislike'):
-                    result.dislikesCount++
+                    userLikesCount.dislikesCount++
                     myStatus = myLikeStatus.Dislike
                     break
             }
-
-            let objectLike: likesBDType = {
-                _id: new ObjectId(),
-                user: {
-                    userId: user._id,
-                    login: user.infUser.login,
-                    myStatus: myStatus
-                },
-                object: {
-                    type: object.type,
-                    typeId: object.typeId
-                },
-                addedAt: addDate
-            }
-
-            await this.create(objectLike)
+    
+            await this.createLike(user, object, myStatus)
         }
 
-        return result
+
+
+
+        return userLikesCount
     }
 
-    public async threeUser(postLikeId: ObjectId) {
+    public async threeUserLikesArray(postLikeId: ObjectId):
+        Promise<likesBDType [] | null>
+    
+    {
+        const likeUserArray: likesBDType [] =  await LIKES.find({
+                                                                    $and: [
+                                                                        {"object.typeId": postLikeId},
+                                                                        {"user.myStatus": myLikeStatus.Like}
+                                                                        ]
+                                                                
+                                                                }).limit(3).sort({addedAt: -1}).toArray();
 
-        const likesArray: likesBDType [] =  await LIKES.find({
-            $and: [
-                {"object.typeId": postLikeId},
-                {"user.myStatus": myLikeStatus.Like}
-                ]
-        
-        }).limit(3).sort({addedAt: -1}).toArray();
+        if (likeUserArray.length === 0) {
+            return null
+        }
 
-        return likesArray
+        return likeUserArray
     }
 
+    public async userLikeMaper(objectId: ObjectId):
+        Promise<newestLikes[] | null>
+    {
+        const threeUserArray: likesBDType [] | null =  await this.threeUserLikesArray(objectId)
+
+        if (!threeUserArray) {
+            return null
+        }
+
+        const allLikeUserMapping: newestLikes [] = threeUserArray.map((fieldLikeUser: likesBDType) => {
+
+        return {    
+                addedAt: fieldLikeUser.addedAt,
+                userId: fieldLikeUser.user.userId,
+                login: fieldLikeUser.user.login
+                }})
+
+        return allLikeUserMapping
+    }
 }
 
-export default new likeService();
+export default new LikeService()

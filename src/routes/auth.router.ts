@@ -1,56 +1,65 @@
 import {indexMiddleware} from "../middleware/index.middleware";
 import {Router} from "express";
-import authController from "../controllers/auth.controller";
+import AuthController from "../controllers/auth.controller";
 
 
-const authRouter = Router({});
+const authRouter = Router({})
 
 authRouter.post('/login',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USER_AUTH,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.authorization);
+    AuthController.authorization
+)
 
 authRouter.post('/refresh-token',
     indexMiddleware.COOKIE_REFRESH,
-    authController.refreshToken);
+    AuthController.refreshToken
+)
 
 authRouter.post('/password-recovery',
     indexMiddleware.IP_BANNER,
     indexMiddleware.PASS_EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.createNewPass);
+    AuthController.createNewPass
+)
 
 authRouter.post('/new-password',
     indexMiddleware.IP_BANNER,
     indexMiddleware.NEW_PASS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.updateNewPass);
+    AuthController.updateNewPass
+)
 
 authRouter.post('/registration-confirmation',
     indexMiddleware.IP_BANNER,
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.confirmEmail);
+    AuthController.confirmEmail
+)
 
 authRouter.post('/registration',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.registration);
+    AuthController.registration
+)
 
 authRouter.post('/registration-email-resending',
     indexMiddleware.IP_BANNER,
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.resendingEmail);
+    AuthController.resendingEmail
+)
 
 authRouter.post('/logout',
     indexMiddleware.COOKIE_REFRESH,
-    authController.logout);
+    AuthController.logout
+)
 
 authRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,
-    authController.aboutMe);
+    AuthController.aboutMe
+)
 
-export default authRouter;
+export default authRouter

@@ -19,20 +19,20 @@ export const errorsValidator = (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-    const errors = validationResult(req);
+) => 
+{
+    const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
         return res.status(400).json({
             errorsMessages: errors.array().map((x) => {
-                let object: object = {message: x.msg, field: x.param};
-                return object;
-            }),
+
+                return {message: x.msg, field: x.param}
+                 
+            })
         })
     }
-
-    next();
-    return
+    next()
 }
 
 export const indexMiddleware = {

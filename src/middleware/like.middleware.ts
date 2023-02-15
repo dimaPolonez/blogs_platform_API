@@ -1,7 +1,6 @@
 import {Request, Response, NextFunction} from "express";
 import {body} from "express-validator";
-import jwtApplication from "../application/jwt.application";
-import {returnRefreshObject} from "../models/activeDevice.models";
+import JwtApp from "../application/jwt.application";
 import {myLikeStatus} from "../models/likes.models";
 import {ObjectId} from "mongodb";
 
@@ -15,37 +14,35 @@ export const likeValidator = [
         .notEmpty()
         .bail()
         .withMessage('Field likeStatus incorrect')
-        .custom(async (value) => {
+        .custom((value) => {
             if (Object.values(myLikeStatus).includes(value)) {
                 return true
-            } else {
-                throw new Error('Field likeStatus incorrect');
             }
+            throw new Error('Field likeStatus incorrect')
         })
-];
+]
 
 export const reqUserId = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+) => 
+{
+    req.userId = null
 
     if (!req.headers.authorization) {
-        req.userId = 'quest';
-        next();
+        next()
         return
     }
 
-    const token: string = req.headers.authorization.substring(7)
+    const accessToken: string = req.headers.authorization.substring(7)
 
-    const userAccessId: ObjectId | null = await jwtApplication.verifyAccessJwt(token);
+    const userObjectId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
 
-    if (userAccessId) {
-        req.userId = userAccessId.toString();
-        next();
+    if (userObjectId) {
+        req.userId = new ObjectId (userObjectId)
+        next()
         return
     }
-    req.userId = 'quest';
-    next();
-    return
+    next()
 }

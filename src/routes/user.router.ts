@@ -1,28 +1,32 @@
 import {Response, Router} from "express";
 import {indexMiddleware} from "../middleware/index.middleware";
-import queryService from "../services/query.service";
+import QueryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
-import userController from "../controllers/user.controller";
+import UserController from "../controllers/user.controller";
 import {notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType} from "../models/request.models";
 import {resultUserObjectType} from "../models/user.models";
 
-const userRouter = Router({});
+const userRouter = Router({})
 
 userRouter.post('/',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    userController.create);
+    UserController.createUser
+)
 
 userRouter.delete('/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
-    userController.delete);
+    indexMiddleware.ERRORS_VALIDATOR,
+    UserController.deleteUser
+)
 
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
-    async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => {
+    indexMiddleware.ERRORS_VALIDATOR,
+    async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => 
+{
         try {
-
             let queryAll: notStringQueryReqPagSearchAuth = {
                 searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
                 searchEmailTerm: req.query.searchEmailTerm ? req.query.searchEmailTerm : '',
@@ -32,11 +36,13 @@ userRouter.get('/',
                 pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
             }
 
-            const users: resultUserObjectType = await queryService.getAllUsers(queryAll);
-            res.status(ERRORS_CODE.OK_200).json(users);
+            const allUsers: resultUserObjectType = await QueryService.getAllUsers(queryAll)
+
+            res.status(ERRORS_CODE.OK_200).json(allUsers)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     })
 
-export default userRouter;
+export default userRouter

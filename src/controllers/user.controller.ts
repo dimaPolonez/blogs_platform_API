@@ -1,45 +1,48 @@
 import {Response} from "express";
-import {ObjectId} from "mongodb";
 import {ERRORS_CODE} from "../data/db.data";
-import userService from "../services/user.service";
+import UserService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
-import {authParams} from "../models/auth.models";
+import { authParams } from "../models/auth.models";
 
-class userController {
+class UserController {
 
-    async create(req: bodyReqType<userReqType>, res: Response) {
+    public async createUser(req: bodyReqType<userReqType>, res: Response) 
+    {
         try {
 
             const authParams: authParams = {
                 confirm: true,
                 codeActivated: 'Activated',
                 lifeTimeCode: 'Activated'
-            }
+            } 
 
-            const user: userObjectResult = await userService.create(req.body, authParams);
-            res.status(ERRORS_CODE.CREATED_201).json(user);
+            const user: userObjectResult = await UserService.createUser(req.body, authParams)
+
+            res.status(ERRORS_CODE.CREATED_201).json(user)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async delete(req: paramsReqType<paramsId>, res: Response) {
+    public async deleteUser(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
-
-            const user: boolean = await userService.delete(bodyId);
+            const user: boolean = await UserService.deleteUser(req.params.id)
 
             if (user) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
 }
 
-export default new userController();
+export default new UserController()

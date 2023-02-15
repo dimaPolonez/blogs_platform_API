@@ -1,91 +1,92 @@
 import {Response} from 'express';
-import blogService from '../services/blog.service';
+import BlogService from '../services/blog.service';
 import {ERRORS_CODE} from "../data/db.data";
-import postService from "../services/post.service";
-import {ObjectId} from "mongodb";
+import PostService from "../services/post.service";
 import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {blogObjectResult, blogReqType} from "../models/blog.models";
 import {postObjectResult, postOfBlogReqType} from "../models/post.models";
 
-class blogController {
+class BlogController {
 
-    async getOne(req: paramsReqType<paramsId>, res: Response) {
+    public async getOneBlog(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const findBlog: null | blogObjectResult = await BlogService.getOneBlog(req.params.id)
 
-            const blog: false | blogObjectResult = await blogService.getOne(bodyId);
-
-            if (blog) {
-                res.status(ERRORS_CODE.OK_200).json(blog);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (findBlog) {
+                res.status(ERRORS_CODE.OK_200).json(findBlog)
+                return
             }
+            
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async create(req: bodyReqType<blogReqType>, res: Response) {
+    public async createBlog(req: bodyReqType<blogReqType>, res: Response) 
+    {
         try {
-            const blog: blogObjectResult = await blogService.create(req.body);
+            const createdBlog: blogObjectResult = await BlogService.createNewBlog(req.body)
 
-            if (blog) {
-                res.status(ERRORS_CODE.CREATED_201).json(blog);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
-            }
+            res.status(ERRORS_CODE.CREATED_201).json(createdBlog)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async update(req: paramsAndBodyReqType<paramsId, blogReqType>, res: Response) {
+    public async updateBlog(req: paramsAndBodyReqType<paramsId, blogReqType>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const updatedBlog: boolean = await BlogService.updateBlog(req.params.id, req.body)
 
-            const blog: boolean = await blogService.update(bodyId, req.body);
-
-            if (blog) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (updatedBlog) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async delete(req: paramsReqType<paramsId>, res: Response) {
+    public async deleteBlog(req: paramsReqType<paramsId>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const deletedBlog: boolean = await BlogService.deleteBlog(req.params.id)
 
-            const blog: boolean = await blogService.delete(bodyId);
-
-            if (blog) {
-                res.sendStatus(ERRORS_CODE.NO_CONTENT_204);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (deletedBlog) {
+                res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    async createOnePostOfBlog(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) {
+    public async createOnePostOfBlog(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) 
+    {
         try {
-            const bodyId: ObjectId = new ObjectId(req.params.id);
+            const createdPost: null | postObjectResult = await PostService.createOnePostOfBlog(req.params.id, req.body)
 
-            const post: false | postObjectResult = await postService.createOnePostOfBlog(bodyId, req.body);
-
-            if (post) {
-                res.status(ERRORS_CODE.CREATED_201).json(post);
-            } else {
-                res.sendStatus(ERRORS_CODE.NOT_FOUND_404);
+            if (createdPost) {
+                res.status(ERRORS_CODE.CREATED_201).json(createdPost)
+                return
             }
+
+            res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+
         } catch (e) {
-            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e);
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 }
 
-export default new blogController();
+export default new BlogController()

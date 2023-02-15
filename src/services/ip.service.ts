@@ -4,71 +4,67 @@ import {OBJECT_IP} from "../data/db.data";
 import {objectIP} from "../models/activeDevice.models";
 
 
-class ipService {
+class IpService {
 
-    async find(ip: string):
-        Promise<boolean> {
+    public async findIP(ip: string):
+        Promise<boolean> 
+    {
+        const findIp: null | objectIP = await OBJECT_IP.findOne({ip: ip})
 
-        const find: objectIP [] = await OBJECT_IP.find({ip: ip}).toArray();
-
-        if (find.length === 0) {
-            return this.create(ip)
+        if (!findIp) {
+            return await this.createIP(ip)
         }
 
-        return this.check(find[0])
-
+        return await this.checkIP(findIp)
     }
 
-    async create(ip: string):
-        Promise<true> {
-
-        const newDateCreated: Date = new Date()
-
+    private async createIP(ip: string):
+        Promise<boolean> 
+    {
         await OBJECT_IP.insertOne({
             _id: new ObjectID(),
             ip: ip,
-            lastDate: newDateCreated,
+            lastDate: new Date(),
             tokens: 4
         })
 
         return true
-
     }
 
-    async check(objectIP: objectIP):
-        Promise<boolean> {
-
+    private async checkIP(objectIP: objectIP):
+        Promise<boolean> 
+    {
         const newDateCreated: Date = new Date()
 
-        let seconds: number = differenceInSeconds(newDateCreated, objectIP.lastDate)
+        let seconds: number = differenceInSeconds(new Date(), objectIP.lastDate)
 
         if (seconds <= 10) {
 
-            if (objectIP.tokens > 0) {
+            if (objectIP.tokens > 0){
 
-                let newToken: number = objectIP.tokens - 1;
+                let newToken: number = objectIP.tokens - 1
 
                 await OBJECT_IP.updateOne({ip: objectIP.ip}, {
                     $set: {
                         tokens: newToken
                     }
                 })
-            } else {
-                return false
-            }
-        } else {
-            await OBJECT_IP.updateOne({_id: objectIP._id}, {
-                $set: {
-                    lastDate: newDateCreated,
-                    tokens: 4
-                }
-            })
 
-            return true
+                return true
+            }
+
+            return false
         }
+        
+        await OBJECT_IP.updateOne({_id: objectIP._id}, {
+                                                            $set: {
+                                                                lastDate: newDateCreated,
+                                                                tokens: 4
+                                                            }
+                                                        })
 
         return true
     }
 }
 
-export default new ipService();
+export default new IpService()
