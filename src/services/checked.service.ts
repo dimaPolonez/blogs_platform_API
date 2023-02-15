@@ -56,7 +56,7 @@ class CheckedService {
             throw new Error('Email is not registration')
         }
 
-        if (!(findUser.activeUser.codeActivated === 'Activated')){
+        if (findUser.activeUser.codeActivated === 'Activated'){
             throw new Error('Account activated')
         }
 
