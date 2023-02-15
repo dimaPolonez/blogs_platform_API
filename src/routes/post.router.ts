@@ -95,6 +95,7 @@ postRouter.get('/:id/comments',
             
             if (allComments) {
                 res.status(ERRORS_CODE.OK_200).json(allComments)
+                return
             }
 
             res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
