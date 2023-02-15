@@ -46,9 +46,7 @@ class GuardService {
     async checkedActiveSession(sessionId: ObjectId):
         Promise<boolean> 
     {
-        const findID: ObjectId = new ObjectId (sessionId)
-
-        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: findID})
+        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
             return false
@@ -77,11 +75,8 @@ class GuardService {
                                                         });
     }
 
-    public async killAllSessions(id: ObjectId, userObject: userBDType) 
+    public async killAllSessions(sessionId: ObjectId, userObject: userBDType) 
     {
-        const sessionId: ObjectId = new ObjectId(id)
-
-
         await ACTIVE_DEVICE.deleteMany({
                                             $and: [
                                                 {_id: {$ne: sessionId}},
@@ -90,10 +85,8 @@ class GuardService {
                                         })
     }
 
-    public async killOneSessionLogout(id: ObjectId) 
+    public async killOneSessionLogout(sessionId: ObjectId) 
     {
-        const sessionId: ObjectId = new ObjectId(id)
-        
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
     }
 
@@ -108,8 +101,7 @@ class GuardService {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        if (!(findActiveSession._id.toString() === userObject._id.toString())) {
-
+        if (!(sessionId.toString() === userObject._id.toString())) {
             return ERRORS_CODE.NOT_YOUR_OWN_403            
         }
 
