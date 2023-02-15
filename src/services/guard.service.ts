@@ -46,7 +46,9 @@ class GuardService {
     async checkedActiveSession(sessionId: ObjectId):
         Promise<boolean> 
     {
-        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
+        const findID: ObjectId = new ObjectId (sessionId)
+
+        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: findID})
 
         if (!findActiveSession) {
             return false
