@@ -59,9 +59,10 @@ class AuthService {
 
     }
 
-    public async findOneUserToId(bodyID: ObjectId):
+    public async findOneUserToId(userId: ObjectId):
         Promise<null | userBDType> 
     {
+        const bodyID: ObjectId = new ObjectId (userId)
         const findUserById: userBDType | null = await USERS.findOne({_id: bodyID})
 
         if (!findUserById) {
