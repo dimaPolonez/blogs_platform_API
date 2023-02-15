@@ -102,22 +102,25 @@ class LikeService {
 
             await this.updateLike(myStatus, findLike._id)
 
+        } else {
+            
+            switch (likeStatusBody) {
+                case ('Like'):
+                    userLikesCount.likesCount++
+                    myStatus = myLikeStatus.Like
+                    break
+    
+                case ('Dislike'):
+                    userLikesCount.dislikesCount++
+                    myStatus = myLikeStatus.Dislike
+                    break
+            }
+    
+            await this.createLike(user, object, myStatus)
         }
 
 
-        switch (likeStatusBody) {
-            case ('Like'):
-                userLikesCount.likesCount++
-                myStatus = myLikeStatus.Like
-                break
 
-            case ('Dislike'):
-                userLikesCount.dislikesCount++
-                myStatus = myLikeStatus.Dislike
-                break
-        }
-
-        await this.createLike(user, object, myStatus)
 
         return userLikesCount
     }
