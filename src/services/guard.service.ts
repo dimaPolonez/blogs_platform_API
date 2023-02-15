@@ -55,10 +55,10 @@ class GuardService {
         const date = Date.parse(findActiveSession.expiresTime)
 
         if (isAfter(date, new Date())){
+            return true
+        } else {
             return false
         }
-
-        return true
     }
 
     public async updateExpiredSession(sessionId: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 

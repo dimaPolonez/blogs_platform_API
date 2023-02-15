@@ -11,10 +11,8 @@ class GuardController {
         try {
             const activeDevice: null | returnActiveDevice = await GuardService.allActiveSessions(req.user._id)
 
-            if (activeDevice) {
-                res.status(ERRORS_CODE.OK_200).json(activeDevice)
-                return
-            }
+            res.status(ERRORS_CODE.OK_200).json(activeDevice)
+            return
             
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
