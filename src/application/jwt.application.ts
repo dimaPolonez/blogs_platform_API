@@ -11,8 +11,8 @@ class JwtApp {
 
     public async createAccessJwt(user: userBDType): 
         Promise<tokensObjectType> 
-    {                                               //540
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 10})
+    {                                            
+        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 540})
 
         return {
             accessToken: accessToken,
@@ -21,8 +21,8 @@ class JwtApp {
 
     public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
         Promise<string> 
-    {                                   //5400
-        const expiresBase: number = 20
+    {                                
+        const expiresBase: number = 5400
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
@@ -43,7 +43,7 @@ class JwtApp {
     {
         const deviceId: ObjectId = new ObjectId(sessionId)
 
-        const expiresBase: number = 20
+        const expiresBase: number = 5400
 
         const expiresTime: string = add(new Date(), {
             seconds: expiresBase
