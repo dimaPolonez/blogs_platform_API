@@ -109,7 +109,7 @@ class GuardService {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        if (!(sessionId.toString() === userObject._id.toString())) {
+        if (!(findActiveSession.userId.toString() === userObject._id.toString())) {
             return ERRORS_CODE.NOT_YOUR_OWN_403            
         }
 
