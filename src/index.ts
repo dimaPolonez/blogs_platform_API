@@ -16,9 +16,11 @@ async function startApp() {
 
         await startBD()
 
-        app.listen(PORT, () => {
-            console.log(`Example app listening on port ${PORT}`)
-        })
+        if (process.env.NODE_ENV !== 'test') {
+            app.listen(PORT, () => {
+                console.log(`Example app listening on port ${PORT}`)
+            })
+          }
 }
 
 startApp()

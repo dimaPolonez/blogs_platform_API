@@ -11,6 +11,7 @@
     "@types/uuid": "^9.0.0",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
+    "cross-env": "^7.0.3",
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -38,7 +39,6 @@
     "watch": "tsc -w",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "test": "jest --watch"
+    "test": "cross-env NODE_ENV=test jest api.test.ts --watchAll"
   }
 }
- 
