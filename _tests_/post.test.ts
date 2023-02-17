@@ -3,9 +3,10 @@ import { testObject } from '../src/models/request.models';
 
 
 
-export function blogFlow(api: supertest.SuperTest<supertest.Test>, testObject: testObject) {
+export function postFlow(api: supertest.SuperTest<supertest.Test>, testObject: testObject) {
 
-    describe('blogFlow tests start', () => {
+
+    describe('postFlow tests start', () => {
 
         it('get all blog', async () => {
             await api.get('/blogs/')

@@ -59,3 +59,12 @@ export type notStringQueryReqPag = {
     pageNumber: number,
     pageSize: number
 }
+
+export type testObject = {
+    basic: string,
+    accessToken: string,
+    refreshToken: string,
+    userID: string,
+    blogID: string,
+    postID: string
+}
