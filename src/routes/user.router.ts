@@ -17,6 +17,7 @@ userRouter.post('/',
 
 userRouter.delete('/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     UserController.deleteUser
 )

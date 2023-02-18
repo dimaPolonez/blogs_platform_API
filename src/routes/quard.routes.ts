@@ -17,6 +17,8 @@ guardRouter.delete('/devices',
 
 guardRouter.delete('/devices/:id',
     indexMiddleware.COOKIE_REFRESH,
+    indexMiddleware.PARAMS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
     GuardController.killOneSession
 )
 

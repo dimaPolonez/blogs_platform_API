@@ -14,7 +14,10 @@ import {resultPostObjectType} from '../models/post.models';
 const blogRouter = Router({})
 
 blogRouter.get(
-    '/:id', BlogController.getOneBlog
+    '/:id',
+    indexMiddleware.PARAMS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
+    BlogController.getOneBlog
 )
 
 blogRouter.post(
@@ -29,6 +32,7 @@ blogRouter.put(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.BLOGS_VALIDATOR,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     BlogController.updateBlog
 )
@@ -36,6 +40,7 @@ blogRouter.put(
 blogRouter.delete(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     BlogController.deleteBlog
 )
@@ -44,12 +49,15 @@ blogRouter.post(
     '/:id/posts',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.POSTS_OF_BLOG_VALIDATOR,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     BlogController.createOnePostOfBlog
 )
 
 blogRouter.get('/:id/posts',
     indexMiddleware.USER_ID,
+    indexMiddleware.PARAMS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
     async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => 
     {
         try {
@@ -74,7 +82,7 @@ blogRouter.get('/:id/posts',
         }
     })
 
-blogRouter.get('/', 
+blogRouter.get('/',
     async (req: queryReqType<queryReqPagOfSearchName>, res: Response) => 
     {
         try {

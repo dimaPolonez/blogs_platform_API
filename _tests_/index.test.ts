@@ -5,6 +5,7 @@ import { settings } from '../src/data/db.data';
 import { blogFlow } from './blog.test';
 import { testObject } from '../src/models/request.models';
 import { postFlow } from './post.test';
+import {commentFlow} from "./comments.test";
 
 const api = supertest(app)
 
@@ -26,11 +27,14 @@ it('server start', async () => {
 it('clear base', async () => {
     await api.delete("/testing/all-data")
         .expect(204)
+
 })
+
+jest.setTimeout(10000)
 
 describe('start base tests', () => {
 
-    it('create new user', async () => {
+    it('post new user status 201', async () => {
         await api.post("/users").set('Authorization', `Basic ${testObject.basic}`)
             .send({
                 login: 'Polonez',
@@ -40,7 +44,7 @@ describe('start base tests', () => {
             .expect(201)
     })
 
-    it('aut user and get tokens', async () => {
+    it('post aut user and get tokens status 200', async () => {
         await api.post("/auth/login")
             .send({
                 loginOrEmail: 'Polonez',
@@ -51,11 +55,11 @@ describe('start base tests', () => {
                 testObject.accessToken = res.body['accessToken']
                 testObject.refreshToken = res.headers['set-cookie'][0]
                 const validAccess: any = jwt.verify(testObject.accessToken, settings.JWT_SECRET)
-                testObject.userID = validAccess.userID
+                testObject.userID = validAccess.userId
             })
     })
 
-    it('create new blog', async () => {
+    it('post new blog status 201', async () => {
         await api.post("/blogs").set('Authorization', `Basic ${testObject.basic}`)
             .send({
                 name: 'Test blog',
@@ -77,7 +81,7 @@ describe('start base tests', () => {
             })
     })
 
-    it('create new post', async () => {
+    it('post new post status 201', async () => {
         await api.post("/posts").set('Authorization', `Basic ${testObject.basic}`)
             .send({
                 title: 'Test post',
@@ -113,6 +117,8 @@ describe('start base tests', () => {
 blogFlow(api, testObject)
 
 postFlow(api, testObject)
+
+commentFlow(api, testObject)
 
 
 

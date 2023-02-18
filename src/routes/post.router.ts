@@ -17,6 +17,8 @@ const postRouter = Router({})
 postRouter.get(
     '/:id', 
     indexMiddleware.USER_ID,
+    indexMiddleware.PARAMS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
     PostController.getOnePost
 )
 
@@ -32,6 +34,7 @@ postRouter.put(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.POSTS_VALIDATOR,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     PostController.updatePost
 )
@@ -39,6 +42,7 @@ postRouter.put(
 postRouter.put('/:id/like-status',
     indexMiddleware.BEARER_AUTHORIZATION,
     indexMiddleware.LIKE_VALIDATOR,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     PostController.likeStatusPost
 )
@@ -46,6 +50,7 @@ postRouter.put('/:id/like-status',
 postRouter.delete(
     '/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     PostController.deletePost
 )
@@ -53,6 +58,7 @@ postRouter.delete(
 postRouter.post('/:id/comments',
     indexMiddleware.BEARER_AUTHORIZATION,
     indexMiddleware.COMMENT_VALIDATOR,
+    indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
     PostController.createCommentOfPost
 )
@@ -81,6 +87,8 @@ postRouter.get('/',
 
 postRouter.get('/:id/comments',
     indexMiddleware.USER_ID,
+    indexMiddleware.PARAMS_VALIDATOR,
+    indexMiddleware.ERRORS_VALIDATOR,
     async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => 
     {
         try {
