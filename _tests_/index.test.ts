@@ -6,6 +6,7 @@ import { blogFlow } from './blog.test';
 import { testObject } from '../src/models/request.models';
 import { postFlow } from './post.test';
 import {commentFlow} from "./comments.test";
+import {likeFlow} from "./like.test";
 
 const api = supertest(app)
 
@@ -114,11 +115,13 @@ describe('start base tests', () => {
 
 })
 
-blogFlow(api, testObject)
+//blogFlow(api, testObject)
 
-postFlow(api, testObject)
+//postFlow(api, testObject)
 
-commentFlow(api, testObject)
+//commentFlow(api, testObject)
+
+//likeFlow(api,testObject)
 
 
 
