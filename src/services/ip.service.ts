@@ -1,7 +1,7 @@
 import {ObjectID} from "bson";
 import {differenceInSeconds} from "date-fns";
 import {OBJECT_IP} from "../data/db.data";
-import {objectIP} from "../models/activeDevice.models";
+import {objectIpBDType} from "../models/session.models";
 
 
 class IpService {
@@ -9,7 +9,7 @@ class IpService {
     public async findIP(ip: string):
         Promise<boolean> 
     {
-        const findIp: null | objectIP = await OBJECT_IP.findOne({ip: ip})
+        const findIp: null | objectIpBDType = await OBJECT_IP.findOne({ip: ip})
 
         if (!findIp) {
             return await this.createIP(ip)
@@ -21,17 +21,17 @@ class IpService {
     private async createIP(ip: string):
         Promise<boolean> 
     {
-        await OBJECT_IP.insertOne({
+       /* await OBJECT_IP.insertOne({
             _id: new ObjectID(),
             ip: ip,
             lastDate: new Date(),
             tokens: 4
-        })
+        })*/
 
         return true
     }
 
-    private async checkIP(objectIP: objectIP):
+    private async checkIP(objectIP: objectIpBDType):
         Promise<boolean> 
     {
         const newDateCreated: Date = new Date()

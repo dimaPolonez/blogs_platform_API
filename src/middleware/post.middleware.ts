@@ -46,11 +46,11 @@ export const postValidator = [
 
             const valueId = new ObjectId(value)
 
-            const findBlog: null| blogBDType = await BlogService.findBlogById(valueId)
+        /*    const findBlog: null| blogBDType = await BlogService.findBlogById(valueId)
 
             if (findBlog) {
                 return true
-            }
+            }*/
 
             throw new Error('Field blogId incorrect')
         })

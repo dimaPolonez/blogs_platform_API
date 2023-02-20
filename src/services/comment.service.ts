@@ -148,7 +148,7 @@ class CommentService {
             return null
         }
 
-        await COMMENTS.insertOne({
+        /*await COMMENTS.insertOne({
                                     _id: newGenerateId,
                                     content: body.content,
                                     commentatorInfo: {
@@ -162,7 +162,7 @@ class CommentService {
                                         dislikesCount: 0,
                                         myStatus: myLikeStatus.None
                                     }
-                                })
+                                })*/
         
         return {
                 id: newGenerateId,

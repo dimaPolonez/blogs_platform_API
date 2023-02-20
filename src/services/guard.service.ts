@@ -1,7 +1,7 @@
 import {isAfter} from "date-fns";
 import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE, ERRORS_CODE} from "../data/db.data";
-import {activeDeviceBDType, deviceInfoObject, returnActiveDevice} from "../models/activeDevice.models";
+import {sessionBDType, deviceInfoObject, returnActiveDevice} from "../models/session.models";
 import {userBDType} from "../models/user.models";
 
 
@@ -14,14 +14,14 @@ class GuardService {
 
         const nowDate: string = new Date().toISOString()
 
-        await ACTIVE_DEVICE.insertOne({
+        /*await ACTIVE_DEVICE.insertOne({
                                         _id: newGenerateId,
                                         userId: userId,
                                         ip: deviceInfo.ip,
                                         title: deviceInfo.title,
                                         lastActiveDate: nowDate,
                                         expiresTime: expiresTime
-                                    })
+                                    })*/
 
         return newGenerateId
     }
@@ -29,9 +29,11 @@ class GuardService {
     public async allActiveSessions(userID: ObjectId):
         Promise<returnActiveDevice[]> 
     {
-        const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userID}).toArray()
+        //const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userID}).toArray()
 
-        const returnObject: returnActiveDevice [] = allActiveDevice.map((fieldDevice: activeDeviceBDType) => {
+                        const allActiveDevice: [] = []
+
+        const returnObject: returnActiveDevice [] = allActiveDevice.map((fieldDevice: sessionBDType) => {
             return {
                 deviceId: fieldDevice._id,
                 ip: fieldDevice.ip,
@@ -48,7 +50,7 @@ class GuardService {
     {
         const sessionId: ObjectId = new ObjectId(reqID)
 
-        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
+        const findActiveSession: null | sessionBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
             return false
@@ -103,7 +105,7 @@ class GuardService {
     {
         const sessionId: ObjectId = new ObjectId(sessionURIId)
 
-        const findActiveSession: null | activeDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
+        const findActiveSession: null | sessionBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
             return ERRORS_CODE.NOT_FOUND_404

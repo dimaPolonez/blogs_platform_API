@@ -87,17 +87,17 @@ class PostService {
 
         const postNewId: ObjectId = new ObjectId()
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
+       /* const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
-        }
+        }*/
 
         const nowDate = new Date().toISOString()
 
         
 
-        await POSTS.insertOne({
+        /*await POSTS.insertOne({
                                 _id: postNewId,
                                 title: body.title,
                                 shortDescription: body.shortDescription,
@@ -111,7 +111,7 @@ class PostService {
                                     myStatus: myLikeStatus.None,
                                     newestLikes: []
                                 }
-                            })
+                            })*/
 
 
         return {
@@ -146,11 +146,11 @@ class PostService {
             return false
         }
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
+       /* const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
-        }
+        }*/
 
         await POSTS.updateOne({_id: bodyID}, {
                                                 $set: {
@@ -222,7 +222,7 @@ class PostService {
 
         const nowDate = new Date().toISOString()
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(bodyID)
+        /*const blogFind: null | blogBDType = await BlogService.findBlogById(bodyID)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -242,7 +242,7 @@ class PostService {
                                                     myStatus: myLikeStatus.None,
                                                     newestLikes: []
                                                     }
-                                })
+                                })*/
         return {
                 id: postNewId,
                 title: body.title,

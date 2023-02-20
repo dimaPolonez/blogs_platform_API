@@ -1,12 +1,11 @@
-import {MongoClient} from 'mongodb';
-import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import {blogBDType} from '../models/blog.models';
-import {postBDType} from '../models/post.models';
-import {userBDType} from '../models/user.models';
-import {commentOfPostBDType} from '../models/comment.models';
-import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
-import {likesBDType} from '../models/likes.models';
+import mongoose from 'mongoose';
+import { postBDSchema } from './entity/post.entity';
+import { commentOfPostBDSchema } from './entity/comment.entity';
+import { userBDSchema } from './entity/user.entity';
+import { objectIpBDSchema } from './entity/objectIP.entity';
+import { likesBDSchema } from './entity/likes.entity';
+import { sessionBDSchema } from './entity/session.entity';
 
 dotenv.config()
 
@@ -19,30 +18,24 @@ export const settings = {
     MAIL_URL_PASS: process.env.MAIL_URL_PASS
 }
 
-export const client = new MongoClient(settings.DB_URL)
-
 export async function startBD() {
     try {
-        await client.connect()
 
-        await client.db('blogs_platform_API').command({ping: 1})
+        await mongoose.connect(settings.DB_URL)
 
         console.log('Connected successfully to mongo server')
 
     } catch {
-        await client.close()
+        await mongoose.disconnect();
     }
 }
 
-const db: mongoDB.Db = client.db(process.env.DB_NAME)
-
-export const BLOGS = db.collection<blogBDType>('blogs')
-export const POSTS = db.collection<postBDType>('posts')
-export const USERS = db.collection<userBDType>('users')
-export const COMMENTS = db.collection<commentOfPostBDType>('comments')
-export const ACTIVE_DEVICE = db.collection<activeDeviceBDType>('refreshTokensActive')
-export const OBJECT_IP = db.collection<objectIP>('objectIP')
-export const LIKES = db.collection<likesBDType>('likes')
+export const POSTS = mongoose.model('posts', postBDSchema)
+export const USERS = mongoose.model('users', userBDSchema)
+export const COMMENTS = mongoose.model('comments', commentOfPostBDSchema)
+export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
+export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
+export const LIKES = mongoose.model('likes', likesBDSchema)
 
 export const ERRORS_CODE = {
     OK_200: 200,

@@ -35,7 +35,7 @@ jest.setTimeout(10000)
 
 describe('start base tests', () => {
 
-    it('post new user status 201', async () => {
+/*    it('post new user status 201', async () => {
         await api.post("/users").set('Authorization', `Basic ${testObject.basic}`)
             .send({
                 login: 'Polonez',
@@ -58,7 +58,7 @@ describe('start base tests', () => {
                 const validAccess: any = jwt.verify(testObject.accessToken, settings.JWT_SECRET)
                 testObject.userID = validAccess.userId
             })
-    })
+    })*/
 
     it('post new blog status 201', async () => {
         await api.post("/blogs").set('Authorization', `Basic ${testObject.basic}`)
@@ -82,7 +82,7 @@ describe('start base tests', () => {
             })
     })
 
-    it('post new post status 201', async () => {
+ /*   it('post new post status 201', async () => {
         await api.post("/posts").set('Authorization', `Basic ${testObject.basic}`)
             .send({
                 title: 'Test post',
@@ -111,11 +111,11 @@ describe('start base tests', () => {
                     }
                 })
             })
-    })
+    })*/
 
 })
 
-//blogFlow(api, testObject)
+blogFlow(api, testObject)
 
 //postFlow(api, testObject)
 

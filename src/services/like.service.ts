@@ -24,7 +24,7 @@ class LikeService {
 
     private async createLike(user: userBDType, object: countObject, likeStatus: myLikeStatus) 
     {
-        await LIKES.insertOne({
+        /*await LIKES.insertOne({
                                 _id: new ObjectId(),
                                 user: {
                                     userId: user._id,
@@ -36,7 +36,7 @@ class LikeService {
                                     typeId: object.typeId
                                 },
                                 addedAt: new Date().toISOString()
-                            })
+                            })*/
     }
 
     private async updateLike(status: myLikeStatus, objectLikeId: ObjectId) 
@@ -129,13 +129,14 @@ class LikeService {
         Promise<likesBDType [] | null>
     
     {
-        const likeUserArray: likesBDType [] =  await LIKES.find({
+       /* const likeUserArray: likesBDType [] =  await LIKES.find({
                                                                     $and: [
                                                                         {"object.typeId": postLikeId},
                                                                         {"user.myStatus": myLikeStatus.Like}
                                                                         ]
                                                                 
-                                                                }).limit(3).sort({addedAt: -1}).toArray();
+                                                                }).limit(3).sort({addedAt: -1}).toArray()*/
+                                                                const likeUserArray: [] = []
 
         if (likeUserArray.length === 0) {
             return null

@@ -3,7 +3,7 @@ import {settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
 import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
-import {deviceInfoObject, returnRefreshObject} from "../models/activeDevice.models";
+import {deviceInfoObject, returnRefreshObject} from "../models/session.models";
 import GuardService from "../services/guard.service";
 import {add} from 'date-fns';
 

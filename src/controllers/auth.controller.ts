@@ -9,7 +9,7 @@ import AuthService from '../services/auth.service';
 import UserService from '../services/user.service';
 import {authParams} from "../models/auth.models";
 import ActiveCodeApp from "../application/codeActive.application";
-import {deviceInfoObject} from "../models/activeDevice.models";
+import {deviceInfoObject} from "../models/session.models";
 import GuardService from '../services/guard.service';
 import BcryptApp from '../application/bcrypt.application';
 

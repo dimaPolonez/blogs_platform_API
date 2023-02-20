@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import {ERRORS_CODE} from "../data/db.data";
-import {returnActiveDevice} from '../models/activeDevice.models';
+import {returnActiveDevice} from '../models/session.models';
 import {paramsId, paramsReqType} from '../models/request.models';
 import GuardService from '../services/guard.service';
 

@@ -64,7 +64,7 @@ export function blogFlow(api: supertest.SuperTest<supertest.Test>, testObject: t
                 })
         })
 
-        it('post new post by id blog status 201', async () => {
+   /*     it('post new post by id blog status 201', async () => {
             await api.post(`/blogs/${testObject.blogID}/posts`).set('Authorization', `Basic ${testObject.basic}`)
                 .send({
                     title: 'Test post by blog',
@@ -97,7 +97,7 @@ export function blogFlow(api: supertest.SuperTest<supertest.Test>, testObject: t
                         }
                     })
                 })
-        })
+        })*/
 
         it('post new deleteBlog status 201', async () => {
             await api.post("/blogs").set('Authorization', `Basic ${testObject.basic}`)

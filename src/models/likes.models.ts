@@ -10,7 +10,7 @@ export type likesBDType = {
     object: {
         typeId: ObjectId,
         type: string
-    }
+    },
     addedAt: string
 }
 

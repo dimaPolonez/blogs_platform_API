@@ -1,4 +1,4 @@
-import {BLOGS, COMMENTS, POSTS, USERS} from "../data/db.data";
+import {COMMENTS, POSTS, USERS} from "../data/db.data";
 import {
     notStringQueryReqPag,
     notStringQueryReqPagOfSearchName, notStringQueryReqPagSearchAuth
@@ -12,6 +12,7 @@ import {likesBDType, myLikeStatus, newestLikes} from "../models/likes.models";
 import LikeService from "./like.service";
 import BlogService from "./blog.service";
 import PostService from "./post.service";
+import { BlogModel } from "../data/entity/blog.entity";
 
 function sortObject(sortDir: string)
 {
@@ -28,11 +29,13 @@ class QueryService {
     public async getAllBlogs(queryAll: notStringQueryReqPagOfSearchName):
         Promise<resultBlogObjectType> 
     {
-        const allBlogs: blogBDType [] = await BLOGS
+        /*const allBlogs: blogBDType [] = await BLOGS
                                                 .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
                                                 .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                 .limit(queryAll.pageSize)
-                                                .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray()
+                                                .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray()*/
+
+                                                const allBlogs: [] = []
 
         const allMapsBlog: blogAllMaps [] = allBlogs.map((field: blogBDType) => {
             return {
@@ -44,7 +47,7 @@ class QueryService {
             }
         })
 
-        const allCount: number = await BLOGS.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')})
+        const allCount: number = await BlogModel.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')})
 
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
@@ -60,10 +63,11 @@ class QueryService {
     public async getAllPosts(queryAll: notStringQueryReqPag, userId: ObjectId | null): 
         Promise<resultPostObjectType> 
     {
-        const allPostsFind: postBDType [] = await POSTS.find({})
+        /*const allPostsFind: postBDType [] = await POSTS.find({})
                                                                 .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                 .limit(queryAll.pageSize)
-                                                                .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
+                                                                .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()*/
+                                                                const allPostsFind: [] = []
 
         const allPostMapping: postAllMaps [] = await Promise.all(allPostsFind.map(async (fieldPost: postBDType) => {
 
@@ -119,7 +123,7 @@ class QueryService {
     {
         const blogParamsId: ObjectId = new ObjectId(blogURIId)
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogParamsId)
+       /* const blogFind: null | blogBDType = await BlogService.findBlogById(blogParamsId)
 
         if (!blogFind) {
             return null
@@ -128,7 +132,9 @@ class QueryService {
         const postsOfFindBlog: postBDType [] = await POSTS.find({blogId: blogParamsId})
                                                                                         .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                                         .limit(queryAll.pageSize)
-                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
+                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()*/
+
+                                                                                        const postsOfFindBlog: [] = []
 
         const allPostMapping: postAllMaps [] = await Promise.all(postsOfFindBlog.map(async (fieldPost: postBDType) => {
 
@@ -183,7 +189,7 @@ class QueryService {
     public async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
         Promise<resultUserObjectType> 
     {
-        const usersAll: userBDType [] = await USERS
+        /*const usersAll: userBDType [] = await USERS
                                                     .find(
                                                         {
                                                             $or: [
@@ -194,7 +200,8 @@ class QueryService {
                                                     )
                                                     .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                     .limit(queryAll.pageSize)
-                                                    .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
+                                                    .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()*/
+                                                    const usersAll: [] = []
 
         const allMapsUsers: userAllMaps [] = usersAll.map((fieldUser: userBDType) => {
             return {
@@ -235,10 +242,12 @@ class QueryService {
             return null
         }
 
-        const comments: commentOfPostBDType [] = await COMMENTS.find({postId: postID})
+        /*const comments: commentOfPostBDType [] = await COMMENTS.find({postId: postID})
                                                                                         .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                                         .limit(queryAll.pageSize)
-                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
+                                                                                        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()*/
+
+                                                                                        const comments: [] = []
 
         const allMapsComments: commentAllMaps [] = await Promise.all(comments.map(async (fieldComment: commentOfPostBDType) => {
 

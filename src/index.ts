@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {ACTIVE_DEVICE, BLOGS, COMMENTS, ERRORS_CODE, LIKES, OBJECT_IP, POSTS, startBD, USERS} from './data/db.data';
+import {ACTIVE_DEVICE, COMMENTS, ERRORS_CODE, LIKES, OBJECT_IP, POSTS, startBD, USERS} from './data/db.data';
 import blogRouter from './routes/blog.router';
 import postRouter from './routes/post.router';
 import userRouter from "./routes/user.router";
@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.router";
 import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
 import guardRouter from "./routes/quard.routes";
+import blogRepository from './data/repository/blog.repository';
 
 const PORT = process.env.PORT || 5000
 
@@ -44,7 +45,7 @@ app.get('/', async (req: Request, res: Response) =>
 app.delete('/testing/all-data', async (req: Request, res: Response) => 
 {
     try {
-        await BLOGS.deleteMany({})
+        await blogRepository.deleteAllBlog()
         await POSTS.deleteMany({})
         await USERS.deleteMany({})
         await COMMENTS.deleteMany({})

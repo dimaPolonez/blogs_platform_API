@@ -1,101 +1,39 @@
-import {BLOGS} from '../data/db.data';
-import {ObjectId} from "mongodb";
-import {blogBDType, blogObjectResult, blogReqType} from "../models/blog.models";
+import {blogObjectResult, blogReqType} from "../models/blog.models";
+import blogRepository from '../data/repository/blog.repository';
 
 class BlogService {
 
-    public async findBlogById(bodyID: ObjectId):
-        Promise<null | blogBDType>
-    {
-        const findBlogById: null | blogBDType = await BLOGS.findOne({_id: bodyID})
-
-        if (!findBlogById) {
-            return null
-        }
-
-        return findBlogById
-    }
-
-    public async getOneBlog(blogURIId: string):
+    public async getOneBlog(blogID: string):
         Promise<null | blogObjectResult> 
     {
-        const bodyID: ObjectId = new ObjectId(blogURIId)
+        const oneBlog: null | blogObjectResult = await blogRepository.findOneById(blogID)
 
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
-
-        if (!findBlog) {
-            return null
-        }
-
-        return {
-                id: findBlog._id,
-                name: findBlog.name,
-                description: findBlog.description,
-                websiteUrl: findBlog.websiteUrl,
-                createdAt: findBlog.createdAt
-            }
+        return oneBlog
     }
 
-    public async createNewBlog(body: blogReqType):
+    public async createNewBlog(blogDTO: blogReqType):
         Promise<blogObjectResult> 
     {
-        const newGenerateId: ObjectId = new ObjectId()
+        const createdBlog: blogObjectResult = await blogRepository.createBlog(blogDTO) 
+        
+        return createdBlog
 
-        const nowDate: string = new Date().toISOString()
-
-        await BLOGS.insertOne({
-                                _id: newGenerateId,
-                                name: body.name,
-                                description: body.description,
-                                websiteUrl: body.websiteUrl,
-                                createdAt: nowDate
-                            })
-
-        return {
-            id: newGenerateId,
-            name: body.name,
-            description: body.description,
-            websiteUrl: body.websiteUrl,
-            createdAt: nowDate
-        }
     }
 
-    public async updateBlog(blogURIId: string, body: blogReqType):
+    public async updateBlog(blogID: string, blogDTO: blogReqType):
         Promise<boolean> 
     {
-        const bodyID: ObjectId = new ObjectId(blogURIId)
+        const updatedBlogResult: boolean = await blogRepository.updateBlog(blogID, blogDTO)
 
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
-
-        if (!findBlog) {
-            return false
-        }
-
-        await BLOGS.updateOne({_id: bodyID}, {
-            $set: {
-                name: body.name,
-                description: body.description,
-                websiteUrl: body.websiteUrl
-            }
-        })
-
-        return true
+        return updatedBlogResult
     }
 
-    public async deleteBlog(blogURIId: string):
+    public async deleteBlog(blogID: string):
         Promise<boolean> 
     {
-        const bodyID: ObjectId = new ObjectId(blogURIId)
+        const deletedBlogResult: boolean = await blogRepository.deleteBlog(blogID)
 
-        const findBlog: null | blogBDType = await this.findBlogById(bodyID)
-
-        if (!findBlog) {
-            return false
-        }
-
-        await BLOGS.deleteOne({_id: bodyID})
-
-        return true
+        return deletedBlogResult
     }
 }
 

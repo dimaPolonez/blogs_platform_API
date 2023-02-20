@@ -15,7 +15,7 @@ class UserService {
 
         const nowDate = new Date().toISOString()
 
-        await USERS.insertOne({
+        /*await USERS.insertOne({
                                 _id: userObjectId,
                                 infUser: {
                                     login: body.login,
@@ -30,7 +30,7 @@ class UserService {
                                     confirm: authParams.confirm,
                                     hushPass: hushPass
                                 }
-                            })
+                            })*/
         return {
                     id: userObjectId,
                     login: body.login,
