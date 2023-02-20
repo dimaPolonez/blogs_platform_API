@@ -20,6 +20,7 @@ export const settings = {
 
 export async function startBD() {
     try {
+        mongoose.set("strictQuery", true)
 
         await mongoose.connect(settings.DB_URL)
 
