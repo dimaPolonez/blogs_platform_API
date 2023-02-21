@@ -133,11 +133,7 @@ class AuthController {
     public async registration(req: bodyReqType<userReqType>, res: Response) 
     {
         try {
-            const authParams: authParams = await ActiveCodeApp.createCode()
-
-            const createdUser: userObjectResult = await UserService.createUser(req.body, authParams)
-
-            await MailerApp.sendMailCode(createdUser.email, authParams.codeActivated)
+            await UserService.createUserRegistration(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 

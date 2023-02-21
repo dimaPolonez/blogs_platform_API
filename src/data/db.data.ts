@@ -1,8 +1,5 @@
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { postBDSchema } from './entity/post.entity';
-import { commentOfPostBDSchema } from './entity/comment.entity';
-import { userBDSchema } from './entity/user.entity';
 import { objectIpBDSchema } from './entity/objectIP.entity';
 import { likesBDSchema } from './entity/likes.entity';
 import { sessionBDSchema } from './entity/session.entity';
@@ -31,7 +28,6 @@ export async function startBD() {
     }
 }
 
-export const USERS = mongoose.model('users', userBDSchema)
 export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
 export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
 export const LIKES = mongoose.model('likes', likesBDSchema)

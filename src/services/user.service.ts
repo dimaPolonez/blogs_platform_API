@@ -1,15 +1,28 @@
-import {USERS} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import BcryptApp from "../application/bcrypt.application";
 import {userBDType, userObjectResult, userReqType} from "../models/user.models";
 import {authParams} from "../models/auth.models";
+import UserRepository from "../data/repository/user.repository";
 
 class UserService {
 
-    public async createUser(body: userReqType, authParams: authParams):
+    public async createUserAdmin(userDTO: userReqType):
         Promise<userObjectResult> 
     {
-        const hushPass: string = await BcryptApp.saltGenerate(body.password)
+        
+
+        const hushPass: string = await BcryptApp.saltGenerate(userDTO.password)
+
+        const authParams: authParams = {
+            confirm: true,
+            codeActivated: 'Activated',
+            lifeTimeCode: 'Activated'
+        } 
+
+        const createNewUser: userObjectResult = await UserRepository.createUser(hushPass, userDTO, authParams)
+
+
+        
 
         const userObjectId: ObjectId = new ObjectId()
 
@@ -38,6 +51,16 @@ class UserService {
                     createdAt: nowDate
                 }
     }
+
+    public async createUserRegistration(userDTO: userReqType)
+    {
+
+        const authParams: authParams = await ActiveCodeApp.createCode()
+
+        await MailerApp.sendMailCode(createdUser.email, authParams.codeActivated)
+
+    }
+
 
     public async updateUser(user: userBDType, authParams: authParams) 
     {

@@ -10,14 +10,7 @@ class UserController {
     public async createUser(req: bodyReqType<userReqType>, res: Response) 
     {
         try {
-
-            const authParams: authParams = {
-                confirm: true,
-                codeActivated: 'Activated',
-                lifeTimeCode: 'Activated'
-            } 
-
-            const user: userObjectResult = await UserService.createUser(req.body, authParams)
+            const user: userObjectResult = await UserService.createUserAdmin(req.body)
 
             res.status(ERRORS_CODE.CREATED_201).json(user)
 
