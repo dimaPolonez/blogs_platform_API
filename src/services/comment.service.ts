@@ -1,17 +1,19 @@
-import {COMMENTS, ERRORS_CODE, POSTS} from "../data/db.data";
+import {ERRORS_CODE} from "../data/db.data";
 import {ObjectId} from "mongodb";
 import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
 import {userBDType} from "../models/user.models";
 import {postBDType, postOfBlogReqType} from "../models/post.models";
 import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
 import LikeService from "./like.service";
+import { PostModel } from "../data/entity/post.entity";
+import CommentRepository from "../data/repository/comment.repository";
 
 class CommentService {
 
-    private async findComment(bodyID: ObjectId):
-        Promise<null | commentOfPostBDType>
+    public async getOneComment(commentID: string, userID: ObjectId | null):
+        Promise<null | commentObjectResult> 
     {
-        const findComment: null | commentOfPostBDType = await COMMENTS.findOne({_id: bodyID})
+        const findComment: null | commentObjectResult = await CommentRepository.findOneById(commentID, userID)
 
         if (!findComment) {
             return null
@@ -20,67 +22,24 @@ class CommentService {
         return findComment
     }
 
-    public async getOneComment(commentURIId: string, userId: ObjectId | null):
+    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: ObjectId):
         Promise<null | commentObjectResult> 
     {
-        const bodyID: ObjectId = new ObjectId(commentURIId)
+        const createdComment: null | commentObjectResult = await CommentRepository.createCommentOfPost(postID, commentDTO, userID)
 
-        const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
-
-        if (!findComment) {
+        if (!createdComment) {
             return null
         }
 
-        let myUserStatus: myLikeStatus = myLikeStatus.None
-
-        if (userId) {
-            const userObjectId: ObjectId = new ObjectId(userId)
-
-            const checked: null | likesBDType = await LikeService.checkedLike(findComment._id, userObjectId)
-
-            if (checked) {
-                myUserStatus = checked.user.myStatus
-            }
-        }
-
-        return {
-            id: findComment._id,
-            content: findComment.content,
-            commentatorInfo: {
-                userId: findComment.commentatorInfo.userId,
-                userLogin: findComment.commentatorInfo.userLogin,
-            },
-            createdAt: findComment.createdAt,
-            likesInfo: {
-                likesCount: findComment.likesInfo.likesCount,
-                dislikesCount: findComment.likesInfo.dislikesCount,
-                myStatus: myUserStatus
-            }
-        }
+        return createdComment    
     }
 
-    public async updateComment(commentURIId: string, body: commentReqType, userObject: userBDType):
+    public async updateComment(commentID: string, commentDTO: commentReqType, userID: ObjectId):
         Promise<number> 
     {
-        const bodyID: ObjectId = new ObjectId(commentURIId)
-        
-        const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
+        const updatedCommentResult: number = await CommentRepository.updateComment(commentID, commentDTO, userID)
 
-        if (!findComment) {
-            return ERRORS_CODE.NOT_FOUND_404
-        }
-
-        if (!(findComment.commentatorInfo.userId.toString() === userObject._id.toString())) {
-            return ERRORS_CODE.NOT_YOUR_OWN_403
-        }
-
-        await COMMENTS.updateOne({_id: bodyID}, {
-            $set: {
-                content: body.content
-            }
-        })
-
-        return ERRORS_CODE.NO_CONTENT_204
+        return updatedCommentResult
     }
 
     public async commentLike(likeStatus: string, commentURIId: string, user: userBDType):
@@ -88,7 +47,7 @@ class CommentService {
     {
         const bodyID: ObjectId = new ObjectId(commentURIId)
 
-        const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
+        /*const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
 
         if (!findComment) {
             return false
@@ -109,75 +68,16 @@ class CommentService {
                 "likesInfo.dislikesCount": newObjectLikes.dislikesCount,
             }
         })
-
+    */
         return true
     }
 
-    public async deleteComment(commentURIId: string, userObject: userBDType):
+    public async deleteComment(commentID: string, userID: ObjectId):
         Promise<number> 
     {
-        const bodyID: ObjectId = new ObjectId(commentURIId)
+        const deletedCommentResult: number = await CommentRepository.deleteComment(commentID, userID)
 
-        const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
-
-        if (!findComment) {
-            return ERRORS_CODE.NOT_FOUND_404
-        }
-
-        if (!(findComment.commentatorInfo.userId.toString() === userObject._id.toString())) {
-            return ERRORS_CODE.NOT_YOUR_OWN_403
-        }
-
-        await COMMENTS.deleteOne({_id: bodyID})
-
-        return ERRORS_CODE.NO_CONTENT_204
-    }
-
-    public async createCommentOfPost(postURIId: string, body: postOfBlogReqType, objectUser: userBDType):
-        Promise<null | commentObjectResult> 
-    {
-        const postId: ObjectId = new ObjectId(postURIId)
-
-        const newGenerateId: ObjectId = new ObjectId()
-
-        const nowDate: string = new Date().toISOString()
-
-        const postFind: null | postBDType = await POSTS.findOne({_id: postId})
-
-        if (!postFind) {
-            return null
-        }
-
-        /*await COMMENTS.insertOne({
-                                    _id: newGenerateId,
-                                    content: body.content,
-                                    commentatorInfo: {
-                                        userId: objectUser._id,
-                                        userLogin: objectUser.infUser.login
-                                    },
-                                    postId: postId,
-                                    createdAt: nowDate,
-                                    likesInfo: {
-                                        likesCount: 0,
-                                        dislikesCount: 0,
-                                        myStatus: myLikeStatus.None
-                                    }
-                                })*/
-        
-        return {
-                id: newGenerateId,
-                content: body.content,
-                commentatorInfo: {
-                    userId: objectUser._id,
-                    userLogin: objectUser.infUser.login
-                },
-                createdAt: nowDate,
-                likesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
-                    myStatus: myLikeStatus.None
-                }
-        }                 
+        return deletedCommentResult
     }
 
 }

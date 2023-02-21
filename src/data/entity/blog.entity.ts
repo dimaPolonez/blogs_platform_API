@@ -1,6 +1,6 @@
 import mongoose, {Model, Schema} from "mongoose";
 import {blogBDType, blogReqType} from "../../models/blog.models";
-import blogRepository from "../repository/blog.repository";
+import BlogRepository from "../repository/blog.repository";
 
 type BlogStaticType = Model<blogBDType> & {
     createBlog(blogDTO: blogReqType): any,
@@ -23,7 +23,7 @@ blogBDSchema.static({async createBlog(blogDTO: blogReqType):
                 createdAt: new Date().toISOString()
             })
 
-            await blogRepository.save(newBlogSmart)
+            await BlogRepository.save(newBlogSmart)
 
             return newBlogSmart
         }
@@ -32,16 +32,17 @@ blogBDSchema.static({async createBlog(blogDTO: blogReqType):
 blogBDSchema.static({async updateBlog(blogID: string, blogDTO: blogReqType):
         Promise<boolean> {
 
-        const findBlogDocument = await blogRepository.findOneByIdReturnDoc(blogID)
+        const findBlogDocument = await BlogRepository.findOneByIdReturnDoc(blogID)
 
         if (!findBlogDocument) {
             return false
         }
+        
         findBlogDocument.name = blogDTO.name
         findBlogDocument.description = blogDTO.description
         findBlogDocument.websiteUrl = blogDTO.websiteUrl
 
-        await blogRepository.save(findBlogDocument)
+        await BlogRepository.save(findBlogDocument)
 
         return true
     }

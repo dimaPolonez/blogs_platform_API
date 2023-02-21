@@ -6,7 +6,7 @@ import {userBDType} from "../models/user.models";
 class LikeService {
 
     public async checkedLike(objectId: ObjectId, userId: ObjectId):
-        Promise<null | likesBDType> 
+        Promise<myLikeStatus> 
     {
 
         const findUserLike: likesBDType | null = await LIKES.findOne({
@@ -16,10 +16,10 @@ class LikeService {
                                                                         ]
                                                                     })
         if (!findUserLike) {
-            return null
+            return myLikeStatus.None
         } 
         
-        return findUserLike
+        return findUserLike.user.myStatus
     }
 
     private async createLike(user: userBDType, object: countObject, likeStatus: myLikeStatus) 
@@ -59,7 +59,7 @@ class LikeService {
         
         let myStatus: myLikeStatus = myLikeStatus.None
 
-        const findLike: null | likesBDType = await this.checkedLike(object.typeId, user._id)
+       /* const findLike: null | likesBDType = await this.checkedLike(object.typeId, user._id)
 
         if (findLike) {
 
@@ -121,12 +121,12 @@ class LikeService {
 
 
 
-
+*/
         return userLikesCount
     }
 
     public async threeUserLikesArray(postLikeId: ObjectId):
-        Promise<likesBDType [] | null>
+        Promise<newestLikes[] | []>
     
     {
        /* const likeUserArray: likesBDType [] =  await LIKES.find({
@@ -135,20 +135,36 @@ class LikeService {
                                                                         {"user.myStatus": myLikeStatus.Like}
                                                                         ]
                                                                 
-                                                                }).limit(3).sort({addedAt: -1}).toArray()*/
+                                                                }).limit(3).sort({addedAt: -1}).toArray()
                                                                 const likeUserArray: [] = []
 
-        if (likeUserArray.length === 0) {
-            return null
-        }
+                if (threeUserLikesArray) {
 
+            findOnePost.extendedLikesInfo.newestLikes = threeUserLikesArray.map((fieldUserLikes: likesBDType) => {
+
+                return {    
+                            addedAt: fieldUserLikes.addedAt,
+                            userId: fieldUserLikes.user.userId,
+                            login: fieldUserLikes.user.login
+                        }
+                    
+                }
+            )
+        }
+        
+        
+                                                                if (likeUserArray.length === 0) {
+            return []
+        }
+*/
+const likeUserArray: [] = []
         return likeUserArray
     }
 
     public async userLikeMaper(objectId: ObjectId):
         Promise<newestLikes[] | null>
     {
-        const threeUserArray: likesBDType [] | null =  await this.threeUserLikesArray(objectId)
+        /*const threeUserArray: likesBDType [] | null =  await this.threeUserLikesArray(objectId)
 
         if (!threeUserArray) {
             return null
@@ -160,7 +176,9 @@ class LikeService {
                 addedAt: fieldLikeUser.addedAt,
                 userId: fieldLikeUser.user.userId,
                 login: fieldLikeUser.user.login
-                }})
+                }})*/
+
+                const allLikeUserMapping: [] = []
 
         return allLikeUserMapping
     }

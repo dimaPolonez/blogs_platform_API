@@ -4,7 +4,7 @@ import {ERRORS_CODE} from "../data/db.data";
 import CommentService from "../services/comment.service";
 import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
-import {commentObjectResult} from "../models/comment.models";
+import {commentObjectResult, commentReqType} from "../models/comment.models";
 import { likesReq } from '../models/likes.models';
 
 class PostController {
@@ -12,7 +12,7 @@ class PostController {
     public async getOnePost(req: paramsReqType<paramsId>, res: Response) 
     {
         try {
-            const post: null | postObjectResult = await PostService.getOnePost(req.params.id, req.userId)
+            const post: null | postObjectResult = await PostService.getOnePost(req.params.id, req.userID)
 
             if (post) {
                 res.status(ERRORS_CODE.OK_200).json(post)
@@ -89,10 +89,10 @@ class PostController {
         }
     }
 
-    public async createCommentOfPost(req: paramsAndBodyReqType<paramsId, postOfBlogReqType>, res: Response) 
+    public async createCommentOfPost(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) 
     {
         try {
-            const comment: null | commentObjectResult = await CommentService.createCommentOfPost(req.params.id, req.body, req.user)
+            const comment: null | commentObjectResult = await CommentService.createCommentOfPost(req.params.id, req.body, req.user._id)
 
             if (comment) {
                 res.status(ERRORS_CODE.CREATED_201).json(comment)

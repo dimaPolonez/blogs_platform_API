@@ -1,24 +1,25 @@
-import {ObjectId} from "mongodb"
-import {blogBDType, blogObjectResult, blogReqType} from "../../models/blog.models"
-import {blogBDSchema, BlogModel} from "../entity/blog.entity"
+import { ObjectId } from "mongodb"
+import { blogBDType, blogObjectResult, blogReqType } from "../../models/blog.models"
+import { BlogModel } from "../entity/blog.entity"
 
 
-class blogRepository {
+class BlogRepository {
 
     public async findOneByIdReturnDoc(blogID: string) {
 
         const objectBlogID: ObjectId = new ObjectId(blogID)
 
-        const findBlogSmart: null | blogBDType = await BlogModel.findOne({_id: objectBlogID})
+        const findBlogSmart: null | blogBDType = await BlogModel.findOne({ _id: objectBlogID })
 
         return findBlogSmart
     }
 
     public async findOneById(blogID: string):
         Promise<null | blogObjectResult> {
+            
         const objectBlogID: ObjectId = new ObjectId(blogID)
 
-        const findBlogSmart: null | blogBDType = await BlogModel.findOne({_id: objectBlogID})
+        const findBlogSmart: null | blogBDType = await BlogModel.findOne({ _id: objectBlogID })
 
         if (!findBlogSmart) {
             return null
@@ -35,8 +36,8 @@ class blogRepository {
     }
 
     public async createBlog(blogDTO: blogReqType):
-        Promise<blogObjectResult>
-    {
+        Promise<blogObjectResult> {
+
         const newBlogSmart = await BlogModel.createBlog(blogDTO)
 
         return {
@@ -56,17 +57,15 @@ class blogRepository {
     }
 
     public async deleteBlog(blogID: string):
-        Promise<boolean>
-    {
+        Promise<boolean> {
+            
         const findBlogModel: blogObjectResult | null = await this.findOneById(blogID)
 
         if (!findBlogModel) {
             return false
         }
 
-        const objectBlogID: ObjectId = new ObjectId(blogID)
-
-        await BlogModel.deleteOne({_id: objectBlogID})
+        await BlogModel.deleteOne({ _id: findBlogModel.id })
 
         return true
     }
@@ -80,4 +79,4 @@ class blogRepository {
     }
 
 }
-export default new blogRepository()
+export default new BlogRepository()

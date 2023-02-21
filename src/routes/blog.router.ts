@@ -1,7 +1,6 @@
 import {Response, Router} from 'express';
 import BlogController from '../controllers/blog.controller';
 import {indexMiddleware} from '../middleware/index.middleware';
-import QueryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import {
     notStringQueryReqPag, notStringQueryReqPagOfSearchName,
@@ -10,6 +9,7 @@ import {
 } from '../models/request.models';
 import {resultBlogObjectType} from '../models/blog.models';
 import {resultPostObjectType} from '../models/post.models';
+import QueryRepository from '../data/repository/query.repository';
 
 const blogRouter = Router({})
 
@@ -68,7 +68,7 @@ blogRouter.get('/:id/posts',
                 pageSize: req.query.pageSize ? +req.query.pageSize : 10
             }
 
-            const allPosts: null | resultPostObjectType = await QueryService.getAllPostsOfBlog(req.params.id, queryAll, req.userId)
+            const allPosts: null | resultPostObjectType = await QueryRepository.getAllPostsOfBlog(req.params.id, queryAll, req.userID)
 
             if (allPosts) {
                 res.status(ERRORS_CODE.OK_200).json(allPosts)
@@ -94,7 +94,7 @@ blogRouter.get('/',
                 pageSize: req.query.pageSize ? +req.query.pageSize : 10
             }
 
-            const allBlogs: resultBlogObjectType = await QueryService.getAllBlogs(queryAll)
+            const allBlogs: resultBlogObjectType = await QueryRepository.getAllBlogs(queryAll)
 
             res.status(ERRORS_CODE.OK_200).json(allBlogs)
 

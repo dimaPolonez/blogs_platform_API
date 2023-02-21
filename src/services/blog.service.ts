@@ -1,12 +1,12 @@
 import {blogObjectResult, blogReqType} from "../models/blog.models";
-import blogRepository from '../data/repository/blog.repository';
+import BlogRepository from '../data/repository/blog.repository';
 
 class BlogService {
 
     public async getOneBlog(blogID: string):
         Promise<null | blogObjectResult> 
     {
-        const oneBlog: null | blogObjectResult = await blogRepository.findOneById(blogID)
+        const oneBlog: null | blogObjectResult = await BlogRepository.findOneById(blogID)
 
         return oneBlog
     }
@@ -14,7 +14,7 @@ class BlogService {
     public async createNewBlog(blogDTO: blogReqType):
         Promise<blogObjectResult> 
     {
-        const createdBlog: blogObjectResult = await blogRepository.createBlog(blogDTO) 
+        const createdBlog: blogObjectResult = await BlogRepository.createBlog(blogDTO) 
         
         return createdBlog
 
@@ -23,7 +23,7 @@ class BlogService {
     public async updateBlog(blogID: string, blogDTO: blogReqType):
         Promise<boolean> 
     {
-        const updatedBlogResult: boolean = await blogRepository.updateBlog(blogID, blogDTO)
+        const updatedBlogResult: boolean = await BlogRepository.updateBlog(blogID, blogDTO)
 
         return updatedBlogResult
     }
@@ -31,7 +31,7 @@ class BlogService {
     public async deleteBlog(blogID: string):
         Promise<boolean> 
     {
-        const deletedBlogResult: boolean = await blogRepository.deleteBlog(blogID)
+        const deletedBlogResult: boolean = await BlogRepository.deleteBlog(blogID)
 
         return deletedBlogResult
     }

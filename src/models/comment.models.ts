@@ -19,6 +19,12 @@ export type commentReqType = {
     content: string
 }
 
+export type commentDTOAll = {
+    content: string,
+    commentatorInfo: commInfo,
+    postId: string
+}
+
 export type commentAllMaps = {
     id: ObjectId,
     content: string,

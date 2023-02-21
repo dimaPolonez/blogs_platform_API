@@ -53,7 +53,7 @@ export const bearerAuthorization = async (
         const findUser: null | userBDType = await AuthService.findOneUserToId(userAccessIdObject)
 
         if (findUser) {
-            req.user = findUser
+            req.userID = userAccessIdObject
             next()
             return
         }

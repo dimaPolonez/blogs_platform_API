@@ -28,7 +28,7 @@ export const reqUserId = async (
     next: NextFunction
 ) => 
 {
-    req.userId = null
+    req.userID = new ObjectId()
 
     if (!req.headers.authorization) {
         next()
@@ -40,9 +40,9 @@ export const reqUserId = async (
     const userObjectId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
 
     if (userObjectId) {
-        req.userId = new ObjectId (userObjectId)
+        req.userID = new ObjectId (userObjectId)
         next()
         return
-    }
+    } 
     next()
 }

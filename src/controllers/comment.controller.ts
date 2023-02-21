@@ -10,7 +10,7 @@ class CommentController {
     public async getOneComment(req: paramsReqType<paramsId>, res: Response) 
     {
         try {
-            const comment: null | commentObjectResult = await CommentService.getOneComment(req.params.id, req.userId)
+            const comment: null | commentObjectResult = await CommentService.getOneComment(req.params.id, req.userID)
 
             if (comment) {
                 res.status(ERRORS_CODE.OK_200).json(comment)
@@ -27,7 +27,7 @@ class CommentController {
     public async updateComment(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) 
     {
         try {
-            const comment: number = await CommentService.updateComment(req.params.id, req.body, req.user)
+            const comment: number = await CommentService.updateComment(req.params.id, req.body, req.userID)
 
             switch (comment) {
                 case (204):
@@ -63,7 +63,7 @@ class CommentController {
     async deleteComment(req: paramsReqType<paramsId>, res: Response) 
     {
         try {
-            const deletedComment: number = await CommentService.deleteComment(req.params.id, req.user)
+            const deletedComment: number = await CommentService.deleteComment(req.params.id, req.userID)
 
             switch (deletedComment) {
                 case (204):

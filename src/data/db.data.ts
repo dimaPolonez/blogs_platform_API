@@ -31,9 +31,7 @@ export async function startBD() {
     }
 }
 
-export const POSTS = mongoose.model('posts', postBDSchema)
 export const USERS = mongoose.model('users', userBDSchema)
-export const COMMENTS = mongoose.model('comments', commentOfPostBDSchema)
 export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
 export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
 export const LIKES = mongoose.model('likes', likesBDSchema)

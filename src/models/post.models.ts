@@ -6,7 +6,7 @@ export type postBDType = {
     title: string,
     shortDescription: string,
     content: string,
-    blogId: ObjectId,
+    blogId: string,
     blogName: string,
     createdAt: string,
     extendedLikesInfo: likesInfoPost
@@ -16,7 +16,7 @@ export type postReqType = {
     title: string,
     shortDescription: string,
     content: string,
-    blogId: ObjectId
+    blogId: string
 }
 
 export type postOfBlogReqType = {
@@ -30,7 +30,7 @@ export type postAllMaps = {
     title: string,
     shortDescription: string,
     content: string,
-    blogId: ObjectId,
+    blogId: string,
     blogName: string,
     createdAt: string,
     extendedLikesInfo: likesInfoPost
@@ -49,7 +49,7 @@ export type postObjectResult = {
     title: string,
     shortDescription: string,
     content: string,
-    blogId: ObjectId,
+    blogId: string,
     blogName: string,
     createdAt: string,
     extendedLikesInfo: likesInfoPost
