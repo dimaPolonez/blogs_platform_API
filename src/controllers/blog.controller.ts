@@ -5,6 +5,8 @@ import PostService from "../services/post.service";
 import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {blogObjectResult, blogReqType} from "../models/blog.models";
 import {postObjectResult, postOfBlogReqType} from "../models/post.models";
+import QueryRepository from "../data/repository/query.repository";
+import {blogRepository} from "../data/repository/blog.repository";
 
 class BlogController {
 
@@ -25,11 +27,11 @@ class BlogController {
         }
     }
 
-    public async createBlog(req: bodyReqType<blogReqType>, res: Response) 
-    {
+    public async createBlog(req: bodyReqType<blogReqType>, res: Response) {
         try {
-            const createdBlog: blogObjectResult = await BlogService.createNewBlog(req.body)
-
+            const createdBlogId: blogObjectResult = await BlogService.createNewBlog(req.body)
+            //queryBlogRepo.getById(id)
+            //
             res.status(ERRORS_CODE.CREATED_201).json(createdBlog)
 
         } catch (e) {

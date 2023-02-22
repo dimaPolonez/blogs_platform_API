@@ -79,4 +79,5 @@ class BlogRepository {
     }
 
 }
-export default new BlogRepository()
+
+export const blogRepository = new BlogRepository()

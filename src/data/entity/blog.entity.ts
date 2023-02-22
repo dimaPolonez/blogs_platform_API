@@ -23,8 +23,6 @@ blogBDSchema.static({async createBlog(blogDTO: blogReqType):
                 createdAt: new Date().toISOString()
             })
 
-            await BlogRepository.save(newBlogSmart)
-
             return newBlogSmart
         }
     })

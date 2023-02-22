@@ -21,7 +21,8 @@ export const commentOfPostBDSchema =  new Schema<commentOfPostBDType, CommentSta
     likesInfo: {
         likesCount: Number,
         dislikesCount: Number,
-        myStatus: String}
+        myStatus: String
+    }
 })
 
 commentOfPostBDSchema.static({async createComment(commentDTO: commentDTOAll):
@@ -48,8 +49,9 @@ commentOfPostBDSchema.static({async createComment(commentDTO: commentDTOAll):
 }
 })
 
-commentOfPostBDSchema.static({async updateComment(commentID: string, commentDTO: commentReqType):
-Promise<boolean> {
+commentOfPostBDSchema.static({
+    async updateComment(commentID: string, commentDTO: commentReqType):
+        Promise<boolean> {
 
     const findCommentDocument = await CommentRepository.findOneByIdReturnDoc(commentID)
 
