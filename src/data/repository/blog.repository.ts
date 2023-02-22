@@ -9,7 +9,7 @@ class BlogRepository {
 
         const objectBlogID: ObjectId = new ObjectId(blogID)
 
-        const findBlogSmart: null | blogBDType = await BlogModel.findOne({ _id: objectBlogID })
+        const findBlogSmart = await BlogModel.findOne({ _id: objectBlogID })
 
         return findBlogSmart
     }

@@ -8,7 +8,7 @@ class LikesRepository {
 
     public async findOneByIdReturnDoc(likeID: ObjectId){
 
-        const findLikeSmart: null | likesBDType = await LikesModel.findOne( { _id: likeID } )
+        const findLikeSmart = await LikesModel.findOne( { _id: likeID } )
 
         return findLikeSmart
     }

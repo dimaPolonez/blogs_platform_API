@@ -14,7 +14,7 @@ class PostRepository {
 
         const objectPostID: ObjectId = new ObjectId(postID)
 
-        const findPostSmart: null | postBDType = await PostModel.findOne({ _id: objectPostID })
+        const findPostSmart = await PostModel.findOne({ _id: objectPostID })
 
         return findPostSmart
     }
@@ -82,10 +82,10 @@ class PostRepository {
             blogName: blogName,
             createdAt: newPostSmart.createdAt,
             extendedLikesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: myLikeStatus.None,
-                newestLikes: []
+                likesCount: newPostSmart.extendedLikesInfo.likesCount,
+                dislikesCount: newPostSmart.extendedLikesInfo.dislikesCount,
+                myStatus: newPostSmart.extendedLikesInfo.myStatus,
+                newestLikes: newPostSmart.extendedLikesInfo.newestLikes
             }
         }
     }

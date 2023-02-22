@@ -10,7 +10,7 @@ class UserRepository {
 
         const objectUserID: ObjectId = new ObjectId(userID)
 
-        const findUserSmart: null | userBDType = await UserModel.findOne( { _id: objectUserID } )
+        const findUserSmart = await UserModel.findOne( { _id: objectUserID } )
 
         return findUserSmart
     }

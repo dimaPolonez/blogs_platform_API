@@ -16,7 +16,7 @@ class CommentRepository {
 
         const objectCommentID: ObjectId = new ObjectId(commentID)
 
-        const findCommentSmart: null | commentOfPostBDType = await CommentModel.findOne({ _id: objectCommentID })
+        const findCommentSmart = await CommentModel.findOne({ _id: objectCommentID })
 
         return findCommentSmart
     }
