@@ -3,12 +3,14 @@ import { postBDType, postObjectResult, postReqType } from "../../models/post.mod
 import { PostModel } from "../entity/post.entity"
 import BlogRepository from "./blog.repository";
 import { blogObjectResult } from "../../models/blog.models";
-import { myLikeStatus, newestLikes } from "../../models/likes.models";
+import { myLikeStatus, newestLikes, countObject, likesCounter } from "../../models/likes.models";
+import LikeService from "../../services/like.service";
+
 
 
 class PostRepository {
 
-    public async findOneByIdReturnDoc(postID: string){
+    public async findOneByIdReturnDoc(postID: string) {
 
         const objectPostID: ObjectId = new ObjectId(postID)
 
@@ -17,95 +19,116 @@ class PostRepository {
         return findPostSmart
     }
 
-    public async findOneById(postID: string, userID: ObjectId | null):
-        Promise<null | postObjectResult>
-    {
+    public async findOneById(postID: string, userID: string | null):
+        Promise<null | postObjectResult> {
+            
         const objectPostID: ObjectId = new ObjectId(postID)
 
         let likeStatus: myLikeStatus = myLikeStatus.None
 
         let newestLikes: newestLikes[] | [] = []
 
-        const findPostSmart: null | postBDType = await PostModel.findOne({_id: objectPostID})
+        const findPostSmart: null | postBDType = await PostModel.findOne({ _id: objectPostID })
 
         if (!findPostSmart) {
             return null
         }
 
         if (userID) {
-           // likeStatus = await LikeService.checkedLike(findPostSmart._id, userID)
-        }
+            const likeStatusChecked = await LikeService.checkedLike(findPostSmart._id, userID)
 
-       // newestLikes =  await LikeService.threeUserLikesArray(findOnePost.id)
-
-        return {
-                id: findPostSmart._id,
-                title: findPostSmart.title,
-                shortDescription: findPostSmart.shortDescription,
-                content: findPostSmart.content,
-                blogId: findPostSmart.blogId,
-                blogName: findPostSmart.blogName,
-                createdAt: findPostSmart.createdAt,
-                extendedLikesInfo: {
-                    likesCount: findPostSmart.extendedLikesInfo.likesCount,
-                    dislikesCount: findPostSmart.extendedLikesInfo.dislikesCount,
-                    myStatus: likeStatus,
-                    newestLikes: newestLikes
+            if (likeStatusChecked){
+                likeStatus = likeStatusChecked.user.myStatus
             }
         }
 
-        
+        newestLikes =  await LikeService.threeUserLikesArray(findPostSmart._id)
+
+        return {
+            id: findPostSmart._id,
+            title: findPostSmart.title,
+            shortDescription: findPostSmart.shortDescription,
+            content: findPostSmart.content,
+            blogId: findPostSmart.blogId,
+            blogName: findPostSmart.blogName,
+            createdAt: findPostSmart.createdAt,
+            extendedLikesInfo: {
+                likesCount: findPostSmart.extendedLikesInfo.likesCount,
+                dislikesCount: findPostSmart.extendedLikesInfo.dislikesCount,
+                myStatus: likeStatus,
+                newestLikes: newestLikes
+            }
+        }
     }
 
     public async createPost(postDTO: postReqType):
-        Promise<postObjectResult>
-    {
+        Promise<postObjectResult> {
         const blogFind: blogObjectResult | null = await BlogRepository.findOneById(postDTO.blogId)
 
         let blogName: string = 'blog not found'
 
-        const newPostSmart = await PostModel.createPost(postDTO)
-
-        if (blogFind) {
+        if(blogFind) {
             blogName = blogFind.name
         }
 
+        const newPostSmart = await PostModel.createPost(postDTO)
+
         return {
-                    id: newPostSmart._id,
-                    title: newPostSmart.title,
-                    shortDescription: newPostSmart.shortDescription,
-                    content: newPostSmart.content,
-                    blogId: newPostSmart.blogId,
-                    blogName: blogName,
-                    createdAt: newPostSmart.createdAt,
-                    extendedLikesInfo: {
-                                        likesCount: newPostSmart.likesCount,
-                                        dislikesCount: newPostSmart.dislikesCount,
-                                        myStatus: newPostSmart.myStatus,
-                                        newestLikes: newPostSmart.newestLikes
-                                    }
-                }
-        
+            id: newPostSmart._id,
+            title: newPostSmart.title,
+            shortDescription: newPostSmart.shortDescription,
+            content: newPostSmart.content,
+            blogId: newPostSmart.blogId,
+            blogName: blogName,
+            createdAt: newPostSmart.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None,
+                newestLikes: []
+            }
+        }
     }
 
     public async updatePost(postID: string, postDTO: postReqType):
-        Promise<boolean>
-    {
+        Promise<boolean> {
         const updatedPostResult: boolean = PostModel.updatePost(postID, postDTO)
 
         return updatedPostResult
     }
 
-    public async deletePost(postID: string):
-        Promise<boolean>
-    {
-        const findPostModel: postObjectResult | null = await this.findOneById(postID, null)
+    public async updatePostLiked(likeDTO: string, postID: string, userID: string):
+        Promise<boolean> {
 
-        if(!findPostModel){
+       const findPost: null | postObjectResult = await this.findOneById(postID, userID)
+
+        if (!findPost) {
             return false
         }
 
-        await PostModel.deleteOne( { _id: findPostModel.id } )
+        const countObject: countObject = {
+            typeId: findPost.id,
+            type: 'post',
+            likesCount: findPost.extendedLikesInfo.likesCount,
+            dislikesCount: findPost.extendedLikesInfo.dislikesCount
+        }
+
+        const newObjectLikes: likesCounter = await LikeService.counterLike(likeDTO, countObject, userID)
+
+        const updatedPostResult: boolean = PostModel.updatePostLiked(postID, newObjectLikes)
+
+        return updatedPostResult
+    }
+
+    public async deletePost(postID: string):
+        Promise<boolean> {
+        const findPostModel: postObjectResult | null = await this.findOneById(postID, null)
+
+        if (!findPostModel) {
+            return false
+        }
+
+        await PostModel.deleteOne({ _id: findPostModel.id })
 
         return true
     }

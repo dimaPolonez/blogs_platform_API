@@ -1,7 +1,6 @@
 import {body} from 'express-validator';
-import {ObjectId} from "mongodb";
-import { blogBDType } from '../models/blog.models';
-import BlogService from '../services/blog.service';
+import BlogRepository from '../data/repository/blog.repository';
+import { blogObjectResult } from '../models/blog.models';
 
 export const postValidator = [
     body('title')
@@ -44,15 +43,13 @@ export const postValidator = [
         .withMessage('Field blogId incorrect')
         .custom(async (value) => {
 
-            const valueId = new ObjectId(value)
+            const findBlog: blogObjectResult | null = await BlogRepository.findOneById(value)
 
-        /*    const findBlog: null| blogBDType = await BlogService.findBlogById(valueId)
+            if (!findBlog) {
+                throw new Error('Field blogId incorrect')
+            }
 
-            if (findBlog) {
-                return true
-            }*/
-
-            throw new Error('Field blogId incorrect')
+            return true 
         })
 ]
 

@@ -1,11 +1,13 @@
 import { ObjectId } from "mongodb";
 import { commentObjectResult, commentOfPostBDType, commentReqType, commentDTOAll } from "../../models/comment.models";
-import { myLikeStatus } from "../../models/likes.models";
+import { countObject, likesCounter, myLikeStatus } from "../../models/likes.models";
 import { postObjectResult } from "../../models/post.models";
-import { userBDType } from "../../models/user.models";
+import { userBDType, userObjectResult } from "../../models/user.models";
+import LikeService from "../../services/like.service";
 import { ERRORS_CODE } from "../db.data";
 import { CommentModel } from "../entity/comment.entity";
 import PostRepository from "./post.repository";
+import UserRepository from "./user.repository";
 
 
 class CommentRepository {
@@ -19,7 +21,7 @@ class CommentRepository {
         return findCommentSmart
     }
 
-    public async findOneById(commentID: string, userID: ObjectId | null):
+    public async findOneById(commentID: string, userID: string | null):
         Promise<null | commentObjectResult>
     {
         const objectCommentID: ObjectId = new ObjectId(commentID)
@@ -33,7 +35,11 @@ class CommentRepository {
         let likeStatus: myLikeStatus = myLikeStatus.None
 
         if (userID) {
-            // likeStatus = await LikeService.checkedLike(findPostSmart._id, userID)
+            const likeStatusChecked = await LikeService.checkedLike(findCommentSmart._id, userID)
+
+            if (likeStatusChecked){
+                likeStatus = likeStatusChecked.user.myStatus
+            }
          }
 
         return {
@@ -52,13 +58,13 @@ class CommentRepository {
         }
     }   
     
-    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: ObjectId):
+    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: string):
         Promise<null | commentObjectResult>
     {
-        const userFind = {
-            infUser: {
-                login: ''
-            }
+        const userFind: userObjectResult | null = await UserRepository.findOneById(userID)
+
+        if (!userFind){
+            return null
         }
 
         const postFind: null | postObjectResult = await PostRepository.findOneById(postID, null)
@@ -71,7 +77,7 @@ class CommentRepository {
             content: commentDTO.content,
             commentatorInfo: {
                 userId: userID,
-                userLogin: userFind.infUser.login
+                userLogin: userFind.login
             },
             postId: postID
         }
@@ -82,20 +88,20 @@ class CommentRepository {
             id: newCommentSmart._id,
             content: newCommentSmart.content,
             commentatorInfo: {
-                userId: newCommentSmart.userId,
-                userLogin: newCommentSmart.userLogin
+                userId: userID,
+                userLogin: userFind.login
             },
             createdAt: newCommentSmart.createdAt,
             likesInfo: {
-                likesCount: newCommentSmart.likesInfo.likesCount,
-                dislikesCount: newCommentSmart.likesInfo.dislikesCount,
-                myStatus: newCommentSmart.likesInfo.myStatus
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None
             }
         }
 
     }
 
-    public async updateComment(commentID: string, commentDTO: commentReqType, userID: ObjectId):
+    public async updateComment(commentID: string, commentDTO: commentReqType, userID: string):
         Promise<number>
     {
 
@@ -114,7 +120,31 @@ class CommentRepository {
         return ERRORS_CODE.NO_CONTENT_204
     }
 
-    public async deleteComment(commentID: string, userID: ObjectId):
+    public async updateCommentLiked(likeDTO: string, commentID: string, userID: string):
+        Promise<boolean>
+    {
+        const findComment: commentObjectResult | null = await this.findOneById(commentID, userID)
+
+        if (!findComment){
+            return false
+        }
+
+        const likesInfoComment: countObject = {
+            typeId: findComment.id,
+            type: 'comment',
+            likesCount: findComment.likesInfo.likesCount,
+            dislikesCount: findComment.likesInfo.dislikesCount
+        }
+
+        const newObjectLikes: likesCounter = await LikeService.counterLike(likeDTO, likesInfoComment, userID)
+
+        const updatedPostResult: boolean = CommentModel.updateCommentLiked(commentID, newObjectLikes)
+
+        return updatedPostResult
+
+    }
+
+    public async deleteComment(commentID: string, userID: string):
         Promise<number>
     {
 

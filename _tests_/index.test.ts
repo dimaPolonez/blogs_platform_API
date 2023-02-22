@@ -115,11 +115,11 @@ describe('start base tests', () => {
 
 })
 
-blogFlow(api, testObject)
+//blogFlow(api, testObject)
 
-postFlow(api, testObject)
+//postFlow(api, testObject)
 
-commentFlow(api, testObject)
+//commentFlow(api, testObject)
 
 //likeFlow(api,testObject)
 

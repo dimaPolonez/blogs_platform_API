@@ -30,7 +30,6 @@ export async function startBD() {
 
 export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
 export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
-export const LIKES = mongoose.model('likes', likesBDSchema)
 
 export const ERRORS_CODE = {
     OK_200: 200,

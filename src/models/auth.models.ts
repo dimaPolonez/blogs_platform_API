@@ -4,7 +4,7 @@ import {userBDType} from "./user.models"
 declare global {
     namespace Express {
         export interface Request {
-            userID: ObjectId,
+            userID: string,
             user: userBDType,
             sessionId: ObjectId
         }

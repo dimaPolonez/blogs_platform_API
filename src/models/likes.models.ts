@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb"
+import { tokensObjectType } from "./auth.models"
 
 export type likesBDType = {
     _id: ObjectId,
@@ -31,6 +32,15 @@ export type newestLikes = {
     addedAt: string,
     userId: ObjectId,
     login: string
+}
+
+export type tokensReturn = {
+    refreshToken: string,
+    accessToken: tokensObjectType,
+    optionsCookie: {
+        httpOnly: boolean,
+        secure: boolean
+    }
 }
 
 export type likesCounter = {

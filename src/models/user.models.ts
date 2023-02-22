@@ -23,6 +23,10 @@ export type userReqType = {
     email: string
 }
 
+export type userReqAuthBody = {
+    email: string
+}
+
 export type userAllMaps = {
     id: ObjectId,
     login: string,
@@ -43,4 +47,9 @@ export type userObjectResult = {
     login: string,
     email: string,
     createdAt: string
+}
+
+export type userReqPass = {
+    newPassword: string,
+    recoveryCode: string
 }

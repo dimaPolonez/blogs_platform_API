@@ -7,7 +7,6 @@ import {
     queryReqPag,
     queryReqType
 } from "../models/request.models";
-import QueryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import {resultPostObjectType} from '../models/post.models';
 import {resultCommentObjectType} from "../models/comment.models";
@@ -100,7 +99,7 @@ postRouter.get('/:id/comments',
                 pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
             }
 
-            const allComments: null | resultCommentObjectType = await QueryService.getAllCommentsOfPost(req.params.id, queryAll, req.userID)
+            const allComments: null | resultCommentObjectType = await QueryRepository.getAllCommentsOfPost(req.params.id, queryAll, req.userID)
             
             if (allComments) {
                 res.status(ERRORS_CODE.OK_200).json(allComments)

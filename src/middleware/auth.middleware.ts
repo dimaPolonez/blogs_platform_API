@@ -3,9 +3,9 @@ import {body, header} from "express-validator";
 import {ObjectId} from "mongodb";
 import JwtApp from "../application/jwt.application";
 import {ERRORS_CODE} from "../data/db.data";
+import UserRepository from "../data/repository/user.repository";
 import {returnRefreshObject} from "../models/session.models";
-import {userBDType} from "../models/user.models";
-import AuthService from "../services/auth.service";
+import {userObjectResult} from "../models/user.models";
 import CheckedService from "../services/checked.service";
 
 export const basicAuthorization = (
@@ -48,12 +48,12 @@ export const bearerAuthorization = async (
 
     if (userAccessId) {
 
-        const userAccessIdObject = new ObjectId(userAccessId)
+        const userIDString = userAccessId.toString()
 
-        const findUser: null | userBDType = await AuthService.findOneUserToId(userAccessIdObject)
+        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
 
         if (findUser) {
-            req.userID = userAccessIdObject
+            req.userID = userIDString
             next()
             return
         }
@@ -83,10 +83,12 @@ export const cookieRefresh = async (
 
     if (userRefreshId) {
 
-        const findUser: null | userBDType = await AuthService.findOneUserToId(userRefreshId.userId)
+        const userIDString = userRefreshId.userId.toString()
+
+        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
 
         if (findUser) {
-            req.user = findUser
+            req.userID = userIDString
             req.sessionId = userRefreshId.sessionId
             next()
             return

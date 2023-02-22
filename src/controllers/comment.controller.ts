@@ -46,7 +46,7 @@ class CommentController {
     public async likeStatusComment(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) 
     {
         try {
-            const likedComment: boolean = await CommentService.commentLike(req.body.likeStatus, req.params.id, req.user)
+            const likedComment: boolean = await CommentService.commentLike(req.body.likeStatus, req.params.id, req.userID)
 
             if (likedComment) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204)

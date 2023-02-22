@@ -3,7 +3,6 @@ import {ERRORS_CODE} from "../data/db.data";
 import UserService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
-import { authParams } from "../models/auth.models";
 
 class UserController {
 

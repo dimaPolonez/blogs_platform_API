@@ -1,14 +1,9 @@
-import {ObjectId} from "mongodb";
-import {postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
-import { userBDType } from "../models/user.models";
-import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../models/likes.models";
-import LikeService from "./like.service";
-import { PostModel } from "../data/entity/post.entity";
+import {postObjectResult, postOfBlogReqType, postReqType} from "../models/post.models";
 import PostRepository from "../data/repository/post.repository";
 
 class PostService {
 
-    public async getOnePost(postID: string, userID: ObjectId | null):
+    public async getOnePost(postID: string, userID: string | null):
         Promise<null | postObjectResult> 
     {
         const findOnePost: postObjectResult | null = await PostRepository.findOneById(postID, userID)
@@ -32,36 +27,12 @@ class PostService {
         return updatedPostResult
     }
 
-    public async postLike(likeStatus: string, postURIId: string, user: userBDType):
+    public async postLike(likeDTO: string, postID: string, userID: string):
         Promise<boolean> 
     {
-        const bodyID: ObjectId = new ObjectId(postURIId)
+        const likedPostResult: boolean = await PostRepository.updatePostLiked(likeDTO, postID, userID)
 
-       /*const findPost: null | postBDType = await this.findPost(bodyID)
-
-         if (!findPost) {
-            return false
-        }
-
-        const countObject: countObject = {
-            typeId: findPost._id,
-            type: 'post',
-            likesCount: findPost.extendedLikesInfo.likesCount,
-            dislikesCount: findPost.extendedLikesInfo.dislikesCount
-        }
-
-        
-
-        const newObjectLikes: likesCounter = await LikeService.counterLike(likeStatus, countObject, user)
-
-        await PostModel.updateOne({_id: bodyID}, {
-                                                $set: {
-                                                    "extendedLikesInfo.likesCount": newObjectLikes.likesCount,
-                                                    "extendedLikesInfo.dislikesCount": newObjectLikes.dislikesCount,
-                                                }
-                                            })*/
-
-        return true
+        return likedPostResult
     }
 
     public async deletePost(postID: string):

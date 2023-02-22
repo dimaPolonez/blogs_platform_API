@@ -1,100 +1,115 @@
 import {ObjectId} from "mongodb";
 import BcryptApp from "../application/bcrypt.application";
-import {USERS} from "../data/db.data";
-import {authParams, authReqType} from "../models/auth.models";
-import {userBDType} from "../models/user.models";
+import JwtApp from "../application/jwt.application";
+import MailerApp from "../application/mailer.application"
+import ActiveCodeApp from "../application/codeActive.application"
+import UserRepository from "../data/repository/user.repository";
+import {authParams, authReqType, tokensObjectType} from "../models/auth.models";
+import { tokensReturn } from "../models/likes.models";
+import { deviceInfoObject } from "../models/session.models";
+import {userBDType, userReqPass} from "../models/user.models";
 
+const authParams: authParams = {
+    confirm: true,
+    codeActivated: 'Activated',
+    lifeTimeCode: 'Activated'
+}
 
 class AuthService {
 
-    public async authUser(body: authReqType):
-        Promise<null | userBDType> 
+    public async authUser(authDTO: authReqType, deviceInfo: deviceInfoObject):
+        Promise<null | tokensReturn> 
     {
-        const findNameUser: userBDType | null = await USERS.findOne(
-            {
-                $or: [
-                    {"infUser.login": body.loginOrEmail},
-                    {"infUser.email": body.loginOrEmail}
-                ]
-            })
+        const findUser: null | userBDType = await UserRepository.findOneByLoginOrEmail(authDTO.loginOrEmail)
 
-        if (!findNameUser || !findNameUser.authUser.confirm) {
+        if (!findUser || !findUser.authUser.confirm) {
             return null
         }
 
-        const result: boolean = await BcryptApp.hushCompare(body.password, findNameUser.authUser.hushPass)
+        const validPassword: boolean = await BcryptApp.hushCompare(authDTO.password, findUser.authUser.hushPass)
 
-        if (!result) {
+        if (!validPassword) {
             return null
         }
 
-        return findNameUser
-    }
+        const refreshToken: string = await JwtApp.createRefreshJwt(findUser._id, deviceInfo)
 
-    public async confirmUserEmail(user: userBDType, authParams: authParams)
-    {
-        await USERS.updateOne({_id: user._id}, {
-            $set: {
-                authUser: {confirm: authParams.confirm, hushPass: user.authUser.hushPass},
-                activeUser: {
-                    codeActivated: authParams.codeActivated,
-                    lifeTimeCode: authParams.lifeTimeCode
-                }
+        const accessToken: tokensObjectType = await JwtApp.createAccessJwt(findUser._id)
+
+        const tokensObject: tokensReturn = {
+            refreshToken: refreshToken,
+            accessToken: accessToken,
+            optionsCookie: {
+                httpOnly: true,
+                secure: true
             }
-        });
+        }
 
+        return tokensObject
     }
 
-    public async updateUserPass(userId: ObjectId, authParams: authParams, newHashPass: string) 
-    {
-        await USERS.updateOne({_id: userId}, {
-            $set: {
-                authUser: {confirm: authParams.confirm, hushPass: newHashPass},
-                activeUser: {
-                    codeActivated: authParams.codeActivated,
-                    lifeTimeCode: authParams.lifeTimeCode
-                }
+    public async newTokens(userID: string, deviceInfo: deviceInfoObject, sessionID: ObjectId):
+        Promise<tokensReturn> 
+    {            
+        const objectUserID: ObjectId = new ObjectId(userID)
+
+        const accessToken: tokensObjectType = await JwtApp.createAccessJwt(objectUserID)
+
+        const refreshToken: string = await JwtApp.updateRefreshJwt(objectUserID, deviceInfo, sessionID)
+
+        const tokensObject: tokensReturn = {
+            refreshToken: refreshToken,
+            accessToken: accessToken,
+            optionsCookie: {
+                httpOnly: true,
+                secure: true
             }
-        })
+        }
+
+        return tokensObject
 
     }
 
-    public async findOneUserToId(userId: ObjectId):
-        Promise<null | userBDType> 
+    public async confirmUserEmail(codeActivate: string)
     {
-        const bodyID: ObjectId = new ObjectId (userId)
-        const findUserById: userBDType | null = await USERS.findOne({_id: bodyID})
 
-        if (!findUserById) {
+        const findUser: null | userBDType = await UserRepository.findOneByCode(codeActivate)
+
+        if (!findUser) {
             return null
         }
 
-        return findUserById
+        const userIDString = findUser._id.toString()
+
+        await UserRepository.updateUser(userIDString, authParams)
+
     }
 
-    public async findOneUserToCode(code: string):
-        Promise<null | userBDType> 
-    {
-        const findUserByCode: userBDType | null = await USERS.findOne({"activeUser.codeActivated": code})
+    public async resendingEmail(email: string){
 
-        if (!findUserByCode) {
+        const authParams: authParams = await ActiveCodeApp.createCode()
+
+        await this.confirmUserEmail(authParams.codeActivated)
+
+        await MailerApp.sendMailCode(email, authParams.codeActivated)
+    }
+
+    public async updateUserPass(authDTO: userReqPass) 
+    {
+        const findUser: null | userBDType = await UserRepository.findOneByCode(authDTO.recoveryCode)
+
+        if (!findUser) {
             return null
         }
 
-        return findUserByCode
+        const userIDString = findUser._id.toString()
+
+        const hushPass: string = await BcryptApp.saltGenerate(authDTO.newPassword)
+
+        await UserRepository.updatePasswordUser(userIDString, authParams, hushPass)
+
     }
 
-    public async findOneUserToEmail(email: string):
-        Promise<null | userBDType> 
-    {
-        const findUserByEmail: userBDType | null = await USERS.findOne({"infUser.email": email})
-
-        if (!findUserByEmail) {
-            return null
-        }
-        
-        return findUserByEmail
-    }
 }
 
 export default new AuthService()

@@ -1,14 +1,14 @@
-import {userBDType} from "../models/user.models";
-import {USERS} from "../data/db.data";
+import {userBDType, userObjectResult} from "../models/user.models";
 import {isAfter} from "date-fns";
 import AuthService from "./auth.service";
+import UserRepository from "../data/repository/user.repository";
 
 class CheckedService {
 
     public async loginUniq(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"infUser.login": value})
+        const findUser: null | userObjectResult = await UserRepository.findOneByLogin(value)
 
         if (findUser) {
             return false
@@ -20,7 +20,7 @@ class CheckedService {
     public async emailUniq(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"infUser.email": value})
+        const findUser: null | userObjectResult = await UserRepository.findOneByEmail(value)
 
         if (findUser) {
             return false
@@ -32,7 +32,7 @@ class CheckedService {
     public async activateCodeValid(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await USERS.findOne({"activeUser.codeActivated": value})
+        const findUser: null | userBDType = await UserRepository.findOneByCode(value)
 
         if (!findUser) {
             throw new Error('Code is not valid')
@@ -50,7 +50,7 @@ class CheckedService {
     public async emailToBase(value: string):
         Promise<boolean>
     {
-        const findUser: null | userBDType = await AuthService.findOneUserToEmail(value)
+        const findUser: null | userBDType = await UserRepository.findOneByEmailAll(value)
 
         if (!findUser) {
             throw new Error('Email is not registration')

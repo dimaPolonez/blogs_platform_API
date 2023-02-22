@@ -1,10 +1,10 @@
 import {Response, Router} from "express";
 import {indexMiddleware} from "../middleware/index.middleware";
-import QueryService from "../services/query.service";
 import {ERRORS_CODE} from "../data/db.data";
 import UserController from "../controllers/user.controller";
 import {notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType} from "../models/request.models";
 import {resultUserObjectType} from "../models/user.models";
+import QueryRepository from "../data/repository/query.repository";
 
 const userRouter = Router({})
 
@@ -37,7 +37,7 @@ userRouter.get('/',
                 pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
             }
 
-            const allUsers: resultUserObjectType = await QueryService.getAllUsers(queryAll)
+            const allUsers: resultUserObjectType = await QueryRepository.getAllUsers(queryAll)
 
             res.status(ERRORS_CODE.OK_200).json(allUsers)
 

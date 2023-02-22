@@ -1,9 +1,12 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { userBDType } from "../../models/user.models";
+import { userBDType, userReqType } from "../../models/user.models";
+import {authParams} from "../../models/auth.models";
+import UserRepository from "../repository/user.repository";
 
 type UserStaticType = Model<userBDType> & {
-    createUser(): any,
-    updateUser(): boolean
+    createUser(hushPass: string, userDTO:userReqType, authParams: authParams): any,
+    updateUser(userID: string, authParams: authParams): boolean,
+    updatePasswordUser(userID: string, authParams: authParams, newHashPass: string): boolean
 }
 
 export const userBDSchema =  new Schema<userBDType, UserStaticType>({
@@ -23,57 +26,68 @@ export const userBDSchema =  new Schema<userBDType, UserStaticType>({
 })
 
 
-userBDSchema.static({async createUser():
+userBDSchema.static({async createUser(hushPass: string, userDTO:userReqType, authParams: authParams):
     Promise<any> {
 
-    /*const newPostSmart = new PostModel({
-        title: postDTO.title,
-        shortDescription: postDTO.shortDescription,
-        content: postDTO.content,
-        blogId: postDTO.blogId,
-        blogName: 'blog not found',
-        createdAt: new Date().toISOString(),
-            extendedLikesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: myLikeStatus.None,
-                newestLikes: []
-                }
+    const newUserSmart = new UserModel({
+        infUser: {
+            login: userDTO.login,
+            email: userDTO.email,
+            createdAt: new Date().toISOString()
+        },
+        activeUser: {
+            codeActivated: authParams.codeActivated,
+            lifeTimeCode: authParams.lifeTimeCode
+        },
+        authUser: {
+            confirm: authParams.confirm,
+            hushPass: hushPass
+        }
     })
 
-    await PostRepository.save(newPostSmart)
+    await UserRepository.save(newUserSmart)
 
-    return newPostSmart*/
+    return newUserSmart
 }
 })
 
-userBDSchema.static({async updateUser():
+userBDSchema.static({async updateUser(userID: string, authParams: authParams):
     Promise<boolean> {
 
-        /*
-        const findPostDocument = await PostRepository.findOneByIdReturnDoc(postID)
+        const findUserDocument = await UserRepository.findOneByIdReturnDoc(userID)
 
-        if (!findPostDocument) {
+        if (!findUserDocument) {
             return false
         }
 
-        const blogFind: blogObjectResult | null = await BlogRepository.findOneById(postDTO.blogId)
+        findUserDocument.activeUser.codeActivated = authParams.codeActivated
+        findUserDocument.activeUser.lifeTimeCode = authParams.lifeTimeCode
+        findUserDocument.authUser.confirm = authParams.confirm
 
-        if (blogFind) {
-            findPostDocument.blogName = blogFind.name
-        }
-
-        findPostDocument.title = postDTO.title
-        findPostDocument.shortDescription = postDTO.shortDescription
-        findPostDocument.content = postDTO.content
-        findPostDocument.blogId = postDTO.blogId
-
-        await PostRepository.save(findPostDocument)
-
-        return true*/
+        await UserRepository.save(findUserDocument)
 
         return true
 }
 })
 
-export const USERS = mongoose.model<userBDType, UserStaticType>('users', userBDSchema)
+userBDSchema.static({async updatePasswordUser(userID: string, authParams: authParams, newHashPass: string):
+    Promise<boolean> {
+
+        const findUserDocument = await UserRepository.findOneByIdReturnDoc(userID)
+
+        if (!findUserDocument) {
+            return false
+        }
+
+        findUserDocument.activeUser.codeActivated = authParams.codeActivated
+        findUserDocument.activeUser.lifeTimeCode = authParams.lifeTimeCode
+        findUserDocument.authUser.confirm = authParams.confirm
+        findUserDocument.authUser.hushPass = newHashPass
+
+        await UserRepository.save(findUserDocument)
+
+        return true
+}
+})
+
+export const UserModel = mongoose.model<userBDType, UserStaticType>('users', userBDSchema)

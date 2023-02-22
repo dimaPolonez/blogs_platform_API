@@ -1,16 +1,9 @@
-import {ERRORS_CODE} from "../data/db.data";
-import {ObjectId} from "mongodb";
-import {commentObjectResult, commentOfPostBDType, commentReqType} from "../models/comment.models";
-import {userBDType} from "../models/user.models";
-import {postBDType, postOfBlogReqType} from "../models/post.models";
-import {countObject, likesBDType, likesCounter, myLikeStatus} from "../models/likes.models";
-import LikeService from "./like.service";
-import { PostModel } from "../data/entity/post.entity";
+import {commentObjectResult, commentReqType} from "../models/comment.models";
 import CommentRepository from "../data/repository/comment.repository";
 
 class CommentService {
 
-    public async getOneComment(commentID: string, userID: ObjectId | null):
+    public async getOneComment(commentID: string, userID: string):
         Promise<null | commentObjectResult> 
     {
         const findComment: null | commentObjectResult = await CommentRepository.findOneById(commentID, userID)
@@ -22,7 +15,7 @@ class CommentService {
         return findComment
     }
 
-    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: ObjectId):
+    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: string):
         Promise<null | commentObjectResult> 
     {
         const createdComment: null | commentObjectResult = await CommentRepository.createCommentOfPost(postID, commentDTO, userID)
@@ -34,7 +27,7 @@ class CommentService {
         return createdComment    
     }
 
-    public async updateComment(commentID: string, commentDTO: commentReqType, userID: ObjectId):
+    public async updateComment(commentID: string, commentDTO: commentReqType, userID: string):
         Promise<number> 
     {
         const updatedCommentResult: number = await CommentRepository.updateComment(commentID, commentDTO, userID)
@@ -42,37 +35,15 @@ class CommentService {
         return updatedCommentResult
     }
 
-    public async commentLike(likeStatus: string, commentURIId: string, user: userBDType):
+    public async commentLike(likeDTO: string, commentID: string, userID: string):
         Promise<boolean> 
     {
-        const bodyID: ObjectId = new ObjectId(commentURIId)
+        const commentLikedResult: boolean = await CommentRepository.updateCommentLiked(likeDTO, commentID, userID)
 
-        /*const findComment: null | commentOfPostBDType = await this.findComment(bodyID)
-
-        if (!findComment) {
-            return false
-        }
-
-        const likesInfoComment: countObject = {
-            typeId: findComment._id,
-            type: 'comment',
-            likesCount: findComment.likesInfo.likesCount,
-            dislikesCount: findComment.likesInfo.dislikesCount
-        }
-
-        const newObjectLikes: likesCounter = await LikeService.counterLike(likeStatus, likesInfoComment, user)
-
-        await COMMENTS.updateOne({_id: bodyID}, {
-            $set: {
-                "likesInfo.likesCount": newObjectLikes.likesCount,
-                "likesInfo.dislikesCount": newObjectLikes.dislikesCount,
-            }
-        })
-    */
-        return true
+        return commentLikedResult
     }
 
-    public async deleteComment(commentID: string, userID: ObjectId):
+    public async deleteComment(commentID: string, userID: string):
         Promise<number> 
     {
         const deletedCommentResult: number = await CommentRepository.deleteComment(commentID, userID)

@@ -1,12 +1,13 @@
 import { ObjectId } from "mongodb";
 import mongoose, { Model, Schema } from "mongoose";
 import { commentDTOAll, commentOfPostBDType, commentReqType } from "../../models/comment.models";
-import { myLikeStatus } from "../../models/likes.models";
+import { likesCounter, myLikeStatus } from "../../models/likes.models";
 import CommentRepository from "../repository/comment.repository";
 
 type CommentStaticType = Model<commentOfPostBDType> & {
     createComment(commentDTO: commentDTOAll): any,
-    updateComment(commentID: string, commentDTO: commentReqType): boolean
+    updateComment(commentID: string, commentDTO: commentReqType): boolean,
+    updateCommentLiked(commentID: string, newObjectLikes: likesCounter): boolean
 }
 
 export const commentOfPostBDSchema =  new Schema<commentOfPostBDType, CommentStaticType>({
@@ -61,6 +62,24 @@ Promise<boolean> {
     await CommentRepository.save(findCommentDocument)
 
     return true
+}
+})
+
+commentOfPostBDSchema.static({async updateCommentLiked(commentID: string, newObjectLikes: likesCounter):
+    Promise<boolean> {
+
+        const findCommentDocument = await CommentRepository.findOneByIdReturnDoc(commentID)
+
+        if (!findCommentDocument) {
+            return false
+        }
+
+        findCommentDocument.likesInfo.likesCount = newObjectLikes.likesCount
+        findCommentDocument.likesInfo.likesCount = newObjectLikes.dislikesCount
+
+        await CommentRepository.save(findCommentDocument)
+
+        return true
 }
 })
 

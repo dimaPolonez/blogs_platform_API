@@ -9,17 +9,17 @@ import {add} from 'date-fns';
 
 class JwtApp {
 
-    public async createAccessJwt(user: userBDType): 
+    public async createAccessJwt(userID: ObjectId): 
         Promise<tokensObjectType> 
     {                                            
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 540})
+        const accessToken: string = jwt.sign({userId: userID}, settings.JWT_SECRET, {expiresIn: 540})
 
         return {
             accessToken: accessToken,
         }
     }
 
-    public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
+    public async createRefreshJwt(userID: ObjectId, deviceInfoObject: deviceInfoObject):
         Promise<string> 
     {                                
         const expiresBase: number = 5400
@@ -28,17 +28,17 @@ class JwtApp {
             seconds: expiresBase
         }).toString()
 
-        const deviceId: ObjectId = await GuardService.addNewDevice(user._id, deviceInfoObject, expiresTime)
+        const deviceId: ObjectId = await GuardService.addNewDevice(userID, deviceInfoObject, expiresTime)
 
         const refreshToken: string = jwt.sign({
                                                 deviceId: deviceId,
-                                                userId: user._id
+                                                userId: userID
                                             }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
 
         return refreshToken
     }
 
-    public async updateRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
+    public async updateRefreshJwt(userID: ObjectId, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
         Promise<string> 
     {
         const deviceId: ObjectId = new ObjectId(sessionId)
@@ -53,7 +53,7 @@ class JwtApp {
 
         const refreshToken: string = jwt.sign({
                                                 deviceId: deviceId,
-                                                userId: user._id
+                                                userId: userID
                                             }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
 
         return refreshToken

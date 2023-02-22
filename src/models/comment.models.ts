@@ -11,7 +11,7 @@ export type commentOfPostBDType = {
 }
 
 export type commInfo = {
-    userId: ObjectId,
+    userId: string,
     userLogin: string
 }
 
