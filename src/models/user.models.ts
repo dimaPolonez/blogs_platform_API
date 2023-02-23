@@ -4,18 +4,31 @@ export type userBDType = {
     _id: ObjectId,
     infUser: {
         login: string,
+        hushPass: string,
         email: string,
         createdAt: string
     },
     activeUser: {
         codeActivated: string,
         lifeTimeCode: string,
+        confirm: boolean
     },
-    authUser: {
-        confirm: boolean,
-        hushPass: string
-    }
+    sessionsUser: [sessionsUserType]
 }
+
+export type sessionsUserType = {
+    idSession: string,
+    ip: string,
+    title: string,
+    expiresTime: string,
+    lastActivateTime: string
+}
+
+
+
+
+
+
 
 export type userReqType = {
     login: string,

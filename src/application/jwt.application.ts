@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 import {settings} from "../data/db.data";
 import {tokensObjectType} from '../models/auth.models';
-import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
 import {deviceInfoObject, returnRefreshObject} from "../models/session.models";
 import GuardService from "../services/guard.service";
 import {add} from 'date-fns';
+import { userService } from '../services/user.service';
 
 class JwtApp {
 
@@ -79,11 +79,11 @@ class JwtApp {
             const validAccess: any = jwt.verify(token, settings.JWTREFRESH_SECRET)
 
             const refreshObject: returnRefreshObject = {
-                userId: validAccess.userId,
-                sessionId: validAccess.deviceId
+                userId: validAccess.userId.string,
+                sessionId: validAccess.deviceId.string
             }
 
-            const checkedActiveSession: boolean = await GuardService.checkedActiveSession(refreshObject.sessionId)
+            const checkedActiveSession: boolean = await userService.checkedActiveSession(refreshObject)
 
             if (!checkedActiveSession) {
                 return null
@@ -97,4 +97,4 @@ class JwtApp {
     }
 }
 
-export default new JwtApp()
+export const jwtApp = new JwtApp()

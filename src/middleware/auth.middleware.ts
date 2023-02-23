@@ -1,19 +1,14 @@
-import {Request, Response, NextFunction} from "express";
-import {body, header} from "express-validator";
-import {ObjectId} from "mongodb";
-import JwtApp from "../application/jwt.application";
-import {ERRORS_CODE} from "../data/db.data";
-import UserRepository from "../data/repository/user.repository";
-import {returnRefreshObject} from "../models/session.models";
-import {userObjectResult} from "../models/user.models";
-import CheckedService from "../services/checked.service";
+import { Request, Response, NextFunction } from "express";
+import { body, header } from "express-validator";
+import { ERRORS_CODE } from "../data/db.data";
+import { returnRefreshObject } from "../models/session.models";
+import { checkedService } from "../services/checked.service";
 
 export const basicAuthorization = (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     header('authorization')
         .isString()
         .bail()
@@ -25,8 +20,8 @@ export const basicAuthorization = (
 
     if (req.headers.authorization === `Basic YWRtaW46cXdlcnR5`) {
         next()
-        return 
-    } 
+        return
+    }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
 }
@@ -35,8 +30,7 @@ export const bearerAuthorization = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.headers.authorization) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
@@ -44,62 +38,37 @@ export const bearerAuthorization = async (
 
     const accessToken: string = req.headers.authorization.substring(7)
 
-    const userAccessId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
+    const userID: string | null = await checkedService.validAccess(accessToken)
 
-    if (userAccessId) {
-
-        const userIDString = userAccessId.toString()
-
-        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
-
-        if (findUser) {
-            req.userID = userIDString
-            next()
-            return
-        }
-
-        res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+    if (userID) {
+        req.userID = userID
+        next()
         return
     }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
-
 }
 
 export const cookieRefresh = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.cookies.refreshToken) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
     }
 
-    const refreshToken: string = req.cookies.refreshToken
+    const objectUserID: returnRefreshObject | null = await checkedService.validRefresh(req.cookies.refreshToken)
 
-    const userRefreshId: returnRefreshObject | null = await JwtApp.verifyRefreshJwt(refreshToken)
-
-    if (userRefreshId) {
-
-        const userIDString = userRefreshId.userId.toString()
-
-        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
-
-        if (findUser) {
-            req.userID = userIDString
-            req.sessionId = userRefreshId.sessionId
-            next()
-            return
-        }
-
-        res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
+    if (objectUserID) {
+        req.userID = objectUserID.userId
+        req.sessionID = objectUserID.sessionId
+        next()
         return
     }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
-
 }
 
 export const codeValidator = [
@@ -110,7 +79,7 @@ export const codeValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(CheckedService.activateCodeValid)
+        .custom(checkedService.activateCodeValid)
         .bail()
         .withMessage('Field code incorrect')
 ]
@@ -125,7 +94,7 @@ export const emailValidator = [
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
-        .custom(CheckedService.emailToBase)
+        .custom(checkedService.emailToBase)
         .bail()
         .withMessage('Field email incorrect')
 ]
@@ -150,7 +119,7 @@ export const newPassValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .isLength({min: 6, max: 20})
+        .isLength({ min: 6, max: 20 })
         .bail()
         .withMessage('Field newPassword incorrect'),
     body('recoveryCode')
@@ -160,7 +129,7 @@ export const newPassValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(CheckedService.activateCodeValid)
+        .custom(checkedService.activateCodeValid)
         .bail()
         .withMessage('Field recoveryCode incorrect')
 ]

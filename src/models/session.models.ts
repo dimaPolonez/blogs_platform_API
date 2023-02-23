@@ -23,13 +23,7 @@ export type returnActiveDevice = {
 }
 
 export type returnRefreshObject = {
-    userId: ObjectId,
-    sessionId: ObjectId
+    userId: string,
+    sessionId: string
 }
 
-export type objectIpBDType = {
-    _id: ObjectId,
-    ip: string,
-    tokens: number,
-    lastDate: Date
-}

@@ -1,7 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { userBDType, userReqType } from "../../models/user.models";
+import { sessionsUserType, userBDType, userReqType } from "../../models/user.models";
 import {authParams} from "../../models/auth.models";
-import UserRepository from "../repository/user.repository";
 
 type UserStaticType = Model<userBDType> & {
     createUser(hushPass: string, userDTO:userReqType, authParams: authParams): any,
@@ -9,24 +8,31 @@ type UserStaticType = Model<userBDType> & {
     updatePasswordUser(userID: string, authParams: authParams, newHashPass: string): boolean
 }
 
+export const sessionsUserSchema = new Schema<sessionsUserType>({
+    idSession: String,
+    ip: String,
+    title: String,
+    expiresTime: String,
+    lastActivateTime: String
+})
+
 export const userBDSchema =  new Schema<userBDType, UserStaticType>({
     infUser: {
         login: String,
+        hushPass: String,
         email: String,
         createdAt: String
     },
     activeUser: {
         codeActivated: String,
         lifeTimeCode: String,
-    },
-    authUser: {
         confirm: Boolean,
-        hushPass: String
-    }
+    },
+    sessionsUser: [sessionsUserSchema]
 })
 
 
-userBDSchema.static({async createUser(hushPass: string, userDTO:userReqType, authParams: authParams):
+/* userBDSchema.static({async createUser(hushPass: string, userDTO:userReqType, authParams: authParams):
     Promise<any> {
 
     const newUserSmart = new UserModel({
@@ -49,9 +55,9 @@ userBDSchema.static({async createUser(hushPass: string, userDTO:userReqType, aut
 
     return newUserSmart
 }
-})
+}) */
 
-userBDSchema.static({async updateUser(userID: string, authParams: authParams):
+/* userBDSchema.static({async updateUser(userID: string, authParams: authParams):
     Promise<boolean> {
 
         const findUserDocument = await UserRepository.findOneByIdReturnDoc(userID)
@@ -68,9 +74,9 @@ userBDSchema.static({async updateUser(userID: string, authParams: authParams):
 
         return true
 }
-})
+}) */
 
-userBDSchema.static({async updatePasswordUser(userID: string, authParams: authParams, newHashPass: string):
+/* userBDSchema.static({async updatePasswordUser(userID: string, authParams: authParams, newHashPass: string):
     Promise<boolean> {
 
         const findUserDocument = await UserRepository.findOneByIdReturnDoc(userID)
@@ -88,6 +94,6 @@ userBDSchema.static({async updatePasswordUser(userID: string, authParams: authPa
 
         return true
 }
-})
+}) */
 
 export const UserModel = mongoose.model<userBDType, UserStaticType>('users', userBDSchema)

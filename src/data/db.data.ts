@@ -1,11 +1,7 @@
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { objectIpBDSchema } from './entity/objectIP.entity';
-import { likesBDSchema } from './entity/likes.entity';
-import { sessionBDSchema } from './entity/session.entity';
 
 dotenv.config()
-
 
 export const settings = {
     DB_URL: process.env.mongoURI || 'mongodb://0.0.0.0:27017',
@@ -27,9 +23,6 @@ export async function startBD() {
         await mongoose.disconnect();
     }
 }
-
-export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
-export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
 
 export const ERRORS_CODE = {
     OK_200: 200,

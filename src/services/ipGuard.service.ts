@@ -1,15 +1,17 @@
-import {ObjectID} from "bson";
 import {differenceInSeconds} from "date-fns";
-import {OBJECT_IP} from "../data/db.data";
+import { ObjectId } from "mongodb";
+import { Document } from "mongoose";
+import { ipGuardBDType, IpGuardModel } from "../data/entity/ipGuard.entity";
+import { ipGuardRepository } from "../data/repository/ipGuard.repository";
 import {objectIpBDType} from "../models/session.models";
 
 
-class IpService {
+class IpGuardService {
 
     public async findIP(ip: string):
         Promise<boolean> 
     {
-        const findIp: null | objectIpBDType = await OBJECT_IP.findOne({ip: ip})
+        const findIp = await ipGuardRepository.findOneByIdReturnDoc(ip)
 
         if (!findIp) {
             return await this.createIP(ip)
@@ -20,22 +22,19 @@ class IpService {
 
     private async createIP(ip: string):
         Promise<boolean> 
-    {
-       /* await OBJECT_IP.insertOne({
-            _id: new ObjectID(),
-            ip: ip,
-            lastDate: new Date(),
-            tokens: 4
-        })*/
+    { 
+        const ipDoc = await IpGuardModel.createIp(ip)
+
+        ipDoc.createIp()
+
+        await ipGuardRepository.save(ipDoc)
 
         return true
     }
 
-    private async checkIP(objectIP: objectIpBDType):
+    private async checkIP(objectIP: ):
         Promise<boolean> 
     {
-        const newDateCreated: Date = new Date()
-
         let seconds: number = differenceInSeconds(new Date(), objectIP.lastDate)
 
         if (seconds <= 10) {
@@ -67,4 +66,4 @@ class IpService {
     }
 }
 
-export default new IpService()
+export const ipGuardService = new IpGuardService()

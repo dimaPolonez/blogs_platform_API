@@ -45,25 +45,7 @@ class GuardService {
         return returnObject
     }
 
-    async checkedActiveSession(reqID: ObjectId):
-        Promise<boolean> 
-    {
-        const sessionId: ObjectId = new ObjectId(reqID)
 
-        const findActiveSession: null | sessionBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
-
-        if (!findActiveSession) {
-            return false
-        }
-
-        const date = Date.parse(findActiveSession.expiresTime)
-
-        if (!(isAfter(date, new Date()))){
-            return false
-        }
-
-        return true
-    }
 
     public async updateExpiredSession(reqID: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 
     {

@@ -6,7 +6,7 @@ declare global {
         export interface Request {
             userID: string,
             user: userBDType,
-            sessionId: ObjectId
+            sessionID: string
         }
     }
 }
