@@ -1,7 +1,7 @@
 import express, {Request, Response} from 'express';
 import {ERRORS_CODE, startBD} from './data/db.data';
 import userRouter from "./routes/user.router";
-import authRouter from "./routes/auth.router";
+import authRouter from "./routes/userAuth.router";
 import cookieParser from 'cookie-parser';
 import guardRouter from "./routes/quard.routes";
 import { userRepository } from './data/repository/user.repository';

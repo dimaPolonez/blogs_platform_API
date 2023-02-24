@@ -1,5 +1,5 @@
 import {Router} from "express";
-import GuardController from "../controllers/guard.controller";
+import GuardController from "../controllers/ipGuard.controller";
 import {indexMiddleware} from "../middleware/index.middleware";
 
 
