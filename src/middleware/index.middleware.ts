@@ -16,29 +16,28 @@ import {ipBanner} from './ip.middleware';
 import {likeValidator, reqUserId} from './like.middleware';
 import {ObjectId} from "mongodb";
 
-export const paramsValidator =[
+export const paramsValidator = [
     param('id')
-    .trim()
-    .bail()
-    .isLength({min: 24, max: 24})
-    .bail()
-    .withMessage('Field URI Id incorrect')
-    .custom(async (value) => {
+        .trim()
+        .bail()
+        .isLength({min: 24, max: 24})
+        .bail()
+        .withMessage('Field URI Id incorrect')
+        .custom(async (value) => {
 
-        if (ObjectId.isValid(value)) {
-            return true
-        }
+            if (ObjectId.isValid(value)) {
+                return true
+            }
 
-        throw new Error('Field URI Id incorrect')
-    })
+            throw new Error('Field URI Id incorrect')
+        })
 ]
 
 export const errorsValidator = (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
@@ -46,7 +45,7 @@ export const errorsValidator = (
             errorsMessages: errors.array().map((x) => {
 
                 return {message: x.msg, field: x.param}
-                 
+
             })
         })
     }

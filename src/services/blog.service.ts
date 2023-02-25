@@ -5,28 +5,25 @@ import {BlogModel} from "../data/entity/blog.entity";
 class BlogService {
 
     public async getOneBlog(blogID: string):
-        Promise<null | blogObjectResult> 
-    {
+        Promise<null | blogObjectResult> {
         const oneBlog: null | blogObjectResult = await blogRepository.findOneById(blogID)
 
         return oneBlog
     }
 
     public async createNewBlog(blogDTO: blogReqType):
-        Promise<string>
-    {
+        Promise<string> {
         const createdBlog: blogObjectResult = await blogRepository.createBlog(blogDTO)
 
         const newBlogSmart = await BlogModel.createBlog(blogDTO)
 
         await blogRepository.save(newBlogSmart)
-        
+
         return newBlogSmart._id
     }
 
     public async updateBlog(blogID: string, blogDTO: blogReqType):
-        Promise<boolean> 
-    {
+        Promise<boolean> {
         //smarBtblog = repo.getById
         //smartblog.updateBlog(dto)
         //repo.save(smartBlog)
@@ -36,12 +33,11 @@ class BlogService {
     }
 
     public async deleteBlog(blogID: string):
-        Promise<boolean> 
-    {
+        Promise<boolean> {
         const deletedBlogResult: boolean = await blogRepository.deleteBlog(blogID)
 
         return deletedBlogResult
     }
 }
 
-export default new BlogService()
+export const blogService = new BlogService()

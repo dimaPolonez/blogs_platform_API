@@ -1,15 +1,14 @@
 import {Response} from "express";
 import {ERRORS_CODE} from "../data/db.data";
-import UserService from "../services/user.service";
 import {bodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {userObjectResult, userReqType} from "../models/user.models";
+import {userService} from "../services/user.service";
 
 class UserController {
 
-    public async createUser(req: bodyReqType<userReqType>, res: Response) 
-    {
+    public async createUser(req: bodyReqType<userReqType>, res: Response) {
         try {
-            const user: userObjectResult = await UserService.createUserAdmin(req.body)
+            const user: userObjectResult = await userService.createUserAdmin(req.body)
 
             res.status(ERRORS_CODE.CREATED_201).json(user)
 
@@ -18,10 +17,9 @@ class UserController {
         }
     }
 
-    public async deleteUser(req: paramsReqType<paramsId>, res: Response) 
-    {
+    public async deleteUser(req: paramsReqType<paramsId>, res: Response) {
         try {
-            const user: boolean = await UserService.deleteUser(req.params.id)
+            const user: boolean = await userService.deleteUser(req.params.id)
 
             if (user) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
@@ -37,4 +35,4 @@ class UserController {
 
 }
 
-export default new UserController()
+export const userController = new UserController()

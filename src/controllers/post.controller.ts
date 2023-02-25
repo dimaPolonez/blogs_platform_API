@@ -1,18 +1,17 @@
 import {Response} from 'express';
-import PostService from '../services/post.service';
 import {ERRORS_CODE} from "../data/db.data";
-import CommentService from "../services/comment.service";
 import {bodyReqType, paramsAndBodyReqType, paramsId, paramsReqType} from "../models/request.models";
 import {postObjectResult, postReqType} from "../models/post.models";
 import {commentObjectResult, commentReqType} from "../models/comment.models";
-import { likesReq } from '../models/likes.models';
+import {likesReq} from '../models/likes.models';
+import {postService} from "../services/post.service";
+import {commentService} from "../services/comment.service";
 
 class PostController {
 
-    public async getOnePost(req: paramsReqType<paramsId>, res: Response) 
-    {
+    public async getOnePost(req: paramsReqType<paramsId>, res: Response) {
         try {
-            const post: null | postObjectResult = await PostService.getOnePost(req.params.id, req.userID)
+            const post: null | postObjectResult = await postService.getOnePost(req.params.id, req.userID)
 
             if (post) {
                 res.status(ERRORS_CODE.OK_200).json(post)
@@ -26,10 +25,9 @@ class PostController {
         }
     }
 
-    public async createPost(req: bodyReqType<postReqType>, res: Response) 
-    {
+    public async createPost(req: bodyReqType<postReqType>, res: Response) {
         try {
-            const post: postObjectResult = await PostService.createPost(req.body)
+            const post: postObjectResult = await postService.createPost(req.body)
 
             res.status(ERRORS_CODE.CREATED_201).json(post)
 
@@ -38,10 +36,9 @@ class PostController {
         }
     }
 
-    public async updatePost(req: paramsAndBodyReqType<paramsId, postReqType>, res: Response) 
-    {
+    public async updatePost(req: paramsAndBodyReqType<paramsId, postReqType>, res: Response) {
         try {
-            const updatedPost: boolean = await PostService.updatePost(req.params.id, req.body)
+            const updatedPost: boolean = await postService.updatePost(req.params.id, req.body)
 
             if (updatedPost) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
@@ -55,10 +52,9 @@ class PostController {
         }
     }
 
-    public async likeStatusPost(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) 
-    {
+    public async likeStatusPost(req: paramsAndBodyReqType<paramsId, likesReq>, res: Response) {
         try {
-            const likedPost: boolean = await PostService.postLike(req.body.likeStatus, req.params.id, req.userID)
+            const likedPost: boolean = await postService.postLike(req.body.likeStatus, req.params.id, req.userID)
 
             if (likedPost) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
@@ -72,10 +68,9 @@ class PostController {
         }
     }
 
-    public async deletePost(req: paramsReqType<paramsId>, res: Response) 
-    {
+    public async deletePost(req: paramsReqType<paramsId>, res: Response) {
         try {
-            const deletedPost: boolean = await PostService.deletePost(req.params.id)
+            const deletedPost: boolean = await postService.deletePost(req.params.id)
 
             if (deletedPost) {
                 res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
@@ -89,10 +84,9 @@ class PostController {
         }
     }
 
-    public async createCommentOfPost(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) 
-    {
+    public async createCommentOfPost(req: paramsAndBodyReqType<paramsId, commentReqType>, res: Response) {
         try {
-            const comment: null | commentObjectResult = await CommentService.createCommentOfPost(req.params.id, req.body, req.userID)
+            const comment: null | commentObjectResult = await commentService.createCommentOfPost(req.params.id, req.body, req.userID)
 
             if (comment) {
                 res.status(ERRORS_CODE.CREATED_201).json(comment)
@@ -107,4 +101,4 @@ class PostController {
     }
 }
 
-export default new PostController()
+export const postController = new PostController()

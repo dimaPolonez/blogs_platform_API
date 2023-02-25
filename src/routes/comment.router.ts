@@ -1,14 +1,14 @@
 import {Router} from "express";
 import {indexMiddleware} from "../middleware/index.middleware";
-import CommentController from "../controllers/comment.controller";
+import {commentController} from "../controllers/comment.controller";
 
-const commentRouter = Router({})
+export const commentRouter = Router({})
 
 commentRouter.get('/:id',
     indexMiddleware.USER_ID,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    CommentController.getOneComment
+    commentController.getOneComment
 )
 
 commentRouter.put('/:id',
@@ -16,7 +16,7 @@ commentRouter.put('/:id',
     indexMiddleware.COMMENT_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    CommentController.updateComment
+    commentController.updateComment
 )
 
 commentRouter.put('/:id/like-status',
@@ -24,14 +24,12 @@ commentRouter.put('/:id/like-status',
     indexMiddleware.LIKE_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    CommentController.likeStatusComment
+    commentController.likeStatusComment
 )
 
 commentRouter.delete('/:id',
     indexMiddleware.BEARER_AUTHORIZATION,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    CommentController.deleteComment
+    commentController.deleteComment
 )
-
-export default commentRouter

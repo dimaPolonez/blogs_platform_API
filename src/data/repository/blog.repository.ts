@@ -1,6 +1,6 @@
-import { ObjectId } from "mongodb"
-import { blogBDType, blogObjectResult, blogReqType } from "../../models/blog.models"
-import { BlogModel } from "../entity/blog.entity"
+import {ObjectId} from "mongodb"
+import {blogBDType, blogObjectResult, blogReqType} from "../../models/blog.models"
+import {BlogModel} from "../entity/blog.entity"
 
 
 class BlogRepository {
@@ -9,17 +9,17 @@ class BlogRepository {
 
         const objectBlogID: ObjectId = new ObjectId(blogID)
 
-        const findBlogSmart = await BlogModel.findOne({ _id: objectBlogID })
+        const findBlogSmart = await BlogModel.findOne({_id: objectBlogID})
 
         return findBlogSmart
     }
 
     public async findOneById(blogID: string):
         Promise<null | blogObjectResult> {
-            
+
         const objectBlogID: ObjectId = new ObjectId(blogID)
 
-        const findBlogSmart: null | blogBDType = await BlogModel.findOne({ _id: objectBlogID })
+        const findBlogSmart: null | blogBDType = await BlogModel.findOne({_id: objectBlogID})
 
         if (!findBlogSmart) {
             return null
@@ -58,14 +58,14 @@ class BlogRepository {
 
     public async deleteBlog(blogID: string):
         Promise<boolean> {
-            
+
         const findBlogModel: blogObjectResult | null = await this.findOneById(blogID)
 
         if (!findBlogModel) {
             return false
         }
 
-        await BlogModel.deleteOne({ _id: findBlogModel.id })
+        await BlogModel.deleteOne({_id: findBlogModel.id})
 
         return true
     }

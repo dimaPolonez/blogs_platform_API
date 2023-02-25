@@ -1,19 +1,18 @@
 import {Request, Response, NextFunction} from "express";
 import {body, header} from "express-validator";
 import {ObjectId} from "mongodb";
-import JwtApp from "../application/jwt.application";
 import {ERRORS_CODE} from "../data/db.data";
-import UserRepository from "../data/repository/user.repository";
 import {returnRefreshObject} from "../models/session.models";
 import {userObjectResult} from "../models/user.models";
-import CheckedService from "../services/checked.service";
+import {jwtApp} from "../application/jwt.application";
+import {userRepository} from "../data/repository/user.repository";
+import {checkedService} from "../services/checked.service";
 
 export const basicAuthorization = (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     header('authorization')
         .isString()
         .bail()
@@ -25,8 +24,8 @@ export const basicAuthorization = (
 
     if (req.headers.authorization === `Basic YWRtaW46cXdlcnR5`) {
         next()
-        return 
-    } 
+        return
+    }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
 }
@@ -35,8 +34,7 @@ export const bearerAuthorization = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.headers.authorization) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
@@ -44,13 +42,13 @@ export const bearerAuthorization = async (
 
     const accessToken: string = req.headers.authorization.substring(7)
 
-    const userAccessId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
+    const userAccessId: ObjectId | null = await jwtApp.verifyAccessJwt(accessToken)
 
     if (userAccessId) {
 
         const userIDString = userAccessId.toString()
 
-        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
+        const findUser: null | userObjectResult = await userRepository.findOneById(userIDString)
 
         if (findUser) {
             req.userID = userIDString
@@ -70,8 +68,7 @@ export const cookieRefresh = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.cookies.refreshToken) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
@@ -79,13 +76,13 @@ export const cookieRefresh = async (
 
     const refreshToken: string = req.cookies.refreshToken
 
-    const userRefreshId: returnRefreshObject | null = await JwtApp.verifyRefreshJwt(refreshToken)
+    const userRefreshId: returnRefreshObject | null = await jwtApp.verifyRefreshJwt(refreshToken)
 
     if (userRefreshId) {
 
         const userIDString = userRefreshId.userId.toString()
 
-        const findUser: null | userObjectResult = await UserRepository.findOneById(userIDString)
+        const findUser: null | userObjectResult = await userRepository.findOneById(userIDString)
 
         if (findUser) {
             req.userID = userIDString
@@ -110,7 +107,7 @@ export const codeValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(CheckedService.activateCodeValid)
+        .custom(checkedService.activateCodeValid)
         .bail()
         .withMessage('Field code incorrect')
 ]
@@ -125,7 +122,7 @@ export const emailValidator = [
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
-        .custom(CheckedService.emailToBase)
+        .custom(checkedService.emailToBase)
         .bail()
         .withMessage('Field email incorrect')
 ]
@@ -160,7 +157,7 @@ export const newPassValidator = [
         .bail()
         .notEmpty()
         .bail()
-        .custom(CheckedService.activateCodeValid)
+        .custom(checkedService.activateCodeValid)
         .bail()
         .withMessage('Field recoveryCode incorrect')
 ]

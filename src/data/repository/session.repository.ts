@@ -1,8 +1,8 @@
 
 
-class sessionRepository {
+class SessionRepository {
 
     
 }
 
-export default new sessionRepository()
+export const sessionRepository = new SessionRepository()

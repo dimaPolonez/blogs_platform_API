@@ -1,8 +1,6 @@
+class ObjectIPRepository {
 
 
-class objectIPRepository {
-
-    
 }
 
-export default new objectIPRepository()
+export const objectIpRepository = new ObjectIPRepository()

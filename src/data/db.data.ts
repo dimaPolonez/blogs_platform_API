@@ -1,8 +1,7 @@
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { objectIpBDSchema } from './entity/objectIP.entity';
-import { likesBDSchema } from './entity/likes.entity';
-import { sessionBDSchema } from './entity/session.entity';
+import {objectIpBDSchema} from './entity/objectIP.entity';
+import {sessionBDSchema} from './entity/session.entity';
 
 dotenv.config()
 

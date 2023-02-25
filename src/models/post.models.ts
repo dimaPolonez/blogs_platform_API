@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import { likesInfoPost} from "./likes.models";
+import {likesInfoPost} from "./likes.models";
 
 export type postBDType = {
     _id: ObjectId,

@@ -1,5 +1,4 @@
 import {Response, Router} from 'express';
-import BlogController from '../controllers/blog.controller';
 import {indexMiddleware} from '../middleware/index.middleware';
 import {ERRORS_CODE} from "../data/db.data";
 import {
@@ -9,15 +8,16 @@ import {
 } from '../models/request.models';
 import {resultBlogObjectType} from '../models/blog.models';
 import {resultPostObjectType} from '../models/post.models';
-import QueryRepository from '../data/repository/query.repository';
+import {blogController} from "../controllers/blog.controller";
+import {queryRepository} from "../data/repository/query.repository";
 
-const blogRouter = Router({})
+export const blogRouter = Router({})
 
 blogRouter.get(
     '/:id',
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    BlogController.getOneBlog
+    blogController.getOneBlog
 )
 
 blogRouter.post(
@@ -25,7 +25,7 @@ blogRouter.post(
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.BLOGS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    BlogController.createBlog
+    blogController.createBlog
 )
 
 blogRouter.put(
@@ -34,7 +34,7 @@ blogRouter.put(
     indexMiddleware.BLOGS_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    BlogController.updateBlog
+    blogController.updateBlog
 )
 
 blogRouter.delete(
@@ -42,7 +42,7 @@ blogRouter.delete(
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    BlogController.deleteBlog
+    blogController.deleteBlog
 )
 
 blogRouter.post(
@@ -51,15 +51,14 @@ blogRouter.post(
     indexMiddleware.POSTS_OF_BLOG_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    BlogController.createOnePostOfBlog
+    blogController.createOnePostOfBlog
 )
 
 blogRouter.get('/:id/posts',
     indexMiddleware.USER_ID,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => 
-    {
+    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
         try {
             let queryAll: notStringQueryReqPag = {
                 sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
@@ -68,7 +67,7 @@ blogRouter.get('/:id/posts',
                 pageSize: req.query.pageSize ? +req.query.pageSize : 10
             }
 
-            const allPosts: null | resultPostObjectType = await QueryRepository.getAllPostsOfBlog(req.params.id, queryAll, req.userID)
+            const allPosts: null | resultPostObjectType = await queryRepository.getAllPostsOfBlog(req.params.id, queryAll, req.userID)
 
             if (allPosts) {
                 res.status(ERRORS_CODE.OK_200).json(allPosts)
@@ -83,8 +82,7 @@ blogRouter.get('/:id/posts',
     })
 
 blogRouter.get('/',
-    async (req: queryReqType<queryReqPagOfSearchName>, res: Response) => 
-    {
+    async (req: queryReqType<queryReqPagOfSearchName>, res: Response) => {
         try {
             let queryAll: notStringQueryReqPagOfSearchName = {
                 searchNameTerm: req.query.searchNameTerm ? req.query.searchNameTerm : '',
@@ -94,7 +92,7 @@ blogRouter.get('/',
                 pageSize: req.query.pageSize ? +req.query.pageSize : 10
             }
 
-            const allBlogs: resultBlogObjectType = await QueryRepository.getAllBlogs(queryAll)
+            const allBlogs: resultBlogObjectType = await queryRepository.getAllBlogs(queryAll)
 
             res.status(ERRORS_CODE.OK_200).json(allBlogs)
 
@@ -102,5 +100,3 @@ blogRouter.get('/',
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     })
-
-export default blogRouter

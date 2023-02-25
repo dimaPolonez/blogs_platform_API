@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb";
-import mongoose, { Model, Schema } from "mongoose";
-import { commentDTOAll, commentOfPostBDType, commentReqType } from "../../models/comment.models";
-import { likesCounter, myLikeStatus } from "../../models/likes.models";
-import CommentRepository from "../repository/comment.repository";
+import {ObjectId} from "mongodb";
+import mongoose, {Model, Schema} from "mongoose";
+import {commentDTOAll, commentOfPostBDType, commentReqType} from "../../models/comment.models";
+import {likesCounter, myLikeStatus} from "../../models/likes.models";
+import {commentRepository} from "../repository/comment.repository";
 
 type CommentStaticType = Model<commentOfPostBDType> & {
     createComment(commentDTO: commentDTOAll): any,
@@ -10,7 +10,7 @@ type CommentStaticType = Model<commentOfPostBDType> & {
     updateCommentLiked(commentID: string, newObjectLikes: likesCounter): boolean
 }
 
-export const commentOfPostBDSchema =  new Schema<commentOfPostBDType, CommentStaticType>({
+export const commentOfPostBDSchema = new Schema<commentOfPostBDType, CommentStaticType>({
     content: String,
     commentatorInfo: {
         userId: ObjectId,
@@ -25,52 +25,51 @@ export const commentOfPostBDSchema =  new Schema<commentOfPostBDType, CommentSta
     }
 })
 
-commentOfPostBDSchema.static({async createComment(commentDTO: commentDTOAll):
-    Promise<any> {
+commentOfPostBDSchema.static({
+    async createComment(commentDTO: commentDTOAll):
+        Promise<any> {
+        const newCommentSmart = new CommentModel({
+            content: commentDTO.content,
+            commentatorInfo: {
+                userId: commentDTO.commentatorInfo.userId,
+                userLogin: commentDTO.commentatorInfo.userLogin
+            },
+            postId: commentDTO.postId,
+            createdAt: new Date().toISOString(),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: myLikeStatus.None
+            }
+        })
 
-    const newCommentSmart = new CommentModel({
-        content: commentDTO.content,
-        commentatorInfo: {
-            userId: commentDTO.commentatorInfo.userId,
-            userLogin: commentDTO.commentatorInfo.userLogin
-        },
-        postId: commentDTO.postId,
-        createdAt: new Date().toISOString(),
-        likesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: myLikeStatus.None
-        }
-    })
+        await commentRepository.save(newCommentSmart)
 
-    await CommentRepository.save(newCommentSmart)
-
-    return newCommentSmart
-}
+        return newCommentSmart
+    }
 })
 
 commentOfPostBDSchema.static({
     async updateComment(commentID: string, commentDTO: commentReqType):
         Promise<boolean> {
+        const findCommentDocument = await commentRepository.findOneByIdReturnDoc(commentID)
 
-    const findCommentDocument = await CommentRepository.findOneByIdReturnDoc(commentID)
+        if (!findCommentDocument) {
+            return false
+        }
 
-    if (!findCommentDocument) {
-        return false
+        findCommentDocument.content = commentDTO.content
+
+        await commentRepository.save(findCommentDocument)
+
+        return true
     }
-
-    findCommentDocument.content = commentDTO.content
-
-    await CommentRepository.save(findCommentDocument)
-
-    return true
-}
 })
 
-commentOfPostBDSchema.static({async updateCommentLiked(commentID: string, newObjectLikes: likesCounter):
-    Promise<boolean> {
-
-        const findCommentDocument = await CommentRepository.findOneByIdReturnDoc(commentID)
+commentOfPostBDSchema.static({
+    async updateCommentLiked(commentID: string, newObjectLikes: likesCounter):
+        Promise<boolean> {
+        const findCommentDocument = await commentRepository.findOneByIdReturnDoc(commentID)
 
         if (!findCommentDocument) {
             return false
@@ -79,10 +78,10 @@ commentOfPostBDSchema.static({async updateCommentLiked(commentID: string, newObj
         findCommentDocument.likesInfo.likesCount = newObjectLikes.likesCount
         findCommentDocument.likesInfo.likesCount = newObjectLikes.dislikesCount
 
-        await CommentRepository.save(findCommentDocument)
+        await commentRepository.save(findCommentDocument)
 
         return true
-}
+    }
 })
 
 export const CommentModel = mongoose.model<commentOfPostBDType, CommentStaticType>('comments', commentOfPostBDSchema)

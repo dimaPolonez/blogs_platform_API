@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {body} from "express-validator";
-import JwtApp from "../application/jwt.application";
 import {myLikeStatus} from "../models/likes.models";
 import {ObjectId} from "mongodb";
+import {jwtApp} from "../application/jwt.application";
 
 
 export const likeValidator = [
@@ -26,8 +26,7 @@ export const reqUserId = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.headers.authorization) {
         next()
         return
@@ -35,12 +34,12 @@ export const reqUserId = async (
 
     const accessToken: string = req.headers.authorization.substring(7)
 
-    const userObjectId: ObjectId | null = await JwtApp.verifyAccessJwt(accessToken)
+    const userObjectId: ObjectId | null = await jwtApp.verifyAccessJwt(accessToken)
 
     if (userObjectId) {
         req.userID = userObjectId.toString()
         next()
         return
-    } 
+    }
     next()
 }

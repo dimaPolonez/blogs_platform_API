@@ -2,27 +2,25 @@ import {Request, Response} from 'express';
 import {ERRORS_CODE} from "../data/db.data";
 import {returnActiveDevice} from '../models/session.models';
 import {paramsId, paramsReqType} from '../models/request.models';
-import GuardService from '../services/guard.service';
+import {guardService} from "../services/guard.service";
 
 class GuardController {
 
-    public async getAllSessions(req: Request, res: Response) 
-    {
+    public async getAllSessions(req: Request, res: Response) {
         try {
-            const activeDevice: returnActiveDevice[] = await GuardService.allActiveSessions(req.user._id)
+            const activeDevice: returnActiveDevice[] = await guardService.allActiveSessions(req.user._id)
 
             res.status(ERRORS_CODE.OK_200).json(activeDevice)
             return
-            
+
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
 
-    public async killAllSessions(req: Request, res: Response) 
-    {
+    public async killAllSessions(req: Request, res: Response) {
         try {
-            await GuardService.killAllSessions(req.sessionId, req.user)
+            await guardService.killAllSessions(req.sessionId, req.user)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -31,10 +29,9 @@ class GuardController {
         }
     }
 
-    public async killOneSession(req: paramsReqType<paramsId>, res: Response) 
-    {
+    public async killOneSession(req: paramsReqType<paramsId>, res: Response) {
         try {
-            const killedSession: number = await GuardService.killOneSession(req.params.id, req.user)
+            const killedSession: number = await guardService.killOneSession(req.params.id, req.user)
 
             switch (killedSession) {
                 case (204):
@@ -52,4 +49,4 @@ class GuardController {
 
 }
 
-export default new GuardController()
+export const guardController = new GuardController()

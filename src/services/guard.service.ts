@@ -8,8 +8,7 @@ import {userBDType} from "../models/user.models";
 class GuardService {
 
     public async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
-        Promise<ObjectId>
-    {
+        Promise<ObjectId> {
         const newGenerateId: ObjectId = new ObjectId()
 
         const nowDate: string = new Date().toISOString()
@@ -27,11 +26,10 @@ class GuardService {
     }
 
     public async allActiveSessions(userID: ObjectId):
-        Promise<returnActiveDevice[]> 
-    {
+        Promise<returnActiveDevice[]> {
         //const allActiveDevice: activeDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userID}).toArray()
 
-                        const allActiveDevice: [] = []
+        const allActiveDevice: [] = []
 
         const returnObject: returnActiveDevice [] = allActiveDevice.map((fieldDevice: sessionBDType) => {
             return {
@@ -46,8 +44,7 @@ class GuardService {
     }
 
     async checkedActiveSession(reqID: ObjectId):
-        Promise<boolean> 
-    {
+        Promise<boolean> {
         const sessionId: ObjectId = new ObjectId(reqID)
 
         const findActiveSession: null | sessionBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
@@ -58,51 +55,47 @@ class GuardService {
 
         const date = Date.parse(findActiveSession.expiresTime)
 
-        if (!(isAfter(date, new Date()))){
+        if (!(isAfter(date, new Date()))) {
             return false
         }
 
         return true
     }
 
-    public async updateExpiredSession(reqID: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) 
-    {
+    public async updateExpiredSession(reqID: ObjectId, deviceInfoObject: deviceInfoObject, expires: string) {
         const sessionId: ObjectId = new ObjectId(reqID)
-        
+
         const nowDate: string = new Date().toISOString()
 
         await ACTIVE_DEVICE.updateOne({_id: sessionId}, {
-                                                            $set: {
-                                                                ip: deviceInfoObject.ip,
-                                                                title: deviceInfoObject.title,
-                                                                lastActiveDate: nowDate,
-                                                                expiresTime: expires
-                                                            }
-                                                        });
+            $set: {
+                ip: deviceInfoObject.ip,
+                title: deviceInfoObject.title,
+                lastActiveDate: nowDate,
+                expiresTime: expires
+            }
+        });
     }
 
-    public async killAllSessions(reqID: ObjectId, userObject: userBDType) 
-    {
+    public async killAllSessions(reqID: ObjectId, userObject: userBDType) {
         const sessionId: ObjectId = new ObjectId(reqID)
 
         await ACTIVE_DEVICE.deleteMany({
-                                            $and: [
-                                                {_id: {$ne: sessionId}},
-                                                {userId: userObject._id}
-                                            ]
-                                        })
+            $and: [
+                {_id: {$ne: sessionId}},
+                {userId: userObject._id}
+            ]
+        })
     }
 
-    public async killOneSessionLogout(reqID: ObjectId) 
-    {
+    public async killOneSessionLogout(reqID: ObjectId) {
         const sessionId: ObjectId = new ObjectId(reqID)
 
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
     }
 
     public async killOneSession(sessionURIId: string, userObject: userBDType):
-        Promise<number> 
-    {
+        Promise<number> {
         const sessionId: ObjectId = new ObjectId(sessionURIId)
 
         const findActiveSession: null | sessionBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
@@ -112,15 +105,15 @@ class GuardService {
         }
 
         if (!(findActiveSession.userId.toString() === userObject._id.toString())) {
-            return ERRORS_CODE.NOT_YOUR_OWN_403            
+            return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
         await ACTIVE_DEVICE.deleteOne({_id: sessionId})
 
         return ERRORS_CODE.NO_CONTENT_204
-            
+
     }
 
 }
 
-export default new GuardService()
+export const guardService = new GuardService()

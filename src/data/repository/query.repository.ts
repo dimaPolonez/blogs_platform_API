@@ -1,16 +1,20 @@
-import { blogAllMaps, blogBDType, blogObjectResult, resultBlogObjectType } from "../../models/blog.models"
-import { commentAllMaps, commentOfPostBDType, resultCommentObjectType } from "../../models/comment.models"
-import { likesBDType, myLikeStatus} from "../../models/likes.models"
-import { postAllMaps, postBDType, postObjectResult, resultPostObjectType } from "../../models/post.models"
-import { notStringQueryReqPag, notStringQueryReqPagOfSearchName, notStringQueryReqPagSearchAuth } from "../../models/request.models"
-import { resultUserObjectType, userAllMaps, userBDType } from "../../models/user.models"
-import LikeService from "../../services/like.service"
-import { BlogModel } from "../entity/blog.entity"
-import { CommentModel } from "../entity/comment.entity"
-import { PostModel } from "../entity/post.entity"
-import { UserModel } from "../entity/user.entity"
-import BlogRepository from "./blog.repository"
-import PostRepository from "./post.repository"
+import {blogAllMaps, blogBDType, blogObjectResult, resultBlogObjectType} from "../../models/blog.models"
+import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../../models/comment.models"
+import {likesBDType, myLikeStatus} from "../../models/likes.models"
+import {postAllMaps, postBDType, postObjectResult, resultPostObjectType} from "../../models/post.models"
+import {
+    notStringQueryReqPag,
+    notStringQueryReqPagOfSearchName,
+    notStringQueryReqPagSearchAuth
+} from "../../models/request.models"
+import {resultUserObjectType, userAllMaps, userBDType} from "../../models/user.models"
+import {BlogModel} from "../entity/blog.entity"
+import {CommentModel} from "../entity/comment.entity"
+import {PostModel} from "../entity/post.entity"
+import {UserModel} from "../entity/user.entity"
+import {blogRepository} from "./blog.repository";
+import {postRepository} from "./post.repository";
+import {likeService} from "../../services/like.service";
 
 function sortObject(sortDir: string) {
     return (sortDir === 'desc') ? -1 : 1
@@ -25,10 +29,10 @@ class QueryRepository {
     public async getAllBlogs(queryAll: notStringQueryReqPagOfSearchName):
         Promise<resultBlogObjectType> {
         const allBlogs: blogBDType[] = await BlogModel
-            .find({ name: new RegExp(queryAll.searchNameTerm, 'gi') })
+            .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
             .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
-            .sort({ [queryAll.sortBy]: sortObject(queryAll.sortDirection) })
+            .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})
 
         const allMapsBlog: blogAllMaps[] = allBlogs.map((field: blogBDType) => {
             return {
@@ -40,7 +44,7 @@ class QueryRepository {
             }
         })
 
-        const allCount: number = await BlogModel.countDocuments({ name: new RegExp(queryAll.searchNameTerm, 'gi') })
+        const allCount: number = await BlogModel.countDocuments({name: new RegExp(queryAll.searchNameTerm, 'gi')})
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
         return {
@@ -54,31 +58,31 @@ class QueryRepository {
 
     public async getAllPostsOfBlog(blogID: string, queryAll: notStringQueryReqPag, userID: string):
         Promise<null | resultPostObjectType> {
-        const blogFind: blogObjectResult | null = await BlogRepository.findOneById(blogID)
+        const blogFind: blogObjectResult | null = await blogRepository.findOneById(blogID)
 
         if (!blogFind) {
             return null
         }
 
         const postsOfFindBlog: postBDType[] = await PostModel
-            .find({ blogId: blogID })
+            .find({blogId: blogID})
             .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
             .limit(queryAll.pageSize)
-            .sort(({ [queryAll.sortBy]: sortObject(queryAll.sortDirection) }))
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
 
         const allPostMapping: postAllMaps[] = await Promise.all(postsOfFindBlog.map(async (fieldPost: postBDType) => {
 
             let likeStatus: myLikeStatus = myLikeStatus.None
 
             if (userID) {
-                const likeStatusChecked: likesBDType | null = await LikeService.checkedLike(fieldPost._id, userID)
+                const likeStatusChecked: likesBDType | null = await likeService.checkedLike(fieldPost._id, userID)
 
-                if (likeStatusChecked){
+                if (likeStatusChecked) {
                     likeStatus = likeStatusChecked.user.myStatus
                 }
             }
 
-            const newestLikes =  await LikeService.threeUserLikesArray(fieldPost._id)
+            const newestLikes = await likeService.threeUserLikesArray(fieldPost._id)
 
             return {
                 id: fieldPost._id,
@@ -97,7 +101,7 @@ class QueryRepository {
             }
         }))
 
-        const allCount: number = await PostModel.countDocuments({ blogId: blogID })
+        const allCount: number = await PostModel.countDocuments({blogId: blogID})
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
         const allPostsOfBlog: resultPostObjectType = {
@@ -113,43 +117,42 @@ class QueryRepository {
     }
 
     public async getAllPosts(queryAll: notStringQueryReqPag, userID: string):
-        Promise<resultPostObjectType> 
-    {
+        Promise<resultPostObjectType> {
         const allPostsFind: postBDType [] = await PostModel
-        .find({})
-        .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-        .limit(queryAll.pageSize)
-        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
+            .find({})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
 
         const allPostMapping: postAllMaps [] = await Promise.all(allPostsFind.map(async (fieldPost: postBDType) => {
 
-                let likeStatus: myLikeStatus = myLikeStatus.None
+            let likeStatus: myLikeStatus = myLikeStatus.None
 
-                if (userID) {
-                    const likeStatusChecked = await LikeService.checkedLike(fieldPost._id, userID)
+            if (userID) {
+                const likeStatusChecked = await likeService.checkedLike(fieldPost._id, userID)
 
-                    if (likeStatusChecked){
-                        likeStatus = likeStatusChecked.user.myStatus
-                    }
+                if (likeStatusChecked) {
+                    likeStatus = likeStatusChecked.user.myStatus
                 }
+            }
 
-                const newestLikes =  await LikeService.threeUserLikesArray(fieldPost._id)
+            const newestLikes = await likeService.threeUserLikesArray(fieldPost._id)
 
-                return {
-                    id: fieldPost._id,
-                    title: fieldPost.title,
-                    shortDescription: fieldPost.shortDescription,
-                    content: fieldPost.content,
-                    blogId: fieldPost.blogId,
-                    blogName: fieldPost.blogName,
-                    createdAt: fieldPost.createdAt,
-                    extendedLikesInfo: {
-                        likesCount: fieldPost.extendedLikesInfo.likesCount,
-                        dislikesCount: fieldPost.extendedLikesInfo.dislikesCount,
-                        myStatus: likeStatus,
-                        newestLikes: newestLikes
-                    }
+            return {
+                id: fieldPost._id,
+                title: fieldPost.title,
+                shortDescription: fieldPost.shortDescription,
+                content: fieldPost.content,
+                blogId: fieldPost.blogId,
+                blogName: fieldPost.blogName,
+                createdAt: fieldPost.createdAt,
+                extendedLikesInfo: {
+                    likesCount: fieldPost.extendedLikesInfo.likesCount,
+                    dislikesCount: fieldPost.extendedLikesInfo.dislikesCount,
+                    myStatus: likeStatus,
+                    newestLikes: newestLikes
                 }
+            }
         }))
 
         const allCount: number = await PostModel.countDocuments({})
@@ -166,18 +169,17 @@ class QueryRepository {
     }
 
     public async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
-        Promise<resultUserObjectType>
-    {
+        Promise<resultUserObjectType> {
         const usersAll: userBDType [] = await UserModel
-        .find({
-            $or: [
-                {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
-                {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
-            ]
-        })
-        .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-        .limit(queryAll.pageSize)
-        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
+            .find({
+                $or: [
+                    {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                    {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
+                ]
+            })
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
 
         const allMapsUsers: userAllMaps [] = usersAll.map((fieldUser: userBDType) => {
             return {
@@ -189,12 +191,12 @@ class QueryRepository {
         })
 
         const allCount: number = await UserModel
-        .countDocuments({
-            $or: [
-                {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
-                {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
-            ]
-        })
+            .countDocuments({
+                $or: [
+                    {"infUser.login": new RegExp(queryAll.searchLoginTerm, 'gi')},
+                    {"infUser.email": new RegExp(queryAll.searchEmailTerm, 'gi')}
+                ]
+            })
 
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
@@ -209,20 +211,19 @@ class QueryRepository {
     }
 
     public async getAllCommentsOfPost(postID: string, queryAll: notStringQueryReqPag, userID: string):
-        Promise<null | resultCommentObjectType>
-    {
+        Promise<null | resultCommentObjectType> {
 
-        const findPost: null | postObjectResult = await PostRepository.findOneById(postID, null)
+        const findPost: null | postObjectResult = await postRepository.findOneById(postID, null)
 
-        if (!findPost){
+        if (!findPost) {
             return null
         }
 
         const comments: commentOfPostBDType [] = await CommentModel
-        .find( { postId: findPost.id } )
-        .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
-        .limit(queryAll.pageSize)
-        .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
+            .find({postId: findPost.id})
+            .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
+            .limit(queryAll.pageSize)
+            .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}))
 
         const allMapsComments: commentAllMaps [] = await Promise.all(comments.map(async (fieldComment: commentOfPostBDType) => {
 
@@ -230,7 +231,7 @@ class QueryRepository {
 
             if (userID) {
 
-            const checkLikeComment: null | likesBDType = await LikeService.checkedLike(fieldComment._id, userID)
+                const checkLikeComment: null | likesBDType = await likeService.checkedLike(fieldComment._id, userID)
 
                 if (checkLikeComment) {
                     myUserStatus = checkLikeComment.user.myStatus
@@ -253,7 +254,7 @@ class QueryRepository {
             }
         }))
 
-        const allCount: number = await CommentModel.countDocuments( { postId: findPost.id } )
+        const allCount: number = await CommentModel.countDocuments({postId: findPost.id})
 
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
@@ -268,4 +269,4 @@ class QueryRepository {
 
 }
 
-export default new QueryRepository()
+export const queryRepository = new QueryRepository()

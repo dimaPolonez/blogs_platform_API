@@ -1,5 +1,4 @@
 import {Response, Router} from 'express';
-import PostController from '../controllers/post.controller';
 import {indexMiddleware} from '../middleware/index.middleware';
 import {
     notStringQueryReqPag,
@@ -10,16 +9,17 @@ import {
 import {ERRORS_CODE} from "../data/db.data";
 import {resultPostObjectType} from '../models/post.models';
 import {resultCommentObjectType} from "../models/comment.models";
-import QueryRepository from '../data/repository/query.repository';
+import {postController} from "../controllers/post.controller";
+import {queryRepository} from "../data/repository/query.repository";
 
-const postRouter = Router({})
+export const postRouter = Router({})
 
 postRouter.get(
-    '/:id', 
+    '/:id',
     indexMiddleware.USER_ID,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.getOnePost
+    postController.getOnePost
 )
 
 postRouter.post(
@@ -27,7 +27,7 @@ postRouter.post(
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.POSTS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.createPost
+    postController.createPost
 )
 
 postRouter.put(
@@ -36,7 +36,7 @@ postRouter.put(
     indexMiddleware.POSTS_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.updatePost
+    postController.updatePost
 )
 
 postRouter.put('/:id/like-status',
@@ -44,7 +44,7 @@ postRouter.put('/:id/like-status',
     indexMiddleware.LIKE_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.likeStatusPost
+    postController.likeStatusPost
 )
 
 postRouter.delete(
@@ -52,7 +52,7 @@ postRouter.delete(
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.deletePost
+    postController.deletePost
 )
 
 postRouter.post('/:id/comments',
@@ -60,37 +60,35 @@ postRouter.post('/:id/comments',
     indexMiddleware.COMMENT_VALIDATOR,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    PostController.createCommentOfPost
+    postController.createCommentOfPost
 )
 
-postRouter.get('/', 
+postRouter.get('/',
     indexMiddleware.USER_ID,
-    async (req: queryReqType<queryReqPag>, res: Response) => 
-    {
+    async (req: queryReqType<queryReqPag>, res: Response) => {
         try {
 
-        let queryAll: notStringQueryReqPag = {
-            sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
-            sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
-            pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
-            pageSize: req.query.pageSize ? +req.query.pageSize : 10
+            let queryAll: notStringQueryReqPag = {
+                sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
+                sortDirection: req.query.sortDirection ? req.query.sortDirection : 'desc',
+                pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
+                pageSize: req.query.pageSize ? +req.query.pageSize : 10
+            }
+
+            const allPosts: resultPostObjectType = await queryRepository.getAllPosts(queryAll, req.userID)
+
+            res.status(ERRORS_CODE.OK_200).json(allPosts)
+
+        } catch (e) {
+            res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
-
-        const allPosts: resultPostObjectType = await QueryRepository.getAllPosts(queryAll, req.userID)
-
-        res.status(ERRORS_CODE.OK_200).json(allPosts)
-
-    } catch (e) {
-        res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
-    }
     })
 
 postRouter.get('/:id/comments',
     indexMiddleware.USER_ID,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => 
-    {
+    async (req: paramsAndQueryReqType<paramsId, queryReqPag>, res: Response) => {
         try {
             let queryAll: notStringQueryReqPag = {
                 sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
@@ -99,8 +97,8 @@ postRouter.get('/:id/comments',
                 pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
             }
 
-            const allComments: null | resultCommentObjectType = await QueryRepository.getAllCommentsOfPost(req.params.id, queryAll, req.userID)
-            
+            const allComments: null | resultCommentObjectType = await queryRepository.getAllCommentsOfPost(req.params.id, queryAll, req.userID)
+
             if (allComments) {
                 res.status(ERRORS_CODE.OK_200).json(allComments)
                 return
@@ -112,5 +110,3 @@ postRouter.get('/:id/comments',
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     })
-
-export default postRouter

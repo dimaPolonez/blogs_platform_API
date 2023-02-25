@@ -1,30 +1,27 @@
 import {ObjectId} from "mongodb";
-import LikesRepository from "../data/repository/likes.repository";
 import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../models/likes.models";
-import {userBDType} from "../models/user.models";
+import {likeRepository} from "../data/repository/likes.repository";
 
 class LikeService {
 
     public async checkedLike(objectID: ObjectId, userID: string):
-        Promise<null | likesBDType> 
-    {
-        const findUserLike: null | likesBDType = await LikesRepository.findOneById(objectID, userID)
+        Promise<null | likesBDType> {
+        const findUserLike: null | likesBDType = await likeRepository.findOneById(objectID, userID)
 
         if (!findUserLike) {
             return null
-        } 
-        
+        }
+
         return findUserLike
     }
 
     public async counterLike(likeDTO: string, object: countObject, userID: string):
-        Promise<likesCounter> 
-    {
+        Promise<likesCounter> {
         let userLikesCount: likesCounter = {
             likesCount: object.likesCount,
             dislikesCount: object.dislikesCount
         }
-        
+
         let myStatus: myLikeStatus = myLikeStatus.None
 
         const findLike: null | likesBDType = await this.checkedLike(object.typeId, userID)
@@ -68,38 +65,36 @@ class LikeService {
                     break
             }
 
-            await LikesRepository.updateLike(myStatus, findLike._id)
+            await likeRepository.updateLike(myStatus, findLike._id)
 
         } else {
-            
+
             switch (likeDTO) {
                 case ('Like'):
                     userLikesCount.likesCount++
                     myStatus = myLikeStatus.Like
                     break
-    
+
                 case ('Dislike'):
                     userLikesCount.dislikesCount++
                     myStatus = myLikeStatus.Dislike
                     break
             }
-    
-            await LikesRepository.createLike(userID, object, myStatus)
+
+            await likeRepository.createLike(userID, object, myStatus)
         }
 
         return userLikesCount
     }
 
     public async threeUserLikesArray(postLikeId: ObjectId):
-        Promise<newestLikes[] | []>
-    
-    {
-        const findLikeArray: [] | likesBDType [] = await LikesRepository.findLikeArray(postLikeId)
+        Promise<newestLikes[] | []> {
+        const findLikeArray: [] | likesBDType [] = await likeRepository.findLikeArray(postLikeId)
 
         if (findLikeArray) {
 
             return findLikeArray.map((fieldUserLikes: likesBDType) => {
-                return {    
+                return {
                     addedAt: fieldUserLikes.addedAt,
                     userId: fieldUserLikes.user.userId,
                     login: fieldUserLikes.user.login
@@ -110,27 +105,27 @@ class LikeService {
         return findLikeArray
     }
 
-/*     public async userLikeMaper(objectId: ObjectId):
-        Promise<newestLikes[] | null>
-    {
-        const threeUserArray: likesBDType [] | null =  await this.threeUserLikesArray(objectId)
+    /*     public async userLikeMaper(objectId: ObjectId):
+            Promise<newestLikes[] | null>
+        {
+            const threeUserArray: likesBDType [] | null =  await this.threeUserLikesArray(objectId)
 
-        if (!threeUserArray) {
-            return null
-        }
+            if (!threeUserArray) {
+                return null
+            }
 
-        const allLikeUserMapping: newestLikes [] = threeUserArray.map((fieldLikeUser: likesBDType) => {
+            const allLikeUserMapping: newestLikes [] = threeUserArray.map((fieldLikeUser: likesBDType) => {
 
-        return {    
-                addedAt: fieldLikeUser.addedAt,
-                userId: fieldLikeUser.user.userId,
-                login: fieldLikeUser.user.login
-                }})
+            return {
+                    addedAt: fieldLikeUser.addedAt,
+                    userId: fieldLikeUser.user.userId,
+                    login: fieldLikeUser.user.login
+                    }})
 
-                const allLikeUserMapping: [] = []
+                    const allLikeUserMapping: [] = []
 
-        return allLikeUserMapping
-    } */
+            return allLikeUserMapping
+        } */
 }
 
-export default new LikeService()
+export const likeService = new LikeService()

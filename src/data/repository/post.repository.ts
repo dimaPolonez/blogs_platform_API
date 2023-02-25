@@ -1,11 +1,10 @@
-import { ObjectId } from "mongodb"
-import { postBDType, postObjectResult, postReqType } from "../../models/post.models"
-import { PostModel } from "../entity/post.entity"
-import BlogRepository from "./blog.repository";
-import { blogObjectResult } from "../../models/blog.models";
-import { myLikeStatus, newestLikes, countObject, likesCounter } from "../../models/likes.models";
-import LikeService from "../../services/like.service";
-
+import {ObjectId} from "mongodb"
+import {postBDType, postObjectResult, postReqType} from "../../models/post.models"
+import {PostModel} from "../entity/post.entity"
+import {blogObjectResult} from "../../models/blog.models";
+import {myLikeStatus, newestLikes, countObject, likesCounter} from "../../models/likes.models";
+import {blogRepository} from "./blog.repository";
+import {likeService} from "../../services/like.service";
 
 
 class PostRepository {
@@ -14,35 +13,35 @@ class PostRepository {
 
         const objectPostID: ObjectId = new ObjectId(postID)
 
-        const findPostSmart = await PostModel.findOne({ _id: objectPostID })
+        const findPostSmart = await PostModel.findOne({_id: objectPostID})
 
         return findPostSmart
     }
 
     public async findOneById(postID: string, userID: string | null):
         Promise<null | postObjectResult> {
-            
+
         const objectPostID: ObjectId = new ObjectId(postID)
 
         let likeStatus: myLikeStatus = myLikeStatus.None
 
         let newestLikes: newestLikes[] | [] = []
 
-        const findPostSmart: null | postBDType = await PostModel.findOne({ _id: objectPostID })
+        const findPostSmart: null | postBDType = await PostModel.findOne({_id: objectPostID})
 
         if (!findPostSmart) {
             return null
         }
 
         if (userID) {
-            const likeStatusChecked = await LikeService.checkedLike(findPostSmart._id, userID)
+            const likeStatusChecked = await likeService.checkedLike(findPostSmart._id, userID)
 
-            if (likeStatusChecked){
+            if (likeStatusChecked) {
                 likeStatus = likeStatusChecked.user.myStatus
             }
         }
 
-        newestLikes =  await LikeService.threeUserLikesArray(findPostSmart._id)
+        newestLikes = await likeService.threeUserLikesArray(findPostSmart._id)
 
         return {
             id: findPostSmart._id,
@@ -63,11 +62,11 @@ class PostRepository {
 
     public async createPost(postDTO: postReqType):
         Promise<postObjectResult> {
-        const blogFind: blogObjectResult | null = await BlogRepository.findOneById(postDTO.blogId)
+        const blogFind: blogObjectResult | null = await blogRepository.findOneById(postDTO.blogId)
 
         let blogName: string = 'blog not found'
 
-        if(blogFind) {
+        if (blogFind) {
             blogName = blogFind.name
         }
 
@@ -100,7 +99,7 @@ class PostRepository {
     public async updatePostLiked(likeDTO: string, postID: string, userID: string):
         Promise<boolean> {
 
-       const findPost: null | postObjectResult = await this.findOneById(postID, userID)
+        const findPost: null | postObjectResult = await this.findOneById(postID, userID)
 
         if (!findPost) {
             return false
@@ -113,7 +112,7 @@ class PostRepository {
             dislikesCount: findPost.extendedLikesInfo.dislikesCount
         }
 
-        const newObjectLikes: likesCounter = await LikeService.counterLike(likeDTO, countObject, userID)
+        const newObjectLikes: likesCounter = await likeService.counterLike(likeDTO, countObject, userID)
 
         const updatedPostResult: boolean = PostModel.updatePostLiked(postID, newObjectLikes)
 
@@ -128,7 +127,7 @@ class PostRepository {
             return false
         }
 
-        await PostModel.deleteOne({ _id: findPostModel.id })
+        await PostModel.deleteOne({_id: findPostModel.id})
 
         return true
     }
@@ -142,4 +141,4 @@ class PostRepository {
     }
 }
 
-export default new PostRepository()
+export const postRepository = new PostRepository()

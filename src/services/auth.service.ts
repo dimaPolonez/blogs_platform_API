@@ -1,13 +1,13 @@
 import {ObjectId} from "mongodb";
-import BcryptApp from "../application/bcrypt.application";
-import JwtApp from "../application/jwt.application";
-import MailerApp from "../application/mailer.application"
-import ActiveCodeApp from "../application/codeActive.application"
-import UserRepository from "../data/repository/user.repository";
 import {authParams, authReqType, tokensObjectType} from "../models/auth.models";
-import { tokensReturn } from "../models/likes.models";
-import { deviceInfoObject } from "../models/session.models";
+import {tokensReturn} from "../models/likes.models";
+import {deviceInfoObject} from "../models/session.models";
 import {userBDType, userReqPass} from "../models/user.models";
+import {userRepository} from "../data/repository/user.repository";
+import {bcryptApp} from "../application/bcrypt.application";
+import {jwtApp} from "../application/jwt.application";
+import {activateCodeApp} from "../application/codeActive.application";
+import {mailerApp} from "../application/mailer.application";
 
 const authParams: authParams = {
     confirm: true,
@@ -18,23 +18,22 @@ const authParams: authParams = {
 class AuthService {
 
     public async authUser(authDTO: authReqType, deviceInfo: deviceInfoObject):
-        Promise<null | tokensReturn> 
-    {
-        const findUser: null | userBDType = await UserRepository.findOneByLoginOrEmail(authDTO.loginOrEmail)
+        Promise<null | tokensReturn> {
+        const findUser: null | userBDType = await userRepository.findOneByLoginOrEmail(authDTO.loginOrEmail)
 
         if (!findUser || !findUser.authUser.confirm) {
             return null
         }
 
-        const validPassword: boolean = await BcryptApp.hushCompare(authDTO.password, findUser.authUser.hushPass)
+        const validPassword: boolean = await bcryptApp.hushCompare(authDTO.password, findUser.authUser.hushPass)
 
         if (!validPassword) {
             return null
         }
 
-        const refreshToken: string = await JwtApp.createRefreshJwt(findUser._id, deviceInfo)
+        const refreshToken: string = await jwtApp.createRefreshJwt(findUser._id, deviceInfo)
 
-        const accessToken: tokensObjectType = await JwtApp.createAccessJwt(findUser._id)
+        const accessToken: tokensObjectType = await jwtApp.createAccessJwt(findUser._id)
 
         const tokensObject: tokensReturn = {
             refreshToken: refreshToken,
@@ -49,13 +48,12 @@ class AuthService {
     }
 
     public async newTokens(userID: string, deviceInfo: deviceInfoObject, sessionID: ObjectId):
-        Promise<tokensReturn> 
-    {            
+        Promise<tokensReturn> {
         const objectUserID: ObjectId = new ObjectId(userID)
 
-        const accessToken: tokensObjectType = await JwtApp.createAccessJwt(objectUserID)
+        const accessToken: tokensObjectType = await jwtApp.createAccessJwt(objectUserID)
 
-        const refreshToken: string = await JwtApp.updateRefreshJwt(objectUserID, deviceInfo, sessionID)
+        const refreshToken: string = await jwtApp.updateRefreshJwt(objectUserID, deviceInfo, sessionID)
 
         const tokensObject: tokensReturn = {
             refreshToken: refreshToken,
@@ -70,10 +68,9 @@ class AuthService {
 
     }
 
-    public async confirmUserEmail(codeActivate: string)
-    {
+    public async confirmUserEmail(codeActivate: string) {
 
-        const findUser: null | userBDType = await UserRepository.findOneByCode(codeActivate)
+        const findUser: null | userBDType = await userRepository.findOneByCode(codeActivate)
 
         if (!findUser) {
             return null
@@ -81,22 +78,21 @@ class AuthService {
 
         const userIDString = findUser._id.toString()
 
-        await UserRepository.updateUser(userIDString, authParams)
+        await userRepository.updateUser(userIDString, authParams)
 
     }
 
-    public async resendingEmail(email: string){
+    public async resendingEmail(email: string) {
 
-        const authParams: authParams = await ActiveCodeApp.createCode()
+        const authParams: authParams = await activateCodeApp.createCode()
 
         await this.confirmUserEmail(authParams.codeActivated)
 
-        await MailerApp.sendMailCode(email, authParams.codeActivated)
+        await mailerApp.sendMailCode(email, authParams.codeActivated)
     }
 
-    public async updateUserPass(authDTO: userReqPass) 
-    {
-        const findUser: null | userBDType = await UserRepository.findOneByCode(authDTO.recoveryCode)
+    public async updateUserPass(authDTO: userReqPass) {
+        const findUser: null | userBDType = await userRepository.findOneByCode(authDTO.recoveryCode)
 
         if (!findUser) {
             return null
@@ -104,12 +100,12 @@ class AuthService {
 
         const userIDString = findUser._id.toString()
 
-        const hushPass: string = await BcryptApp.saltGenerate(authDTO.newPassword)
+        const hushPass: string = await bcryptApp.saltGenerate(authDTO.newPassword)
 
-        await UserRepository.updatePasswordUser(userIDString, authParams, hushPass)
+        await userRepository.updatePasswordUser(userIDString, authParams, hushPass)
 
     }
 
 }
 
-export default new AuthService()
+export const authService = new AuthService()

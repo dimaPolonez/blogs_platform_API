@@ -1,60 +1,56 @@
-import BcryptApp from "../application/bcrypt.application";
-import ActiveCodeApp from "../application/codeActive.application";
-import MailerApp from "../application/mailer.application";
 import {userObjectResult, userReqAuthBody, userReqType} from "../models/user.models";
 import {authParams} from "../models/auth.models";
-import UserRepository from "../data/repository/user.repository";
+import {bcryptApp} from "../application/bcrypt.application";
+import {userRepository} from "../data/repository/user.repository";
+import {activateCodeApp} from "../application/codeActive.application";
+import {mailerApp} from "../application/mailer.application";
 
 class UserService {
 
     public async createUserAdmin(userDTO: userReqType):
-        Promise<userObjectResult> 
-    {
-        const hushPass: string = await BcryptApp.saltGenerate(userDTO.password)
+        Promise<userObjectResult> {
+        const hushPass: string = await bcryptApp.saltGenerate(userDTO.password)
 
         const authParams: authParams = {
             confirm: true,
             codeActivated: 'Activated',
             lifeTimeCode: 'Activated'
-        } 
+        }
 
-        const createNewUser: userObjectResult = await UserRepository.createUser(hushPass, userDTO, authParams)
+        const createNewUser: userObjectResult = await userRepository.createUser(hushPass, userDTO, authParams)
 
         return createNewUser
     }
 
-    public async createUserRegistration(userDTO: userReqType)
-    {
-        const hushPass: string = await BcryptApp.saltGenerate(userDTO.password)
+    public async createUserRegistration(userDTO: userReqType) {
+        const hushPass: string = await bcryptApp.saltGenerate(userDTO.password)
 
-        const authParams: authParams = await ActiveCodeApp.createCode()
+        const authParams: authParams = await activateCodeApp.createCode()
 
-        const createNewUser: userObjectResult = await UserRepository.createUser(hushPass, userDTO, authParams)
-        
-        await MailerApp.sendMailCode(createNewUser.email, authParams.codeActivated)
+        const createNewUser: userObjectResult = await userRepository.createUser(hushPass, userDTO, authParams)
+
+        await mailerApp.sendMailCode(createNewUser.email, authParams.codeActivated)
     }
 
 
-    public async updateUser(userDTO: userReqAuthBody) 
-    {
-        const findUser: null | userObjectResult = await UserRepository.findOneByEmail(userDTO.email)
+    public async updateUser(userDTO: userReqAuthBody) {
+        const findUser: null | userObjectResult = await userRepository.findOneByEmail(userDTO.email)
 
         if (findUser) {
-            const authParams: authParams = await ActiveCodeApp.createCode()
+            const authParams: authParams = await activateCodeApp.createCode()
 
-            await UserRepository.updateUser(findUser.id.toString(), authParams)
+            await userRepository.updateUser(findUser.id.toString(), authParams)
 
-            await MailerApp.sendMailPass(userDTO.email, authParams.codeActivated)
+            await mailerApp.sendMailPass(userDTO.email, authParams.codeActivated)
         }
     }
 
     public async deleteUser(userID: string):
-        Promise<boolean> 
-    {
-        const updatedUserResult: boolean = await UserRepository.deleteUser(userID)
-        
+        Promise<boolean> {
+        const updatedUserResult: boolean = await userRepository.deleteUser(userID)
+
         return updatedUserResult
     }
 }
 
-export default new UserService()
+export const userService = new UserService()

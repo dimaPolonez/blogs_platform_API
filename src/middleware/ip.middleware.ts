@@ -1,16 +1,15 @@
 import {Request, Response, NextFunction} from "express";
 import {ERRORS_CODE} from "../data/db.data";
-import IpService from "../services/ip.service";
+import {ipService} from "../services/ip.service";
 
 export const ipBanner = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     let ipPath: string = req.ip + req.path
 
-    let findIp: boolean = await IpService.findIP(ipPath)
+    let findIp: boolean = await ipService.findIP(ipPath)
 
     if (findIp) {
         next()

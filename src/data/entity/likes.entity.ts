@@ -1,15 +1,15 @@
-import { ObjectId } from "mongodb";
-import mongoose, { Model, Schema } from "mongoose";
-import { countObject, likesBDType, myLikeStatus} from "../../models/likes.models";
-import { userObjectResult } from "../../models/user.models";
-import LikesRepository from "../repository/likes.repository";
+import {ObjectId} from "mongodb";
+import mongoose, {Model, Schema} from "mongoose";
+import {countObject, likesBDType, myLikeStatus} from "../../models/likes.models";
+import {userObjectResult} from "../../models/user.models";
+import {likeRepository} from "../repository/likes.repository";
 
 type LikesStaticType = Model<likesBDType> & {
     createLike(findUser: userObjectResult, object: countObject, myStatus: myLikeStatus): any,
     updateLike(status: myLikeStatus, objectLikeId: ObjectId): boolean
 }
 
-export const likesBDSchema =  new Schema<likesBDType, LikesStaticType>({
+export const likesBDSchema = new Schema<likesBDType, LikesStaticType>({
     user: {
         userId: ObjectId,
         login: String,
@@ -23,42 +23,42 @@ export const likesBDSchema =  new Schema<likesBDType, LikesStaticType>({
 })
 
 
-likesBDSchema.static({async createLike(findUser: userObjectResult, object: countObject, myStatus: myLikeStatus):
-    Promise<any> {
+likesBDSchema.static({
+    async createLike(findUser: userObjectResult, object: countObject, myStatus: myLikeStatus):
+        Promise<any> {
+        const newLikeSmart = new LikesModel({
+            user: {
+                userId: findUser.id,
+                login: findUser.login,
+                myStatus: myStatus
+            },
+            object: {
+                typeId: object.typeId,
+                type: object.type
+            },
+            addedAt: new Date().toISOString()
+        })
 
-    const newLikeSmart = new LikesModel({
-        user: {
-            userId: findUser.id,
-            login: findUser.login,
-            myStatus: myStatus
-        },
-        object: {
-            typeId: object.typeId,
-            type: object.type
-        },
-        addedAt: new Date().toISOString()
-    })
-
-    await LikesRepository.save(newLikeSmart)
-}
+        await likeRepository.save(newLikeSmart)
+    }
 })
 
-likesBDSchema.static({async updateLike(status: myLikeStatus, likeID: ObjectId):
-Promise<boolean> {
+likesBDSchema.static({
+    async updateLike(status: myLikeStatus, likeID: ObjectId):
+        Promise<boolean> {
+        const findLikesDocument = await likeRepository.findOneByIdReturnDoc(likeID)
 
-const findLikesDocument = await LikesRepository.findOneByIdReturnDoc(likeID)
+        if (!findLikesDocument) {
+            return false
+        }
 
-if (!findLikesDocument) {
-    return false
-}
+        findLikesDocument.user.myStatus = status
 
-findLikesDocument.user.myStatus = status
+        await likeRepository.save(findLikesDocument)
 
-await LikesRepository.save(findLikesDocument)
+        return true
 
-return true
-
-}
+    }
 })
 
 

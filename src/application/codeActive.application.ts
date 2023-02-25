@@ -6,8 +6,7 @@ import {authParams} from "../models/auth.models";
 class ActiveCodeApp {
 
     public async createCode():
-        Promise<authParams> 
-    {
+        Promise<authParams> {
         const authParams: authParams = {
             confirm: false,
             codeActivated: uuidv4(),
@@ -18,8 +17,7 @@ class ActiveCodeApp {
     }
 
     private async createTime():
-        Promise<string> 
-    {
+        Promise<string> {
         const lifetime: string = add(new Date(), {
             hours: 1,
             minutes: 10
@@ -29,4 +27,4 @@ class ActiveCodeApp {
     }
 }
 
-export default new ActiveCodeApp()
+export const activateCodeApp = new ActiveCodeApp()

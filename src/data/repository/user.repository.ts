@@ -1,7 +1,7 @@
-import { userBDType, userObjectResult, userReqType } from "../../models/user.models";
+import {userBDType, userObjectResult, userReqType} from "../../models/user.models";
 import {authParams} from "../../models/auth.models";
-import { UserModel } from "../entity/user.entity";
-import { ObjectId } from "mongodb";
+import {UserModel} from "../entity/user.entity";
+import {ObjectId} from "mongodb";
 
 
 class UserRepository {
@@ -10,17 +10,16 @@ class UserRepository {
 
         const objectUserID: ObjectId = new ObjectId(userID)
 
-        const findUserSmart = await UserModel.findOne( { _id: objectUserID } )
+        const findUserSmart = await UserModel.findOne({_id: objectUserID})
 
         return findUserSmart
     }
 
     public async findOneById(userID: string):
-    Promise<null | userObjectResult>
-    {
+        Promise<null | userObjectResult> {
         const objectUserID: ObjectId = new ObjectId(userID)
 
-        const findUserSmart: null | userBDType = await UserModel.findOne( { _id: objectUserID } )
+        const findUserSmart: null | userBDType = await UserModel.findOne({_id: objectUserID})
 
         if (!findUserSmart) {
             return null
@@ -35,9 +34,8 @@ class UserRepository {
     }
 
     public async findOneByLogin(userLogin: string):
-    Promise<null | userObjectResult>
-    {
-        const findUserSmart: null | userBDType = await UserModel.findOne( { 'infUser.login': userLogin } )
+        Promise<null | userObjectResult> {
+        const findUserSmart: null | userBDType = await UserModel.findOne({'infUser.login': userLogin})
 
         if (!findUserSmart) {
             return null
@@ -52,14 +50,13 @@ class UserRepository {
     }
 
     public async findOneByLoginOrEmail(userLoginOrEmail: string):
-    Promise<null | userBDType>
-    {
-        const findUserSmart: null | userBDType = await UserModel.findOne( {
+        Promise<null | userBDType> {
+        const findUserSmart: null | userBDType = await UserModel.findOne({
             $or: [
                 {"infUser.login": userLoginOrEmail},
                 {"infUser.email": userLoginOrEmail}
             ]
-        } )
+        })
 
         if (!findUserSmart) {
             return null
@@ -69,9 +66,8 @@ class UserRepository {
     }
 
     public async findOneByCode(codeActivated: string):
-    Promise<null | userBDType>
-    {
-        const findUserSmart: null | userBDType = await UserModel.findOne( { 'activeUser.codeActivated': codeActivated } )
+        Promise<null | userBDType> {
+        const findUserSmart: null | userBDType = await UserModel.findOne({'activeUser.codeActivated': codeActivated})
 
         if (!findUserSmart) {
             return null
@@ -81,9 +77,8 @@ class UserRepository {
     }
 
     public async findOneByEmail(email: string):
-    Promise<null | userObjectResult>
-    {
-        const findUserSmart: null | userBDType = await UserModel.findOne( { 'infUser.email': email } )
+        Promise<null | userObjectResult> {
+        const findUserSmart: null | userBDType = await UserModel.findOne({'infUser.email': email})
 
         if (!findUserSmart) {
             return null
@@ -98,9 +93,8 @@ class UserRepository {
     }
 
     public async findOneByEmailAll(email: string):
-    Promise<null | userBDType>
-    {
-        const findUserSmart: null | userBDType = await UserModel.findOne( { 'infUser.email': email } )
+        Promise<null | userBDType> {
+        const findUserSmart: null | userBDType = await UserModel.findOne({'infUser.email': email})
 
         if (!findUserSmart) {
             return null
@@ -109,9 +103,8 @@ class UserRepository {
         return findUserSmart
     }
 
-    public async createUser(hushPass: string, userDTO:userReqType, authParams: authParams):
-        Promise<userObjectResult>
-    {
+    public async createUser(hushPass: string, userDTO: userReqType, authParams: authParams):
+        Promise<userObjectResult> {
         const newUserSmart = await UserModel.createUser(hushPass, userDTO, authParams)
 
         return {
@@ -122,36 +115,35 @@ class UserRepository {
         }
     }
 
-    public async updateUser(userID: string, authParams: authParams){
+    public async updateUser(userID: string, authParams: authParams) {
         await UserModel.updateUser(userID, authParams)
     }
 
-    public async updatePasswordUser(userID: string, authParams: authParams, newHashPass: string){
+    public async updatePasswordUser(userID: string, authParams: authParams, newHashPass: string) {
         await UserModel.updatePasswordUser(userID, authParams, newHashPass)
     }
 
     public async deleteUser(userID: string):
-        Promise<boolean>
-    {
+        Promise<boolean> {
         const findUser: null | userObjectResult = await this.findOneById(userID)
-        
+
         if (!findUser) {
             return false
         }
 
-        await UserModel.deleteOne( { _id: findUser.id } )
-        
+        await UserModel.deleteOne({_id: findUser.id})
+
         return true
     }
 
-    public async deleteAllUser(){
+    public async deleteAllUser() {
         await UserModel.deleteMany({})
     }
 
     public async save(model: any) {
         return await model.save()
     }
-    
+
 }
 
-export default new UserRepository()
+export const userRepository = new UserRepository()

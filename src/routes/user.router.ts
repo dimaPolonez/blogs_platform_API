@@ -1,32 +1,31 @@
 import {Response, Router} from "express";
 import {indexMiddleware} from "../middleware/index.middleware";
 import {ERRORS_CODE} from "../data/db.data";
-import UserController from "../controllers/user.controller";
 import {notStringQueryReqPagSearchAuth, queryReqPagSearchAuth, queryReqType} from "../models/request.models";
 import {resultUserObjectType} from "../models/user.models";
-import QueryRepository from "../data/repository/query.repository";
+import {userController} from "../controllers/user.controller";
+import {queryRepository} from "../data/repository/query.repository";
 
-const userRouter = Router({})
+export const userRouter = Router({})
 
 userRouter.post('/',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    UserController.createUser
+    userController.createUser
 )
 
 userRouter.delete('/:id',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.PARAMS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    UserController.deleteUser
+    userController.deleteUser
 )
 
 userRouter.get('/',
     indexMiddleware.BASIC_AUTHORIZATION,
     indexMiddleware.ERRORS_VALIDATOR,
-    async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => 
-{
+    async (req: queryReqType<queryReqPagSearchAuth>, res: Response) => {
         try {
             let queryAll: notStringQueryReqPagSearchAuth = {
                 searchLoginTerm: req.query.searchLoginTerm ? req.query.searchLoginTerm : '',
@@ -37,7 +36,7 @@ userRouter.get('/',
                 pageSize: req.query.pageSize ? +(req.query.pageSize) : 10
             }
 
-            const allUsers: resultUserObjectType = await QueryRepository.getAllUsers(queryAll)
+            const allUsers: resultUserObjectType = await queryRepository.getAllUsers(queryAll)
 
             res.status(ERRORS_CODE.OK_200).json(allUsers)
 
@@ -45,5 +44,3 @@ userRouter.get('/',
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     })
-
-export default userRouter

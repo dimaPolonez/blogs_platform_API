@@ -1,18 +1,13 @@
-import { Request, Response } from 'express';
-import JwtApp from "../application/jwt.application";
-import MailerApp from '../application/mailer.application';
-import { ERRORS_CODE } from '../data/db.data';
-import { authMeType, authReqType, tokensObjectType } from "../models/auth.models";
-import { bodyReqType } from "../models/request.models";
-import { userBDType, userObjectResult, userReqType } from "../models/user.models";
-import AuthService from '../services/auth.service';
-import UserService from '../services/user.service';
-import { authParams } from "../models/auth.models";
-import ActiveCodeApp from "../application/codeActive.application";
-import { deviceInfoObject } from "../models/session.models";
-import GuardService from '../services/guard.service';
-import BcryptApp from '../application/bcrypt.application';
-import { tokensReturn } from '../models/likes.models';
+import {Request, Response} from 'express';
+import {ERRORS_CODE} from '../data/db.data';
+import {authMeType, authReqType} from "../models/auth.models";
+import {bodyReqType} from "../models/request.models";
+import {userReqType} from "../models/user.models";
+import {deviceInfoObject} from "../models/session.models";
+import {tokensReturn} from '../models/likes.models';
+import {authService} from "../services/auth.service";
+import {userService} from "../services/user.service";
+import {guardService} from "../services/guard.service";
 
 class AuthController {
 
@@ -23,7 +18,7 @@ class AuthController {
                 title: req.headers["user-agent"]!
             }
 
-            const authValid: null | tokensReturn = await AuthService.authUser(req.body, deviceInfo)
+            const authValid: null | tokensReturn = await authService.authUser(req.body, deviceInfo)
 
             if (authValid) {
 
@@ -47,7 +42,7 @@ class AuthController {
                 title: req.headers["user-agent"]!
             }
 
-            const newTokens: tokensReturn = await AuthService.newTokens(req.userID, deviceInfo, req.sessionId)
+            const newTokens: tokensReturn = await authService.newTokens(req.userID, deviceInfo, req.sessionId)
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', newTokens.refreshToken, newTokens.optionsCookie)
@@ -60,7 +55,7 @@ class AuthController {
 
     public async createNewPass(req: Request, res: Response) {
         try {
-            await UserService.updateUser(req.body)
+            await userService.updateUser(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -71,7 +66,7 @@ class AuthController {
 
     public async updateNewPass(req: Request, res: Response) {
         try {
-            await AuthService.updateUserPass(req.body)
+            await authService.updateUserPass(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -83,7 +78,7 @@ class AuthController {
     public async confirmEmail(req: Request, res: Response) {
         try {
 
-            await AuthService.confirmUserEmail(req.body.code)
+            await authService.confirmUserEmail(req.body.code)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -94,7 +89,7 @@ class AuthController {
 
     public async registration(req: bodyReqType<userReqType>, res: Response) {
         try {
-            await UserService.createUserRegistration(req.body)
+            await userService.createUserRegistration(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -105,7 +100,7 @@ class AuthController {
 
     public async resendingEmail(req: Request, res: Response) {
         try {
-            await AuthService.resendingEmail(req.body.email)
+            await authService.resendingEmail(req.body.email)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -116,12 +111,12 @@ class AuthController {
 
     public async logout(req: Request, res: Response) {
         try {
-            await GuardService.killOneSessionLogout(req.sessionId)
+            await guardService.killOneSessionLogout(req.sessionId)
 
             res
                 .clearCookie('refreshToken')
                 .sendStatus(ERRORS_CODE.NO_CONTENT_204)
-                
+
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -145,4 +140,4 @@ class AuthController {
 }
 
 
-export default new AuthController()
+export const authController = new AuthController()

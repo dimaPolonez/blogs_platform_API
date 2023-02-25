@@ -1,4 +1,3 @@
-import {ObjectID} from "bson";
 import {differenceInSeconds} from "date-fns";
 import {OBJECT_IP} from "../data/db.data";
 import {objectIpBDType} from "../models/session.models";
@@ -67,4 +66,4 @@ class IpService {
     }
 }
 
-export default new IpService()
+export const ipService = new IpService()

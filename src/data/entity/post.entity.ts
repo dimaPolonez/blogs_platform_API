@@ -1,10 +1,10 @@
-import { ObjectId } from "mongodb";
-import mongoose, { Model, Schema } from "mongoose";
-import { blogObjectResult } from "../../models/blog.models";
-import { likesCounter, myLikeStatus } from "../../models/likes.models";
-import { postBDType, postReqType } from "../../models/post.models";
-import PostRepository from "../repository/post.repository";
-import BlogRepository from "../repository/blog.repository";
+import {ObjectId} from "mongodb";
+import mongoose, {Model, Schema} from "mongoose";
+import {blogObjectResult} from "../../models/blog.models";
+import {likesCounter, myLikeStatus} from "../../models/likes.models";
+import {postBDType, postReqType} from "../../models/post.models";
+import {blogRepository} from "../repository/blog.repository";
+import {postRepository} from "../repository/post.repository";
 
 type PostStaticType = Model<postBDType> & {
     createPost(postDTO: postReqType): any,
@@ -12,7 +12,7 @@ type PostStaticType = Model<postBDType> & {
     updatePostLiked(postID: string, newObjectLikes: likesCounter): boolean
 }
 
-export const postBDSchema =  new Schema<postBDType, PostStaticType>({
+export const postBDSchema = new Schema<postBDType, PostStaticType>({
     title: String,
     shortDescription: String,
     content: String,
@@ -27,40 +27,42 @@ export const postBDSchema =  new Schema<postBDType, PostStaticType>({
     }
 })
 
-postBDSchema.static({async createPost(postDTO: postReqType):
-    Promise<any> {
+postBDSchema.static({
+    async createPost(postDTO: postReqType):
+        Promise<any> {
 
-    const newPostSmart = new PostModel({
-        title: postDTO.title,
-        shortDescription: postDTO.shortDescription,
-        content: postDTO.content,
-        blogId: postDTO.blogId,
-        blogName: 'blog not found',
-        createdAt: new Date().toISOString(),
-        extendedLikesInfo: {
+        const newPostSmart = new PostModel({
+            title: postDTO.title,
+            shortDescription: postDTO.shortDescription,
+            content: postDTO.content,
+            blogId: postDTO.blogId,
+            blogName: 'blog not found',
+            createdAt: new Date().toISOString(),
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: myLikeStatus.None,
                 newestLikes: []
-                }
-    })
+            }
+        })
 
-    await PostRepository.save(newPostSmart)
+        await postRepository.save(newPostSmart)
 
-    return newPostSmart
-}
+        return newPostSmart
+    }
 })
 
-postBDSchema.static({async updatePost(postID: string, postDTO: postReqType):
-    Promise<boolean> {
+postBDSchema.static({
+    async updatePost(postID: string, postDTO: postReqType):
+        Promise<boolean> {
 
-        const findPostDocument = await PostRepository.findOneByIdReturnDoc(postID)
+        const findPostDocument = await postRepository.findOneByIdReturnDoc(postID)
 
         if (!findPostDocument) {
             return false
         }
 
-        const blogFind: blogObjectResult | null = await BlogRepository.findOneById(postDTO.blogId)
+        const blogFind: blogObjectResult | null = await blogRepository.findOneById(postDTO.blogId)
 
         if (blogFind) {
             findPostDocument.blogName = blogFind.name
@@ -71,16 +73,17 @@ postBDSchema.static({async updatePost(postID: string, postDTO: postReqType):
         findPostDocument.content = postDTO.content
         findPostDocument.blogId = postDTO.blogId
 
-        await PostRepository.save(findPostDocument)
+        await postRepository.save(findPostDocument)
 
         return true
-}
+    }
 })
 
-postBDSchema.static({async updatePostLiked(postID: string, newObjectLikes: likesCounter):
-    Promise<boolean> {
+postBDSchema.static({
+    async updatePostLiked(postID: string, newObjectLikes: likesCounter):
+        Promise<boolean> {
 
-        const findPostDocument = await PostRepository.findOneByIdReturnDoc(postID)
+        const findPostDocument = await postRepository.findOneByIdReturnDoc(postID)
 
         if (!findPostDocument) {
             return false
@@ -89,10 +92,10 @@ postBDSchema.static({async updatePostLiked(postID: string, newObjectLikes: likes
         findPostDocument.extendedLikesInfo.likesCount = newObjectLikes.likesCount
         findPostDocument.extendedLikesInfo.dislikesCount = newObjectLikes.dislikesCount
 
-        await PostRepository.save(findPostDocument)
+        await postRepository.save(findPostDocument)
 
         return true
-}
+    }
 })
 
 export const PostModel = mongoose.model<postBDType, PostStaticType>('posts', postBDSchema)

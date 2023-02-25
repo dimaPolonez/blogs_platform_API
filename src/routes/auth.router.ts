@@ -1,65 +1,63 @@
 import {indexMiddleware} from "../middleware/index.middleware";
 import {Router} from "express";
-import AuthController from "../controllers/auth.controller";
+import {authController} from "../controllers/auth.controller";
 
 
-const authRouter = Router({})
+export const authRouter = Router({})
 
 authRouter.post('/login',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USER_AUTH,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.authorization
+    authController.authorization
 )
 
 authRouter.post('/refresh-token',
     indexMiddleware.COOKIE_REFRESH,
-    AuthController.refreshToken
+    authController.refreshToken
 )
 
 authRouter.post('/password-recovery',
     indexMiddleware.IP_BANNER,
     indexMiddleware.PASS_EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.createNewPass
+    authController.createNewPass
 )
 
 authRouter.post('/new-password',
     indexMiddleware.IP_BANNER,
     indexMiddleware.NEW_PASS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.updateNewPass
+    authController.updateNewPass
 )
 
 authRouter.post('/registration-confirmation',
     indexMiddleware.IP_BANNER,
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.confirmEmail
+    authController.confirmEmail
 )
 
 authRouter.post('/registration',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.registration
+    authController.registration
 )
 
 authRouter.post('/registration-email-resending',
     indexMiddleware.IP_BANNER,
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    AuthController.resendingEmail
+    authController.resendingEmail
 )
 
 authRouter.post('/logout',
     indexMiddleware.COOKIE_REFRESH,
-    AuthController.logout
+    authController.logout
 )
 
 authRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,
-    AuthController.aboutMe
+    authController.aboutMe
 )
-
-export default authRouter

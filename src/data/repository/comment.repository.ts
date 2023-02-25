@@ -1,46 +1,45 @@
-import { ObjectId } from "mongodb";
-import { commentObjectResult, commentOfPostBDType, commentReqType, commentDTOAll } from "../../models/comment.models";
-import { countObject, likesCounter, myLikeStatus } from "../../models/likes.models";
-import { postObjectResult } from "../../models/post.models";
-import { userBDType, userObjectResult } from "../../models/user.models";
-import LikeService from "../../services/like.service";
-import { ERRORS_CODE } from "../db.data";
-import { CommentModel } from "../entity/comment.entity";
-import PostRepository from "./post.repository";
-import UserRepository from "./user.repository";
+import {ObjectId} from "mongodb";
+import {commentObjectResult, commentOfPostBDType, commentReqType, commentDTOAll} from "../../models/comment.models";
+import {countObject, likesCounter, myLikeStatus} from "../../models/likes.models";
+import {postObjectResult} from "../../models/post.models";
+import {userObjectResult} from "../../models/user.models";
+import {ERRORS_CODE} from "../db.data";
+import {CommentModel} from "../entity/comment.entity";
+import {likeService} from "../../services/like.service";
+import {userRepository} from "./user.repository";
+import {postRepository} from "./post.repository";
 
 
 class CommentRepository {
 
-    public async findOneByIdReturnDoc(commentID: string){
+    public async findOneByIdReturnDoc(commentID: string) {
 
         const objectCommentID: ObjectId = new ObjectId(commentID)
 
-        const findCommentSmart = await CommentModel.findOne({ _id: objectCommentID })
+        const findCommentSmart = await CommentModel.findOne({_id: objectCommentID})
 
         return findCommentSmart
     }
 
     public async findOneById(commentID: string, userID: string | null):
-        Promise<null | commentObjectResult>
-    {
+        Promise<null | commentObjectResult> {
         const objectCommentID: ObjectId = new ObjectId(commentID)
 
-        const findCommentSmart: null | commentOfPostBDType = await CommentModel.findOne({ _id: objectCommentID })
+        const findCommentSmart: null | commentOfPostBDType = await CommentModel.findOne({_id: objectCommentID})
 
-        if (!findCommentSmart){
+        if (!findCommentSmart) {
             return null
         }
 
         let likeStatus: myLikeStatus = myLikeStatus.None
 
         if (userID) {
-            const likeStatusChecked = await LikeService.checkedLike(findCommentSmart._id, userID)
+            const likeStatusChecked = await likeService.checkedLike(findCommentSmart._id, userID)
 
-            if (likeStatusChecked){
+            if (likeStatusChecked) {
                 likeStatus = likeStatusChecked.user.myStatus
             }
-         }
+        }
 
         return {
             id: findCommentSmart._id,
@@ -56,18 +55,17 @@ class CommentRepository {
                 myStatus: likeStatus
             }
         }
-    }   
-    
-    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: string):
-        Promise<null | commentObjectResult>
-    {
-        const userFind: userObjectResult | null = await UserRepository.findOneById(userID)
+    }
 
-        if (!userFind){
+    public async createCommentOfPost(postID: string, commentDTO: commentReqType, userID: string):
+        Promise<null | commentObjectResult> {
+        const userFind: userObjectResult | null = await userRepository.findOneById(userID)
+
+        if (!userFind) {
             return null
         }
 
-        const postFind: null | postObjectResult = await PostRepository.findOneById(postID, null)
+        const postFind: null | postObjectResult = await postRepository.findOneById(postID, null)
 
         if (!postFind) {
             return null
@@ -102,12 +100,11 @@ class CommentRepository {
     }
 
     public async updateComment(commentID: string, commentDTO: commentReqType, userID: string):
-        Promise<number>
-    {
+        Promise<number> {
 
         const findComment: null | commentObjectResult = await this.findOneById(commentID, null)
 
-        if(!findComment) {
+        if (!findComment) {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
@@ -121,11 +118,10 @@ class CommentRepository {
     }
 
     public async updateCommentLiked(likeDTO: string, commentID: string, userID: string):
-        Promise<boolean>
-    {
+        Promise<boolean> {
         const findComment: commentObjectResult | null = await this.findOneById(commentID, userID)
 
-        if (!findComment){
+        if (!findComment) {
             return false
         }
 
@@ -136,7 +132,7 @@ class CommentRepository {
             dislikesCount: findComment.likesInfo.dislikesCount
         }
 
-        const newObjectLikes: likesCounter = await LikeService.counterLike(likeDTO, likesInfoComment, userID)
+        const newObjectLikes: likesCounter = await likeService.counterLike(likeDTO, likesInfoComment, userID)
 
         const updatedPostResult: boolean = CommentModel.updateCommentLiked(commentID, newObjectLikes)
 
@@ -145,12 +141,11 @@ class CommentRepository {
     }
 
     public async deleteComment(commentID: string, userID: string):
-        Promise<number>
-    {
+        Promise<number> {
 
         const findComment: null | commentObjectResult = await this.findOneById(commentID, null)
 
-        if(!findComment) {
+        if (!findComment) {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
@@ -167,10 +162,10 @@ class CommentRepository {
         await CommentModel.deleteMany({})
     }
 
-    public async save(model:any) {
+    public async save(model: any) {
         return await model.save()
     }
-    
+
 }
 
-export default new CommentRepository()
+export const commentRepository = new CommentRepository()

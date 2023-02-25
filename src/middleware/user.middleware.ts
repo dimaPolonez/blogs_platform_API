@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import CheckedService from "../services/checked.service";
+import {checkedService} from "../services/checked.service";
 
 export const usersValidator = [
     body('login')
@@ -13,7 +13,7 @@ export const usersValidator = [
         .bail()
         .matches(/^[a-zA-Z0-9_-]*$/)
         .bail()
-        .custom(CheckedService.loginUniq)
+        .custom(checkedService.loginUniq)
         .bail()
         .withMessage('Field login incorrect'),
     body('password')
@@ -35,7 +35,7 @@ export const usersValidator = [
         .bail()
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
         .bail()
-        .custom(CheckedService.emailUniq)
+        .custom(checkedService.emailUniq)
         .bail()
         .withMessage('Field email incorrect')
 ]

@@ -1,6 +1,6 @@
 import mongoose, {Model, Schema} from "mongoose";
 import {blogBDType, blogReqType} from "../../models/blog.models";
-import BlogRepository from "../repository/blog.repository";
+import {blogRepository} from "../repository/blog.repository";
 
 type BlogStaticType = Model<blogBDType> & {
     createBlog(blogDTO: blogReqType): any,
@@ -14,33 +14,34 @@ export const blogBDSchema = new Schema<blogBDType, BlogStaticType>({
     createdAt: String
 })
 
-blogBDSchema.static({async createBlog(blogDTO: blogReqType):
-            Promise<any> {
-            const newBlogSmart = new BlogModel({
-                name: blogDTO.name,
-                description: blogDTO.description,
-                websiteUrl: blogDTO.websiteUrl,
-                createdAt: new Date().toISOString()
-            })
+blogBDSchema.static({
+    async createBlog(blogDTO: blogReqType):
+        Promise<any> {
+        const newBlogSmart = new BlogModel({
+            name: blogDTO.name,
+            description: blogDTO.description,
+            websiteUrl: blogDTO.websiteUrl,
+            createdAt: new Date().toISOString()
+        })
 
-            return newBlogSmart
-        }
-    })
+        return newBlogSmart
+    }
+})
 
-blogBDSchema.static({async updateBlog(blogID: string, blogDTO: blogReqType):
+blogBDSchema.static({
+    async updateBlog(blogID: string, blogDTO: blogReqType):
         Promise<boolean> {
-
-        const findBlogDocument = await BlogRepository.findOneByIdReturnDoc(blogID)
+        const findBlogDocument = await blogRepository.findOneByIdReturnDoc(blogID)
 
         if (!findBlogDocument) {
             return false
         }
-        
+
         findBlogDocument.name = blogDTO.name
         findBlogDocument.description = blogDTO.description
         findBlogDocument.websiteUrl = blogDTO.websiteUrl
 
-        await BlogRepository.save(findBlogDocument)
+        await blogRepository.save(findBlogDocument)
 
         return true
     }
