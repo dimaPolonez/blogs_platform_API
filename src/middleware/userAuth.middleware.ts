@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {body, header} from "express-validator";
 import {ObjectId} from "mongodb";
 import {ERRORS_CODE} from "../data/db.data";
-import {returnRefreshObject} from "../models/session.models";
+import {returnRefreshObject} from "../models/userSession.models";
 import {userObjectResult} from "../models/user.models";
 import {jwtApp} from "../application/jwt.application";
 import {userRepository} from "../data/repository/user.repository";

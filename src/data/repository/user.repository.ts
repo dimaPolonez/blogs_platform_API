@@ -1,5 +1,5 @@
 import {userBDType, userObjectResult, userReqType} from "../../models/user.models";
-import {authParams} from "../../models/auth.models";
+import {authParams} from "../../models/userAuth.models";
 import {UserModel} from "../entity/user.entity";
 import {ObjectId} from "mongodb";
 

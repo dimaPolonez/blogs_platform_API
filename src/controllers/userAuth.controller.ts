@@ -1,15 +1,15 @@
 import {Request, Response} from 'express';
 import {ERRORS_CODE} from '../data/db.data';
-import {authMeType, authReqType} from "../models/auth.models";
+import {authMeType, authReqType} from "../models/userAuth.models";
 import {bodyReqType} from "../models/request.models";
 import {userReqType} from "../models/user.models";
-import {deviceInfoObject} from "../models/session.models";
+import {deviceInfoObject} from "../models/userSession.models";
 import {tokensReturn} from '../models/likes.models';
-import {authService} from "../services/auth.service";
+import {authService} from "../services/userAuth.service";
 import {userService} from "../services/user.service";
-import {guardService} from "../services/guard.service";
+import {guardService} from "../services/userSession.service";
 
-class AuthController {
+class UserAuthController {
 
     public async authorization(req: bodyReqType<authReqType>, res: Response) {
         try {
@@ -140,4 +140,4 @@ class AuthController {
 }
 
 
-export const authController = new AuthController()
+export const userAuthController = new UserAuthController()

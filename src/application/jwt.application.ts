@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import {settings} from "../data/db.data";
-import {tokensObjectType} from '../models/auth.models';
+import {tokensObjectType} from '../models/userAuth.models';
 import {ObjectId} from "mongodb";
-import {deviceInfoObject, returnRefreshObject} from "../models/session.models";
+import {deviceInfoObject, returnRefreshObject} from "../models/userSession.models";
 import {add} from 'date-fns';
-import {guardService} from "../services/guard.service";
+import {guardService} from "../services/userSession.service";
 
 class JwtApp {
 

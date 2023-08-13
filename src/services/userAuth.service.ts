@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import {authParams, authReqType, tokensObjectType} from "../models/auth.models";
+import {authParams, authReqType, tokensObjectType} from "../models/userAuth.models";
 import {tokensReturn} from "../models/likes.models";
-import {deviceInfoObject} from "../models/session.models";
+import {deviceInfoObject} from "../models/userSession.models";
 import {userBDType, userReqPass} from "../models/user.models";
 import {userRepository} from "../data/repository/user.repository";
 import {bcryptApp} from "../application/bcrypt.application";
@@ -15,7 +15,7 @@ const authParams: authParams = {
     lifeTimeCode: 'Activated'
 }
 
-class AuthService {
+class UserAuthService {
 
     public async authUser(authDTO: authReqType, deviceInfo: deviceInfoObject):
         Promise<null | tokensReturn> {
@@ -108,4 +108,4 @@ class AuthService {
 
 }
 
-export const authService = new AuthService()
+export const authService = new UserAuthService()

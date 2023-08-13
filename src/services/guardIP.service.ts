@@ -1,9 +1,9 @@
 import {differenceInSeconds} from "date-fns";
 import {OBJECT_IP} from "../data/db.data";
-import {objectIpBDType} from "../models/session.models";
+import {objectIpBDType} from "../models/userSession.models";
 
 
-class IpService {
+class GuardIPService {
 
     public async findIP(ip: string):
         Promise<boolean> 
@@ -66,4 +66,4 @@ class IpService {
     }
 }
 
-export const ipService = new IpService()
+export const ipService = new GuardIPService()

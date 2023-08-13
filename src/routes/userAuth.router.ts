@@ -1,63 +1,63 @@
 import {indexMiddleware} from "../middleware/index.middleware";
 import {Router} from "express";
-import {authController} from "../controllers/auth.controller";
+import {userAuthController} from "../controllers/userAuth.controller";
 
 
-export const authRouter = Router({})
+export const userAuthRouter = Router({})
 
-authRouter.post('/login',
+userAuthRouter.post('/login',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USER_AUTH,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.authorization
+    userAuthController.authorization
 )
 
-authRouter.post('/refresh-token',
+userAuthRouter.post('/refresh-token',
     indexMiddleware.COOKIE_REFRESH,
-    authController.refreshToken
+    userAuthController.refreshToken
 )
 
-authRouter.post('/password-recovery',
+userAuthRouter.post('/password-recovery',
     indexMiddleware.IP_BANNER,
     indexMiddleware.PASS_EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.createNewPass
+    userAuthController.createNewPass
 )
 
-authRouter.post('/new-password',
+userAuthRouter.post('/new-password',
     indexMiddleware.IP_BANNER,
     indexMiddleware.NEW_PASS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.updateNewPass
+    userAuthController.updateNewPass
 )
 
-authRouter.post('/registration-confirmation',
+userAuthRouter.post('/registration-confirmation',
     indexMiddleware.IP_BANNER,
     indexMiddleware.CODE_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.confirmEmail
+    userAuthController.confirmEmail
 )
 
-authRouter.post('/registration',
+userAuthRouter.post('/registration',
     indexMiddleware.IP_BANNER,
     indexMiddleware.USERS_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.registration
+    userAuthController.registration
 )
 
-authRouter.post('/registration-email-resending',
+userAuthRouter.post('/registration-email-resending',
     indexMiddleware.IP_BANNER,
     indexMiddleware.EMAIL_VALIDATOR,
     indexMiddleware.ERRORS_VALIDATOR,
-    authController.resendingEmail
+    userAuthController.resendingEmail
 )
 
-authRouter.post('/logout',
+userAuthRouter.post('/logout',
     indexMiddleware.COOKIE_REFRESH,
-    authController.logout
+    userAuthController.logout
 )
 
-authRouter.get('/me',
+userAuthRouter.get('/me',
     indexMiddleware.BEARER_AUTHORIZATION,
-    authController.aboutMe
+    userAuthController.aboutMe
 )

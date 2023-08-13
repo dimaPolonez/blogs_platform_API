@@ -1,6 +1,6 @@
 import mongoose, {Model, Schema} from "mongoose";
 import {userBDType, userReqType} from "../../models/user.models";
-import {authParams} from "../../models/auth.models";
+import {authParams} from "../../models/userAuth.models";
 import {userRepository} from "../repository/user.repository";
 
 type UserStaticType = Model<userBDType> & {

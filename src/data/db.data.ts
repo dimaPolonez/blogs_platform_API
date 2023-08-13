@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import {objectIpBDSchema} from './entity/objectIP.entity';
-import {sessionBDSchema} from './entity/session.entity';
+import {guardIpBDSchema} from './entity/guardIP.entity';
+import {sessionBDSchema} from './entity/userSession.entity';
 
 dotenv.config()
 
@@ -28,7 +28,7 @@ export async function startBD() {
 }
 
 export const ACTIVE_DEVICE = mongoose.model('refreshTokensActive', sessionBDSchema)
-export const OBJECT_IP = mongoose.model('objectIP', objectIpBDSchema)
+export const OBJECT_IP = mongoose.model('objectIP', guardIpBDSchema)
 
 export const ERRORS_CODE = {
     OK_200: 200,

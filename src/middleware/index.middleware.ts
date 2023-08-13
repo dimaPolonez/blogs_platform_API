@@ -11,8 +11,8 @@ import {
     emailValidator,
     newPassValidator,
     passEmailValidator
-} from './auth.middleware';
-import {ipBanner} from './ip.middleware';
+} from './userAuth.middleware';
+import {ipBanner} from './guardIP.middleware';
 import {likeValidator, reqUserId} from './like.middleware';
 import {ObjectId} from "mongodb";
 

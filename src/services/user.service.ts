@@ -1,5 +1,5 @@
 import {userObjectResult, userReqAuthBody, userReqType} from "../models/user.models";
-import {authParams} from "../models/auth.models";
+import {authParams} from "../models/userAuth.models";
 import {bcryptApp} from "../application/bcrypt.application";
 import {userRepository} from "../data/repository/user.repository";
 import {activateCodeApp} from "../application/codeActive.application";

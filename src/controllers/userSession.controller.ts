@@ -1,10 +1,10 @@
 import {Request, Response} from 'express';
 import {ERRORS_CODE} from "../data/db.data";
-import {returnActiveDevice} from '../models/session.models';
+import {returnActiveDevice} from '../models/userSession.models';
 import {paramsId, paramsReqType} from '../models/request.models';
-import {guardService} from "../services/guard.service";
+import {guardService} from "../services/userSession.service";
 
-class GuardController {
+class UserSessionController {
 
     public async getAllSessions(req: Request, res: Response) {
         try {
@@ -49,4 +49,4 @@ class GuardController {
 
 }
 
-export const guardController = new GuardController()
+export const userSessionController = new UserSessionController()

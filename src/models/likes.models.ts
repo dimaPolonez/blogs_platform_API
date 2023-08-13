@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb"
-import {tokensObjectType} from "./auth.models"
+import {tokensObjectType} from "./userAuth.models"
 
 export type likesBDType = {
     _id: ObjectId,

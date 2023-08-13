@@ -1,11 +1,11 @@
 import {isAfter} from "date-fns";
 import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE, ERRORS_CODE} from "../data/db.data";
-import {sessionBDType, deviceInfoObject, returnActiveDevice} from "../models/session.models";
+import {sessionBDType, deviceInfoObject, returnActiveDevice} from "../models/userSession.models";
 import {userBDType} from "../models/user.models";
 
 
-class GuardService {
+class UserSessionService {
 
     public async addNewDevice(userId: ObjectId, deviceInfo: deviceInfoObject, expiresTime: string):
         Promise<ObjectId> {
@@ -116,4 +116,4 @@ class GuardService {
 
 }
 
-export const guardService = new GuardService()
+export const guardService = new UserSessionService()
