@@ -1,44 +1,44 @@
 import {ObjectId} from "mongodb"
-import {likesInfo} from "./likes.models"
+import {LikesInfoType} from "./likes.models"
 
-export type commentOfPostBDType = {
+export type CommentOfPostBDType = {
     _id: ObjectId,
     content: string,
-    commentatorInfo: commInfo,
+    commentatorInfo: CommInfoType,
     postId: ObjectId,
     createdAt: string,
-    likesInfo: likesInfo
+    likesInfo: LikesInfoType
 }
 
-export type commInfo = {
+export type CommInfoType = {
     userId: ObjectId,
     userLogin: string
 }
 
-export type commentReqType = {
+export type CommentReqType = {
     content: string
 }
 
-export type commentAllMaps = {
+export type CommentAllMapsType = {
     id: ObjectId,
     content: string,
-    commentatorInfo: commInfo,
+    commentatorInfo: CommInfoType,
     createdAt: string,
-    likesInfo: likesInfo
+    likesInfo: LikesInfoType
 }
 
-export type resultCommentObjectType = {
+export type ResultCommentObjectType = {
     pagesCount: number,
     page: number,
     pageSize: number,
     totalCount: number,
-    items: commentAllMaps []
+    items: CommentAllMapsType []
 }
 
-export type commentObjectResult = {
+export type CommentObjectResultType = {
     id: ObjectId,
     content: string,
-    commentatorInfo: commInfo,
+    commentatorInfo: CommInfoType,
     createdAt: string,
-    likesInfo: likesInfo
+    likesInfo: LikesInfoType
 }

@@ -1,11 +1,11 @@
 import express, {Request, Response} from 'express';
 import {ACTIVE_DEVICE, BLOGS, COMMENTS, ERRORS_CODE, LIKES, OBJECT_IP, POSTS, startBD, USERS} from './data/db.data';
-import blogRouter from './routes/blog.router';
-import postRouter from './routes/post.router';
-import userRouter from "./routes/user.router";
-import authRouter from "./routes/auth.router";
-import commentRouter from "./routes/comment.router";
 import cookieParser from 'cookie-parser';
+import blogRouter from "./routes/blog.router";
+import postRouter from "./routes/post.router";
+import userRouter from "./routes/user.router";
+import commentRouter from "./routes/comment.router";
+import authRouter from "./routes/auth.router";
 import guardRouter from "./routes/quard.routes";
 
 const PORT = process.env.PORT || 5000

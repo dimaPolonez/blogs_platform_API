@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import { likesInfoPost} from "./likes.models";
+import {LikesInfoPostType} from "./likes.models";
 
-export type postBDType = {
+export type PostBDType = {
     _id: ObjectId,
     title: string,
     shortDescription: string,
@@ -9,23 +9,23 @@ export type postBDType = {
     blogId: ObjectId,
     blogName: string,
     createdAt: string,
-    extendedLikesInfo: likesInfoPost
+    extendedLikesInfo: LikesInfoPostType
 }
 
-export type postReqType = {
+export type PostReqType = {
     title: string,
     shortDescription: string,
     content: string,
     blogId: ObjectId
 }
 
-export type postOfBlogReqType = {
+export type PostOfBlogReqType = {
     title: string,
     shortDescription: string,
     content: string
 }
 
-export type postAllMaps = {
+export type PostAllMapsType = {
     id: ObjectId,
     title: string,
     shortDescription: string,
@@ -33,18 +33,18 @@ export type postAllMaps = {
     blogId: ObjectId,
     blogName: string,
     createdAt: string,
-    extendedLikesInfo: likesInfoPost
+    extendedLikesInfo: LikesInfoPostType
 }
 
-export type resultPostObjectType = {
+export type ResultPostObjectType = {
     pagesCount: number,
     page: number,
     pageSize: number,
     totalCount: number,
-    items: postAllMaps []
+    items: PostAllMapsType []
 }
 
-export type postObjectResult = {
+export type PostObjectResultType = {
     id: ObjectId,
     title: string,
     shortDescription: string,
@@ -52,5 +52,5 @@ export type postObjectResult = {
     blogId: ObjectId,
     blogName: string,
     createdAt: string,
-    extendedLikesInfo: likesInfoPost
+    extendedLikesInfo: LikesInfoPostType
 }

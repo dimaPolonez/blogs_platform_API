@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
 import {settings} from "../data/db.data";
-import {tokensObjectType} from '../models/auth.models';
-import {userBDType} from '../models/user.models';
 import {ObjectId} from "mongodb";
-import {deviceInfoObject, returnRefreshObject} from "../models/activeDevice.models";
 import GuardService from "../services/guard.service";
 import {add} from 'date-fns';
+import {DeviceInfoObjectType} from "../models";
 
 class JwtApp {
 
@@ -19,7 +17,7 @@ class JwtApp {
         }
     }
 
-    public async createRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject):
+    public async createRefreshJwt(user: userBDType, deviceInfoObject: DeviceInfoObjectType):
         Promise<string> 
     {                                
         const expiresBase: number = 5400
@@ -30,12 +28,10 @@ class JwtApp {
 
         const deviceId: ObjectId = await GuardService.addNewDevice(user._id, deviceInfoObject, expiresTime)
 
-        const refreshToken: string = jwt.sign({
-                                                deviceId: deviceId,
-                                                userId: user._id
-                                            }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
-
-        return refreshToken
+        return jwt.sign({
+            deviceId: deviceId,
+            userId: user._id
+        }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
     }
 
     public async updateRefreshJwt(user: userBDType, deviceInfoObject: deviceInfoObject, sessionId: ObjectId):
@@ -51,12 +47,10 @@ class JwtApp {
 
         await GuardService.updateExpiredSession(deviceId, deviceInfoObject, expiresTime)
 
-        const refreshToken: string = jwt.sign({
-                                                deviceId: deviceId,
-                                                userId: user._id
-                                            }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
-
-        return refreshToken
+        return jwt.sign({
+            deviceId: deviceId,
+            userId: user._id
+        }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
     }
 
     public async verifyAccessJwt(token: string):

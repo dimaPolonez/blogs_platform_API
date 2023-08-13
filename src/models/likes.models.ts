@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb"
 
-export type likesBDType = {
+export type LikesBDType = {
     _id: ObjectId,
     user: {
         userId: ObjectId,
@@ -14,26 +14,26 @@ export type likesBDType = {
     addedAt: string
 }
 
-export type likesInfo = {
+export type LikesInfoType = {
     likesCount: number,
     dislikesCount: number,
     myStatus: string
 }
 
-export type likesInfoPost = {
+export type LikesInfoPostType = {
     likesCount: number,
     dislikesCount: number,
     myStatus: string,
-    newestLikes: newestLikes []
+    newestLikes: NewestLikesType []
 }
 
-export type newestLikes = {
+export type NewestLikesType = {
     addedAt: string,
     userId: ObjectId,
     login: string
 }
 
-export type likesCounter = {
+export type LikesCounterType = {
     likesCount: number,
     dislikesCount: number
 }
@@ -44,11 +44,11 @@ export enum myLikeStatus {
     Dislike = 'Dislike'
 }
 
-export type likesReq = {
+export type LikesReqType = {
     likeStatus: string
 }
 
-export type countObject = {
+export type CountObjectType = {
     typeId: ObjectId,
     type: string,
     likesCount: number,

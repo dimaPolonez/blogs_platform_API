@@ -1,12 +1,15 @@
 import {MongoClient} from 'mongodb';
 import * as mongoDB from 'mongodb';
 import * as dotenv from 'dotenv';
-import {blogBDType} from '../models/blog.models';
-import {postBDType} from '../models/post.models';
-import {userBDType} from '../models/user.models';
-import {commentOfPostBDType} from '../models/comment.models';
-import {activeDeviceBDType, objectIP} from "../models/activeDevice.models";
-import {likesBDType} from '../models/likes.models';
+import {
+    ActiveDeviceBDType,
+    BlogBDType,
+    CommentOfPostBDType,
+    LikesBDType,
+    ObjectIPType,
+    PostBDType,
+    UserBDType
+} from "../models";
 
 dotenv.config()
 
@@ -36,13 +39,13 @@ export async function startBD() {
 
 const db: mongoDB.Db = client.db(process.env.DB_NAME)
 
-export const BLOGS = db.collection<blogBDType>('blogs')
-export const POSTS = db.collection<postBDType>('posts')
-export const USERS = db.collection<userBDType>('users')
-export const COMMENTS = db.collection<commentOfPostBDType>('comments')
-export const ACTIVE_DEVICE = db.collection<activeDeviceBDType>('refreshTokensActive')
-export const OBJECT_IP = db.collection<objectIP>('objectIP')
-export const LIKES = db.collection<likesBDType>('likes')
+export const BLOGS = db.collection<BlogBDType>('blogs')
+export const POSTS = db.collection<PostBDType>('posts')
+export const USERS = db.collection<UserBDType>('users')
+export const COMMENTS = db.collection<CommentOfPostBDType>('comments')
+export const ACTIVE_DEVICE = db.collection<ActiveDeviceBDType>('refreshTokensActive')
+export const OBJECT_IP = db.collection<ObjectIPType>('objectIP')
+export const LIKES = db.collection<LikesBDType>('likes')
 
 export const ERRORS_CODE = {
     OK_200: 200,

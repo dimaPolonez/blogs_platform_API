@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 
 
-export type activeDeviceBDType = {
+export type ActiveDeviceBDType = {
     _id: ObjectId,
     userId: ObjectId,
     ip: string,
@@ -10,24 +10,24 @@ export type activeDeviceBDType = {
     expiresTime: string
 }
 
-export type deviceInfoObject = {
+export type DeviceInfoObjectType = {
     ip: string,
     title: string
 }
 
-export type returnActiveDevice = {
+export type ReturnActiveDeviceType = {
     ip: string,
     title: string,
     lastActiveDate: string,
     deviceId: ObjectId
 }
 
-export type returnRefreshObject = {
+export type ReturnRefreshObjectType = {
     userId: ObjectId,
     sessionId: ObjectId
 }
 
-export type objectIP = {
+export type ObjectIPType = {
     _id: ObjectId,
     ip: string,
     tokens: number,

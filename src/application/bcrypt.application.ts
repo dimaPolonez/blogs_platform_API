@@ -7,25 +7,19 @@ class BcryptApp {
     {
         const salt: string = await bcrypt.genSalt(10)
 
-        const hush: string = await this.hushGenerate(password, salt)
-
-        return hush
+        return await this.hushGenerate(password, salt)
     }
 
     private async hushGenerate(password: string, salt: string): 
         Promise<string> 
     {
-        const hush: string = await bcrypt.hash(password, salt)
-
-        return hush
+        return await bcrypt.hash(password, salt)
     }
 
     public async hushCompare(password: string, hush: string): 
         Promise<boolean> 
     {
-        const hushValid: boolean = await bcrypt.compare(password, hush)
-
-        return hushValid
+        return await bcrypt.compare(password, hush)
     }
 
 }

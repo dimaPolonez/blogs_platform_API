@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-export type userBDType = {
+export type UserBDType = {
     _id: ObjectId,
     infUser: {
         login: string,
@@ -17,28 +17,28 @@ export type userBDType = {
     }
 }
 
-export type userReqType = {
+export type UserReqType = {
     login: string,
     password: string,
     email: string
 }
 
-export type userAllMaps = {
+export type UserAllMapsType = {
     id: ObjectId,
     login: string,
     email: string,
     createdAt: string
 }
 
-export type resultUserObjectType = {
+export type ResultUserObjectType = {
     pagesCount: number,
     page: number,
     pageSize: number,
     totalCount: number,
-    items: userAllMaps []
+    items: UserAllMapsType []
 }
 
-export type userObjectResult = {
+export type UserObjectResultType = {
     id: ObjectId,
     login: string,
     email: string,

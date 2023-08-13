@@ -11,22 +11,22 @@ declare global {
     }
 }
 
-export type authReqType = {
+export type AuthReqType = {
     loginOrEmail: string,
     password: string
 }
 
-export type tokensObjectType = {
+export type TokensObjectType = {
     accessToken: string
 }
 
-export type authMeType = {
+export type AuthMeType = {
     email: string,
     login: string,
     userId: ObjectId
 }
 
-export type authParams = {
+export type AuthParamsType = {
     confirm: boolean,
     codeActivated: string,
     lifeTimeCode: string

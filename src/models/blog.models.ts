@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-export type blogBDType = {
+export type BlogBDType = {
     _id: ObjectId,
     name: string,
     description: string,
@@ -8,13 +8,13 @@ export type blogBDType = {
     createdAt: string
 }
 
-export type blogReqType = {
+export type BlogReqType = {
     name: string,
     description: string,
     websiteUrl: string
 }
 
-export type blogAllMaps = {
+export type BlogAllMapsType = {
     id: ObjectId,
     name: string,
     description: string,
@@ -22,15 +22,15 @@ export type blogAllMaps = {
     createdAt: string
 }
 
-export type resultBlogObjectType = {
+export type ResultBlogObjectType = {
     pagesCount: number,
     page: number,
     pageSize: number,
     totalCount: number,
-    items: blogAllMaps []
+    items: BlogAllMapsType []
 }
 
-export type blogObjectResult = {
+export type BlogObjectResultType = {
     id: ObjectId,
     name: string,
     description: string,

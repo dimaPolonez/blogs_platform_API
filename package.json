@@ -38,7 +38,7 @@
     "watch": "tsc -w",
     "build": "tsc",
     "start": "node dist/src/index.js",
-    "test": "jest --watch"
+    "test": "cross-env NODE_ENV=test jest index.test.ts --watchAll"
   }
 }
  

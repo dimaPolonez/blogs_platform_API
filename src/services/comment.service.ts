@@ -70,7 +70,7 @@ class CommentService {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        if (findComment.commentatorInfo.userId.toString() === userObject._id.toString()) {
+        if (findComment.commentatorInfo.userId.toString() !== userObject._id.toString()) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
@@ -124,7 +124,7 @@ class CommentService {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        if (findComment.commentatorInfo.userId.toString() === userObject._id.toString()) {
+        if (findComment.commentatorInfo.userId.toString() !== userObject._id.toString()) {
             return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 

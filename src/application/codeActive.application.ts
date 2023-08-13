@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
-import {authParams} from "../models/auth.models";
+import {authParams} from "../models";
 
 
 class ActiveCodeApp {
@@ -8,24 +8,20 @@ class ActiveCodeApp {
     public async createCode():
         Promise<authParams> 
     {
-        const authParams: authParams = {
+        return {
             confirm: false,
             codeActivated: uuidv4(),
             lifeTimeCode: await this.createTime()
         }
-
-        return authParams
     }
 
     private async createTime():
         Promise<string> 
     {
-        const lifetime: string = add(new Date(), {
+        return add(new Date(), {
             hours: 1,
             minutes: 10
         }).toString()
-
-        return lifetime
     }
 }
 
