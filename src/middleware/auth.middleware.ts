@@ -1,19 +1,17 @@
 import {Request, Response, NextFunction} from "express";
 import {body, header} from "express-validator";
 import {ObjectId} from "mongodb";
-import JwtApp from "../application/jwt.application";
-import {ERRORS_CODE} from "../data/db.data";
-import {returnRefreshObject} from "../models/activeDevice.models";
-import {userBDType} from "../models/user.models";
-import AuthService from "../services/auth.service";
-import CheckedService from "../services/checked.service";
+import JwtApp from "../adapters/jwt.adapter";
+import {ERRORS_CODE} from "../core/db.data";
+import AuthService from "../auth/application/auth.service";
+import CheckedService from "../helpers/checked.service";
+import {ReturnRefreshObjectType, UserBDType} from "../core/models";
 
 export const basicAuthorization = (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     header('authorization')
         .isString()
         .bail()
@@ -35,8 +33,7 @@ export const bearerAuthorization = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.headers.authorization) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
@@ -50,7 +47,7 @@ export const bearerAuthorization = async (
 
         const userAccessIdObject = new ObjectId(userAccessId)
 
-        const findUser: null | userBDType = await AuthService.findOneUserToId(userAccessIdObject)
+        const findUser: null | UserBDType = await AuthService.findOneUserToId(userAccessIdObject)
 
         if (findUser) {
             req.user = findUser
@@ -63,15 +60,13 @@ export const bearerAuthorization = async (
     }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
-
 }
 
 export const cookieRefresh = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => 
-{
+) => {
     if (!req.cookies.refreshToken) {
         res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
         return
@@ -79,11 +74,11 @@ export const cookieRefresh = async (
 
     const refreshToken: string = req.cookies.refreshToken
 
-    const userRefreshId: returnRefreshObject | null = await JwtApp.verifyRefreshJwt(refreshToken)
+    const userRefreshId: ReturnRefreshObjectType | null = await JwtApp.verifyRefreshJwt(refreshToken)
 
     if (userRefreshId) {
 
-        const findUser: null | userBDType = await AuthService.findOneUserToId(userRefreshId.userId)
+        const findUser: null | UserBDType = await AuthService.findOneUserToId(userRefreshId.userId)
 
         if (findUser) {
             req.user = findUser
@@ -97,7 +92,6 @@ export const cookieRefresh = async (
     }
 
     res.status(ERRORS_CODE.UNAUTHORIZED_401).json('Unauthorized')
-
 }
 
 export const codeValidator = [

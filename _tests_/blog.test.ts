@@ -1,5 +1,5 @@
 import supertest from 'supertest'
-import {TestObjectType} from "../src/models";
+import {TestObjectType} from "../src/core/models";
 
 
 

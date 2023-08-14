@@ -1,12 +1,12 @@
 import supertest from 'supertest'
 import { app } from '../src';
 import jwt from 'jsonwebtoken';
-import { settings } from '../src/data/db.data';
+import { settings } from '../src/core/db.data';
 import { blogFlow } from './blog.test';
 import { postFlow } from './post.test';
 import {commentFlow} from "./comments.test";
 import {likeFlow} from "./like.test";
-import {TestObjectType} from "../src/models";
+import {TestObjectType} from "../src/core/models";
 
 const api = supertest(app)
 

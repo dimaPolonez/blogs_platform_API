@@ -1,6 +1,6 @@
 import {Request, Response, NextFunction} from "express";
-import {ERRORS_CODE} from "../data/db.data";
-import IpService from "../services/ip.service";
+import {ERRORS_CODE} from "../core/db.data";
+import IpService from "../helpers/ip.service";
 
 export const ipBanner = async (
     req: Request,

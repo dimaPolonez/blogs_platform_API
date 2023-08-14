@@ -1,17 +1,26 @@
-import {BLOGS, COMMENTS, POSTS, USERS} from "../data/db.data";
-import {
-    notStringQueryReqPag,
-    notStringQueryReqPagOfSearchName, notStringQueryReqPagSearchAuth
-} from "../models/request.models";
-import {blogAllMaps, blogBDType, resultBlogObjectType} from "../models/blog.models";
-import {postAllMaps, postBDType, resultPostObjectType} from "../models/post.models";
-import {resultUserObjectType, userAllMaps, userBDType} from "../models/user.models";
-import {commentAllMaps, commentOfPostBDType, resultCommentObjectType} from "../models/comment.models";
+import {BLOGS, COMMENTS, POSTS, USERS} from "../core/db.data";
 import {ObjectId} from "mongodb";
-import {likesBDType, myLikeStatus, newestLikes} from "../models/likes.models";
-import LikeService from "./like.service";
-import BlogService from "./blog.service";
-import PostService from "./post.service";
+import LikeService from "../helpers/like.service";
+import BlogService from "../public/blogs/application/blog.service";
+import PostService from "../public/posts/application/post.service";
+import {
+    BlogAllMapsType,
+    BlogBDType, CommentAllMapsType, CommentOfPostBDType,
+    LikesBDType,
+    MyLikeStatus,
+    NewestLikesType,
+    NotStringQueryReqPagOfSearchNameType,
+    NotStringQueryReqPagSearchAuthType,
+    NotStringQueryReqPagType,
+    PostAllMapsType,
+    PostBDType,
+    ResultBlogObjectType,
+    ResultCommentObjectType,
+    ResultPostObjectType,
+    ResultUserObjectType,
+    UserAllMapsType,
+    UserBDType
+} from "../core/models";
 
 function sortObject(sortDir: string)
 {
@@ -25,16 +34,16 @@ function skippedObject(pageNum: number, pageSize: number)
 
 class QueryService {
 
-    public async getAllBlogs(queryAll: notStringQueryReqPagOfSearchName):
-        Promise<resultBlogObjectType> 
-    {
-        const allBlogs: blogBDType [] = await BLOGS
+    public async getAllBlogs(
+        queryAll: NotStringQueryReqPagOfSearchNameType
+    ):Promise<ResultBlogObjectType>{
+        const allBlogs: BlogBDType [] = await BLOGS
                                                 .find({name: new RegExp(queryAll.searchNameTerm, 'gi')})
                                                 .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                 .limit(queryAll.pageSize)
                                                 .sort({[queryAll.sortBy]: sortObject(queryAll.sortDirection)}).toArray()
 
-        const allMapsBlog: blogAllMaps [] = allBlogs.map((field: blogBDType) => {
+        const allMapsBlog: BlogAllMapsType[] = allBlogs.map((field: BlogBDType) => {
             return {
                 id: field._id,
                 name: field.name,
@@ -57,28 +66,29 @@ class QueryService {
         }
     }
 
-    public async getAllPosts(queryAll: notStringQueryReqPag, userId: ObjectId | null): 
-        Promise<resultPostObjectType> 
-    {
-        const allPostsFind: postBDType [] = await POSTS.find({})
+    public async getAllPosts(
+        queryAll: NotStringQueryReqPagType,
+        userId: ObjectId | null)
+        :Promise<ResultPostObjectType>{
+        const allPostsFind: PostBDType [] = await POSTS.find({})
                                                                 .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                 .limit(queryAll.pageSize)
                                                                 .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const allPostMapping: postAllMaps [] = await Promise.all(allPostsFind.map(async (fieldPost: postBDType) => {
+        const allPostMapping: PostAllMapsType [] = await Promise.all(allPostsFind.map(async (fieldPost: PostBDType) => {
 
-                let userLikeStatus: myLikeStatus = myLikeStatus.None
-                let allLikeUserMapping: newestLikes[] | [] = []
+                let userLikeStatus: MyLikeStatus = MyLikeStatus.None
+                let allLikeUserMapping: NewestLikesType[] | [] = []
 
                 if (userId) {
-                    const likeUserArray: null | likesBDType = await LikeService.checkedLike(fieldPost._id, userId)
+                    const likeUserArray: null | LikesBDType = await LikeService.checkedLike(fieldPost._id, userId)
 
                     if (likeUserArray) {
                         userLikeStatus = likeUserArray.user.myStatus
                     }
                 }
 
-                const resultUserLikeMapping: newestLikes[] | null = await LikeService.userLikeMaper(fieldPost._id)
+                const resultUserLikeMapping: NewestLikesType[] | null = await LikeService.userLikeMaper(fieldPost._id)
 
                 if (resultUserLikeMapping) {
                     allLikeUserMapping = resultUserLikeMapping
@@ -114,36 +124,38 @@ class QueryService {
         }
     }
 
-    public async getAllPostsOfBlog (blogURIId: string, queryAll: notStringQueryReqPag, userId: ObjectId | null):
-        Promise<resultPostObjectType | null> 
-    {
+    public async getAllPostsOfBlog(
+        blogURIId: string,
+        queryAll: NotStringQueryReqPagType,
+        userId: ObjectId | null
+    ):Promise<ResultPostObjectType | null>{
         const blogParamsId: ObjectId = new ObjectId(blogURIId)
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogParamsId)
+        const blogFind: null | BlogBDType = await BlogService.findBlogById(blogParamsId)
 
         if (!blogFind) {
             return null
         }
 
-        const postsOfFindBlog: postBDType [] = await POSTS.find({blogId: blogParamsId})
+        const postsOfFindBlog: PostBDType [] = await POSTS.find({blogId: blogParamsId})
                                                                                         .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                                         .limit(queryAll.pageSize)
                                                                                         .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const allPostMapping: postAllMaps [] = await Promise.all(postsOfFindBlog.map(async (fieldPost: postBDType) => {
+        const allPostMapping: PostAllMapsType[] = await Promise.all(postsOfFindBlog.map(async (fieldPost: PostBDType) => {
 
-                let userLikeStatus: myLikeStatus = myLikeStatus.None
-                let allLikeUserMapping: newestLikes[] | [] = []
+                let userLikeStatus: MyLikeStatus = MyLikeStatus.None
+                let allLikeUserMapping: NewestLikesType[] | [] = []
 
                 if (userId) {
-                    const likeUserArray: null | likesBDType = await LikeService.checkedLike(fieldPost._id, userId)
+                    const likeUserArray: null | LikesBDType = await LikeService.checkedLike(fieldPost._id, userId)
 
                     if(likeUserArray) {
                         userLikeStatus = likeUserArray.user.myStatus
                     }
                 }
 
-                const resultUserLikeMapping: newestLikes[] | null = await LikeService.userLikeMaper(fieldPost._id)
+                const resultUserLikeMapping: NewestLikesType[] | null = await LikeService.userLikeMaper(fieldPost._id)
 
                 if (resultUserLikeMapping) {
                     allLikeUserMapping = resultUserLikeMapping
@@ -169,7 +181,7 @@ class QueryService {
         const allCount: number = await POSTS.countDocuments({blogId: blogParamsId})
         const pagesCount: number = Math.ceil(allCount / queryAll.pageSize)
 
-        const allPostsOfBlog: resultPostObjectType = {
+        const allPostsOfBlog: ResultPostObjectType = {
             pagesCount: pagesCount,
             page: queryAll.pageNumber,
             pageSize: queryAll.pageSize,
@@ -180,10 +192,10 @@ class QueryService {
         return allPostsOfBlog
     }
 
-    public async getAllUsers(queryAll: notStringQueryReqPagSearchAuth):
-        Promise<resultUserObjectType> 
-    {
-        const usersAll: userBDType [] = await USERS
+    public async getAllUsers(
+        queryAll: NotStringQueryReqPagSearchAuthType
+    ):Promise<ResultUserObjectType>{
+        const usersAll: UserBDType [] = await USERS
                                                     .find(
                                                         {
                                                             $or: [
@@ -196,7 +208,7 @@ class QueryService {
                                                     .limit(queryAll.pageSize)
                                                     .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const allMapsUsers: userAllMaps [] = usersAll.map((fieldUser: userBDType) => {
+        const allMapsUsers: UserAllMapsType[] = usersAll.map((fieldUser: UserBDType) => {
             return {
                 id: fieldUser._id,
                 login: fieldUser.infUser.login,
@@ -224,29 +236,31 @@ class QueryService {
         }
     }
 
-    public async getAllCommentsOfPost(postURIId: string, queryAll: notStringQueryReqPag, userId: ObjectId | null):
-        Promise<null | resultCommentObjectType> 
-    {
+    public async getAllCommentsOfPost(
+        postURIId: string,
+        queryAll: NotStringQueryReqPagType,
+        userId: ObjectId | null
+    ):Promise<null | ResultCommentObjectType>{
         const postID: ObjectId = new ObjectId(postURIId)
 
-        const findPost: null | postBDType = await PostService.findPost(postID)
+        const findPost: null | PostBDType = await PostService.findPost(postID)
 
         if (!findPost) {
             return null
         }
 
-        const comments: commentOfPostBDType [] = await COMMENTS.find({postId: postID})
+        const comments: CommentOfPostBDType[] = await COMMENTS.find({postId: postID})
                                                                                         .skip(skippedObject(queryAll.pageNumber, queryAll.pageSize))
                                                                                         .limit(queryAll.pageSize)
                                                                                         .sort(({[queryAll.sortBy]: sortObject(queryAll.sortDirection)})).toArray()
 
-        const allMapsComments: commentAllMaps [] = await Promise.all(comments.map(async (fieldComment: commentOfPostBDType) => {
+        const allMapsComments: CommentAllMapsType[] = await Promise.all(comments.map(async (fieldComment: CommentOfPostBDType) => {
 
-            let myUserStatus: myLikeStatus = myLikeStatus.None
+            let myUserStatus: MyLikeStatus = MyLikeStatus.None
 
             if (userId) {
 
-            const checkLikeComment: null | likesBDType = await LikeService.checkedLike(fieldComment._id, userId)
+            const checkLikeComment: null | LikesBDType = await LikeService.checkedLike(fieldComment._id, userId)
 
                 if (checkLikeComment) {
                     myUserStatus = checkLikeComment.user.myStatus

@@ -1,7 +1,7 @@
 import {body} from 'express-validator';
 import {ObjectId} from "mongodb";
-import { blogBDType } from '../models/blog.models';
-import BlogService from '../services/blog.service';
+import BlogService from '../public/blogs/application/blog.service';
+import {BlogBDType} from "../core/models";
 
 export const postValidator = [
     body('title')
@@ -46,7 +46,7 @@ export const postValidator = [
 
             const valueId = new ObjectId(value)
 
-            const findBlog: null| blogBDType = await BlogService.findBlogById(valueId)
+            const findBlog: null| BlogBDType = await BlogService.findBlogById(valueId)
 
             if (findBlog) {
                 return true
