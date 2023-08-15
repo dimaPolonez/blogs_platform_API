@@ -1,14 +1,14 @@
 import {USERS} from "../../../core/db.data";
 import {ObjectId} from "mongodb";
 import BcryptApp from "../../../adapters/bcrypt.adapter";
-import {userBDType, userObjectResult, userReqType} from "../../../core/models/user.models";
-import {authParams} from "../../../core/models/auth.models";
+import {AuthParamsType, UserBDType, UserObjectResultType, UserReqType} from "../../../core/models";
 
 class UserService {
 
-    public async createUser(body: userReqType, authParams: authParams):
-        Promise<userObjectResult> 
-    {
+    public async createUser(
+        body: UserReqType,
+        authParams: AuthParamsType
+    ):Promise<UserObjectResultType>{
         const hushPass: string = await BcryptApp.saltGenerate(body.password)
 
         const userObjectId: ObjectId = new ObjectId()
@@ -39,8 +39,10 @@ class UserService {
                 }
     }
 
-    public async updateUser(user: userBDType, authParams: authParams) 
-    {
+    public async updateUser(
+        user: UserBDType,
+        authParams: AuthParamsType
+    ){
         await USERS.updateOne({_id: user._id}, {
             $set: {
                 "activeUser.codeActivated": authParams.codeActivated,
@@ -50,12 +52,12 @@ class UserService {
         })
     }
 
-    public async deleteUser(userURIId: string):
-        Promise<boolean> 
-    {
+    public async deleteUser(
+        userURIId: string
+    ):Promise<boolean>{
         const bodyID: ObjectId = new ObjectId(userURIId)
 
-        const findUser: null | userBDType = await USERS.findOne({_id: bodyID})
+        const findUser: null | UserBDType = await USERS.findOne({_id: bodyID})
 
         if (!findUser) {
             return false

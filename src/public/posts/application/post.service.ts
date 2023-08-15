@@ -1,18 +1,23 @@
 import {POSTS} from "../../../core/db.data";
 import {ObjectId} from "mongodb";
-import {postBDType, postObjectResult, postOfBlogReqType, postReqType} from "../../../core/models/post.models";
-import {blogBDType} from "../../../core/models/blog.models";
-import { userBDType } from "../../../core/models/user.models";
-import {countObject, likesBDType, likesCounter, myLikeStatus, newestLikes} from "../../../core/models/likes.models";
 import LikeService from "../../../helpers/like.service";
 import BlogService from "../../blogs/application/blog.service";
+import {
+    BlogBDType, CountObjectType,
+    LikesBDType, LikesCounterType,
+    MyLikeStatus,
+    NewestLikesType,
+    PostBDType,
+    PostObjectResultType, PostOfBlogReqType,
+    PostReqType, UserBDType
+} from "../../../core/models";
 
 class PostService {
 
-    public async findPost(bodyID: ObjectId):
-        Promise<postBDType | null> 
-    {
-        const findOnePost: postBDType | null = await POSTS.findOne({_id: bodyID})
+    public async findPost(
+        bodyID: ObjectId
+    ):Promise<PostBDType | null>{
+        const findOnePost: PostBDType | null = await POSTS.findOne({_id: bodyID})
 
         if (!findOnePost) {
             return null
@@ -21,35 +26,36 @@ class PostService {
         return findOnePost
     }
 
-    public async getOnePost(postURIId: string, userId: ObjectId | null):
-        Promise<null | postObjectResult> 
-    {
+    public async getOnePost(
+        postURIId: string,
+        userId: ObjectId | null
+    ):Promise<null | PostObjectResultType>{
         const bodyID: ObjectId = new ObjectId(postURIId)
 
-        const findOnePost: postBDType | null = await this.findPost(bodyID)
+        const findOnePost: PostBDType | null = await this.findPost(bodyID)
 
         if (!findOnePost) {
             return null
         }
 
-        let myUserStatus: myLikeStatus = myLikeStatus.None
-        let allMapsUserLikesArray: newestLikes [] | [] = []
+        let myUserStatus: MyLikeStatus = MyLikeStatus.None
+        let allMapsUserLikesArray: NewestLikesType [] | [] = []
 
         if (userId) {
             const userObjectId: ObjectId = new ObjectId(userId)
 
-            const checked: null | likesBDType = await LikeService.checkedLike(findOnePost._id, userObjectId)
+            const checked: null | LikesBDType = await LikeService.checkedLike(findOnePost._id, userObjectId)
 
             if (checked) {
                 myUserStatus = checked.user.myStatus
             }
         }
 
-        const threeUserLikesArray: likesBDType [] | null =  await LikeService.threeUserLikesArray(findOnePost._id)
+        const threeUserLikesArray: LikesBDType [] | null =  await LikeService.threeUserLikesArray(findOnePost._id)
 
         if (threeUserLikesArray) {
 
-            allMapsUserLikesArray = threeUserLikesArray.map((fieldUserLikes: likesBDType) => {
+            allMapsUserLikesArray = threeUserLikesArray.map((fieldUserLikes: LikesBDType) => {
 
                 return {    
                             addedAt: fieldUserLikes.addedAt,
@@ -78,16 +84,16 @@ class PostService {
         }
     }
 
-    public async createPost(body: postReqType):
-        Promise<postObjectResult> 
-    {
+    public async createPost(
+        body: PostReqType
+    ):Promise<PostObjectResultType>{
         const blogId: ObjectId = new ObjectId(body.blogId)
 
         let blogName: string = ''
 
         const postNewId: ObjectId = new ObjectId()
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
+        const blogFind: null | BlogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -108,7 +114,7 @@ class PostService {
                                 extendedLikesInfo: {
                                     likesCount: 0,
                                     dislikesCount: 0,
-                                    myStatus: myLikeStatus.None,
+                                    myStatus: MyLikeStatus.None,
                                     newestLikes: []
                                 }
                             })
@@ -125,28 +131,29 @@ class PostService {
                 extendedLikesInfo: {
                     likesCount: 0,
                     dislikesCount: 0,
-                    myStatus: myLikeStatus.None,
+                    myStatus: MyLikeStatus.None,
                     newestLikes: []
                 }
             }
     }
 
-    public async updatePost(postURIId: string, body: postReqType):
-        Promise<boolean> 
-    {
+    public async updatePost(
+        postURIId: string,
+        body: PostReqType
+    ):Promise<boolean>{
         const bodyID: ObjectId = new ObjectId(postURIId)
 
         const blogId: ObjectId = new ObjectId(body.blogId)
 
         let blogName: string = ''
 
-        const findPost: null | postBDType = await this.findPost(bodyID)
+        const findPost: null | PostBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
         }
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(blogId)
+        const blogFind: null | BlogBDType = await BlogService.findBlogById(blogId)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -165,25 +172,27 @@ class PostService {
         return true
     }
 
-    public async postLike(likeStatus: string, postURIId: string, user: userBDType):
-        Promise<boolean> 
-    {
+    public async postLike(
+        likeStatus: string,
+        postURIId: string,
+        user: UserBDType
+    ):Promise<boolean>{
         const bodyID: ObjectId = new ObjectId(postURIId)
 
-        const findPost: null | postBDType = await this.findPost(bodyID)
+        const findPost: null | PostBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
         }
 
-        const countObject: countObject = {
+        const countObject: CountObjectType = {
             typeId: findPost._id,
             type: 'post',
             likesCount: findPost.extendedLikesInfo.likesCount,
             dislikesCount: findPost.extendedLikesInfo.dislikesCount
         }
 
-        const newObjectLikes: likesCounter = await LikeService.counterLike(likeStatus, countObject, user)
+        const newObjectLikes: LikesCounterType = await LikeService.counterLike(likeStatus, countObject, user)
 
         await POSTS.updateOne({_id: bodyID}, {
                                                 $set: {
@@ -195,12 +204,12 @@ class PostService {
         return true
     }
 
-    public async deletePost(postURIId: string):
-        Promise<boolean> 
-    {
+    public async deletePost(
+        postURIId: string
+    ):Promise<boolean>{
         const bodyID: ObjectId = new ObjectId(postURIId)
 
-        const findPost: null | postBDType = await this.findPost(bodyID)
+        const findPost: null | PostBDType = await this.findPost(bodyID)
 
         if (!findPost) {
             return false
@@ -211,9 +220,10 @@ class PostService {
         return true
     }
 
-    public async createOnePostOfBlog(blogURIId: string, body: postOfBlogReqType):
-        Promise<null | postObjectResult> 
-    {
+    public async createOnePostOfBlog(
+        blogURIId: string,
+        body: PostOfBlogReqType
+    ):Promise<null | PostObjectResultType>{
         let blogName: string = ''
 
         const postNewId: ObjectId = new ObjectId()
@@ -222,7 +232,7 @@ class PostService {
 
         const nowDate = new Date().toISOString()
 
-        const blogFind: null | blogBDType = await BlogService.findBlogById(bodyID)
+        const blogFind: null | BlogBDType = await BlogService.findBlogById(bodyID)
 
         if (blogFind) {
             blogName = blogFind.name
@@ -239,7 +249,7 @@ class PostService {
                                 extendedLikesInfo: {
                                                     likesCount: 0,
                                                     dislikesCount: 0,
-                                                    myStatus: myLikeStatus.None,
+                                                    myStatus: MyLikeStatus.None,
                                                     newestLikes: []
                                                     }
                                 })
@@ -254,7 +264,7 @@ class PostService {
                 extendedLikesInfo: {
                     likesCount: 0,
                     dislikesCount: 0,
-                    myStatus: myLikeStatus.None,
+                    myStatus: MyLikeStatus.None,
                     newestLikes: []
                 }
         }                                        
