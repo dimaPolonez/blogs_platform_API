@@ -1,5 +1,4 @@
 import {Request, Response} from 'express';
-import JwtApp from "../adapters/jwt.adapter";
 import MailerApp from '../adapters/mailer.adapter';
 import {ERRORS_CODE} from '../core/db.data';
 import AuthService from './application/auth.service';
@@ -12,8 +11,7 @@ import {
     AuthParamsType,
     AuthReqType,
     BodyReqType,
-    DeviceInfoObjectType,
-    TokensObjectType,
+    DeviceInfoObjectType, TokensObjectFullType,
     UserBDType, UserObjectResultType, UserReqType
 } from "../core/models";
 
@@ -35,25 +33,21 @@ class AuthController {
         res: Response
     ){
         try {
-            const authValid: null | UserBDType = await AuthService.authUser(req.body)
+            const deviceInfo: DeviceInfoObjectType = {
+                ip: req.ip,
+                title: req.headers["user-agent"]!
+            }
 
-            if (authValid) {
-                const deviceInfo: DeviceInfoObjectType = {
-                    ip: req.ip,
-                    title: req.headers["user-agent"]!
-                }
+            const authValid: TokensObjectFullType | null = await AuthService.authUser(req.body, deviceInfo)
 
-                const accessToken: TokensObjectType = await JwtApp.createAccessJwt(authValid)
-
-                const refreshToken: string = await JwtApp.createRefreshJwt(authValid, deviceInfo)
-
-                res.status(ERRORS_CODE.OK_200)
-                    .cookie('refreshToken', refreshToken, optionsCookie)
-                    .json(accessToken)
+            if (!authValid) {
+                res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401)
                 return
             }
 
-            res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401)
+            res.status(ERRORS_CODE.OK_200)
+                .cookie('refreshToken', authValid.refreshToken, optionsCookie)
+                .json({acessToken: authValid.accessToken})
 
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
@@ -70,13 +64,12 @@ class AuthController {
                 title: req.headers["user-agent"]!
             }
 
-            const accessToken: TokensObjectType = await JwtApp.createAccessJwt(req.user)
-
-            const refreshToken: string = await JwtApp.updateRefreshJwt(req.user, deviceInfo, req.sessionId)
+            const authValid: TokensObjectFullType = await
+                AuthService.updateRefreshToken(deviceInfo, req.user._id, req.sessionId)
 
             res.status(ERRORS_CODE.OK_200)
-                .cookie('refreshToken', refreshToken, optionsCookie)
-                .json(accessToken)
+                .cookie('refreshToken', authValid.refreshToken, optionsCookie)
+                .json({acessToken: authValid.accessToken})
 
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
@@ -88,19 +81,9 @@ class AuthController {
         res: Response
     ){
         try {
-            const findUser: null | UserBDType = await AuthService.findOneUserToEmail(req.body.email)
-
-            if (findUser) {
-
-                const authParams: AuthParamsType = await ActiveCodeApp.createCode()
-
-                await UserService.updateUser(findUser, authParams)
-
-                await MailerApp.sendMailPass(req.body.email, authParams.codeActivated)
-            }
+            await AuthService.createUserNewPass(req.body.email)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -111,16 +94,9 @@ class AuthController {
         res: Response
     ){
         try {
-            const findUser: null | UserBDType = await AuthService.findOneUserToCode(req.body.recoveryCode)
-
-            if (findUser) {
-                const hushPass: string = await BcryptApp.saltGenerate(req.body.newPassword)
-
-                await AuthService.updateUserPass(findUser._id, authParams, hushPass)
-            }
+            await AuthService.updateUserPass(authParams,req.body.recoveryCode, req.body.newPassword)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-            
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -131,11 +107,7 @@ class AuthController {
         res: Response
     ){
         try {
-            const findUser: null | UserBDType = await AuthService.findOneUserToCode(req.body.code)
-
-            if (findUser) {
-                await AuthService.confirmUserEmail(findUser, authParams)
-            }
+            await AuthService.confirmUserEmail(req.body.code, authParams)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 

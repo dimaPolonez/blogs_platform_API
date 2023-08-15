@@ -8,51 +8,19 @@ import jwt from "jsonwebtoken";
 class JwtApp {
 
     public async createAccessJwt(
-        user: UserBDType
-    ):Promise<TokensObjectType> {
-        const accessToken: string = jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: 540})
-
-        return {
-            accessToken: accessToken,
-        }
+        userId: ObjectId,
+    ):Promise<string> {
+        return await jwt.sign({userId: userId}, settings.JWT_SECRET, {expiresIn: 540})
     }
 
     public async createRefreshJwt(
-        user: UserBDType,
-        deviceInfoObject: DeviceInfoObjectType
+        userId: ObjectId,
+        deviceId: ObjectId,
+        expiresBase: number
     ):Promise<string>{
-        const expiresBase: number = 5400
-
-        const expiresTime: string = add(new Date(), {
-            seconds: expiresBase
-        }).toString()
-
-        const deviceId: ObjectId = await SessionsService.addNewDevice(user._id, deviceInfoObject, expiresTime)
-
         return jwt.sign({
             deviceId: deviceId,
-            userId: user._id
-        }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
-    }
-
-    public async updateRefreshJwt(
-        user: UserBDType,
-        deviceInfoObject: DeviceInfoObjectType,
-        sessionId: ObjectId
-    ):Promise<string>{
-        const deviceId: ObjectId = new ObjectId(sessionId)
-
-        const expiresBase: number = 5400
-
-        const expiresTime: string = add(new Date(), {
-            seconds: expiresBase
-        }).toString()
-
-        await SessionsService.updateExpiredSession(deviceId, deviceInfoObject, expiresTime)
-
-        return jwt.sign({
-            deviceId: deviceId,
-            userId: user._id
+            userId: userId
         }, settings.JWTREFRESH_SECRET, {expiresIn: expiresBase})
     }
 

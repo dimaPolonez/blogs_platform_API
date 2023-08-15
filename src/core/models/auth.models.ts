@@ -20,6 +20,11 @@ export type TokensObjectType = {
     accessToken: string
 }
 
+export type TokensObjectFullType = {
+    accessToken: string,
+    refreshToken: string
+}
+
 export type AuthMeType = {
     email: string,
     login: string,
