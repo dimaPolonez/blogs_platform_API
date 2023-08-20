@@ -8,7 +8,6 @@ class SessionsQueryRepository {
     async getAllSessions(
         userId: ObjectId
     ):Promise<ReturnActiveDeviceType[]>{
-
         const allActiveDevice: ActiveDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userId}).toArray()
 
         return allActiveDevice.map((fieldDevice: ActiveDeviceBDType) => {
@@ -20,7 +19,5 @@ class SessionsQueryRepository {
             }
         })
     }
-
 }
-
 export default new SessionsQueryRepository()

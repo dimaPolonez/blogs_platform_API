@@ -1,70 +1,34 @@
-import {USERS} from "../../../core/db.data";
-import {ObjectId} from "mongodb";
 import BcryptApp from "../../../adapters/bcrypt.adapter";
-import {AuthParamsType, UserBDType, UserObjectResultType, UserReqType} from "../../../core/models";
+import {AuthParamsType, UserBDType, UserReqType} from "../../../core/models";
+import userRepository from "../repository/user.repository";
+import UserRepository from "../repository/user.repository";
 
 class UserService {
 
     public async createUser(
         body: UserReqType,
-        authParams: AuthParamsType
-    ):Promise<UserObjectResultType>{
+    ):Promise<string>{
         const hushPass: string = await BcryptApp.saltGenerate(body.password)
 
-        const userObjectId: ObjectId = new ObjectId()
+        const authParams: AuthParamsType = {
+            confirm: true,
+            codeActivated: 'Activated',
+            lifeTimeCode: 'Activated'
+        }
 
-        const nowDate = new Date().toISOString()
-
-        await USERS.insertOne({
-                                _id: userObjectId,
-                                infUser: {
-                                    login: body.login,
-                                    email: body.email,
-                                    createdAt: nowDate
-                                },
-                                activeUser: {
-                                    codeActivated: authParams.codeActivated,
-                                    lifeTimeCode: authParams.lifeTimeCode
-                                },
-                                authUser: {
-                                    confirm: authParams.confirm,
-                                    hushPass: hushPass
-                                }
-                            })
-        return {
-                    id: userObjectId,
-                    login: body.login,
-                    email: body.email,
-                    createdAt: nowDate
-                }
-    }
-
-    public async updateUser(
-        user: UserBDType,
-        authParams: AuthParamsType
-    ){
-        await USERS.updateOne({_id: user._id}, {
-            $set: {
-                "activeUser.codeActivated": authParams.codeActivated,
-                "activeUser.lifeTimeCode": authParams.lifeTimeCode,
-                "authUser.confirm": authParams.confirm
-            }
-        })
+        return await userRepository.createUser(body, authParams, hushPass)
     }
 
     public async deleteUser(
-        userURIId: string
+        userId: string
     ):Promise<boolean>{
-        const bodyID: ObjectId = new ObjectId(userURIId)
-
-        const findUser: null | UserBDType = await USERS.findOne({_id: bodyID})
+        const findUser: UserBDType | null = await UserRepository.findOne(userId)
 
         if (!findUser) {
             return false
         }
 
-        await USERS.deleteOne({_id: bodyID})
-        
+        await userRepository.deleteUser(userId)
         return true
     }
 }

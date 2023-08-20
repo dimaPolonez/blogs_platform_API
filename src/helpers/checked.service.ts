@@ -1,9 +1,21 @@
-import {USERS} from "../core/db.data";
+import {BLOGS, USERS} from "../core/db.data";
 import {isAfter} from "date-fns";
-import {UserBDType} from "../core/models";
-import AuthRepository from "../auth/repository/auth.repository";
+import {BlogBDType, UserBDType} from "../core/models";
+import {ObjectId} from "mongodb";
 
 class CheckedService {
+
+    public async findBlog(
+        blogId: string
+    ):Promise<string | null>{
+        const findBlog: BlogBDType | null = await BLOGS.findOne({_id: new ObjectId(blogId)})
+
+        if (!findBlog) {
+            return null
+        }
+
+        return findBlog.name
+    }
 
     public async loginUniq(
         value: string
@@ -50,7 +62,13 @@ class CheckedService {
     public async emailToBase(
         value: string
     ):Promise<boolean>{
-        const findUser: null | UserBDType = await AuthRepository.findOneUserLoginOrEmail(value)
+        const findUser: null | UserBDType = await USERS.findOne(
+            {
+                $or: [
+                    {"infUser.login": value},
+                    {"infUser.email": value}
+                ]
+            })
 
         if (!findUser) {
             throw new Error('Email is not registration')
@@ -59,7 +77,6 @@ class CheckedService {
         if (findUser.activeUser.codeActivated === 'Activated'){
             throw new Error('Account activated')
         }
-
         return true
     }
 

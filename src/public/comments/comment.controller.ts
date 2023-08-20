@@ -8,6 +8,7 @@ import {
     ParamsIdType,
     ParamsReqType
 } from "../../core/models";
+import CommentQueryRepository from "./repository/comment.query-repository";
 
 class CommentController {
 
@@ -16,7 +17,7 @@ class CommentController {
         res: Response
     ){
         try {
-            const comment: null | CommentObjectResultType = await CommentService.getOneComment(req.params.id, req.userId)
+            const comment: CommentObjectResultType | null = await CommentQueryRepository.getOneComment(req.params.id, req.userId)
 
             if (comment) {
                 res.status(ERRORS_CODE.OK_200).json(comment)
@@ -24,7 +25,6 @@ class CommentController {
             }
 
             res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -45,7 +45,6 @@ class CommentController {
                 case (404):
                     return res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
             }
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -64,7 +63,6 @@ class CommentController {
             }
 
             res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -85,7 +83,6 @@ class CommentController {
                 case (404):
                     return res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
             }
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }

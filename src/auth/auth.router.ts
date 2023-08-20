@@ -2,7 +2,6 @@ import {Router} from "express";
 import AuthController from "./auth.controller";
 import {indexMiddleware} from "../middleware";
 
-
 const authRouter = Router({})
 
 authRouter.post('/login',

@@ -2,7 +2,6 @@ import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE} from "../../../core/db.data";
 import {ActiveDeviceBDType} from "../../../core/models";
 
-
 class SessionsRepository {
 
     async findOne(

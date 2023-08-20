@@ -45,7 +45,6 @@ class AuthController {
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', authValid.refreshToken, optionsCookie)
                 .json({accessToken: authValid.accessToken})
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -67,7 +66,6 @@ class AuthController {
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', authValid.refreshToken, optionsCookie)
                 .json({acessToken: authValid.accessToken})
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -107,7 +105,6 @@ class AuthController {
             await AuthService.confirmUserEmail(req.body.code, authParams)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -121,7 +118,6 @@ class AuthController {
             await AuthService.createNewUser(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -135,7 +131,6 @@ class AuthController {
             await AuthService.resendingEmail(req.body.email)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -151,7 +146,6 @@ class AuthController {
             res
                 .clearCookie('refreshToken')
                 .sendStatus(ERRORS_CODE.NO_CONTENT_204)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -169,13 +163,10 @@ class AuthController {
             }
 
             res.status(ERRORS_CODE.OK_200).json(aboutMe)
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
     }
-
 }
-
 
 export default new AuthController()

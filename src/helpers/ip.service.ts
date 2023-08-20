@@ -3,7 +3,6 @@ import {differenceInSeconds} from "date-fns";
 import {OBJECT_IP} from "../core/db.data";
 import {ObjectIPType} from "../core/models";
 
-
 class IpService {
 
     public async findIP(

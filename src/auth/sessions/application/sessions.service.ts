@@ -33,7 +33,8 @@ class SessionsService {
     ):Promise<boolean>{
         const sessionId: ObjectId = new ObjectId(reqID)
 
-        const findActiveSession: null | ActiveDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
+        const findActiveSession: null | ActiveDeviceBDType = await
+            ACTIVE_DEVICE.findOne({_id: sessionId})
 
         if (!findActiveSession) {
             return false
@@ -87,7 +88,8 @@ class SessionsService {
         userId: ObjectId
     ):Promise<number>{
 
-        const findActiveSession: ActiveDeviceBDType | null = await SessionsRepository.findOne(new ObjectId(sessionId))
+        const findActiveSession: ActiveDeviceBDType | null = await
+            SessionsRepository.findOne(new ObjectId(sessionId))
 
         if (!findActiveSession) {
             return ERRORS_CODE.NOT_FOUND_404

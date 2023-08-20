@@ -16,10 +16,6 @@ export type AuthReqType = {
     password: string
 }
 
-export type TokensObjectType = {
-    accessToken: string
-}
-
 export type TokensObjectFullType = {
     accessToken: string,
     refreshToken: string

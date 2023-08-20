@@ -1,185 +1,50 @@
-import {POSTS} from "../../../core/db.data";
-import {ObjectId} from "mongodb";
 import LikeService from "../../../helpers/like.service";
-import BlogService from "../../blogs/application/blog.service";
 import {
-    BlogBDType, CountObjectType,
-    LikesBDType, LikesCounterType,
-    MyLikeStatus,
-    NewestLikesType,
-    PostBDType,
-    PostObjectResultType, PostOfBlogReqType,
+    CountObjectType,
+    LikesCounterType,
+    PostBDType, PostOfBlogReqType,
     PostReqType, UserBDType
 } from "../../../core/models";
+import CheckedService from "../../../helpers/checked.service";
+import PostRepository from "../repository/post.repository";
+import CommentRepository from "../../comments/repository/comment.repository";
 
 class PostService {
 
-    public async findPost(
-        bodyID: ObjectId
-    ):Promise<PostBDType | null>{
-        const findOnePost: PostBDType | null = await POSTS.findOne({_id: bodyID})
-
-        if (!findOnePost) {
-            return null
-        }
-
-        return findOnePost
-    }
-
-    public async getOnePost(
-        postURIId: string,
-        userId: ObjectId | null
-    ):Promise<null | PostObjectResultType>{
-        const bodyID: ObjectId = new ObjectId(postURIId)
-
-        const findOnePost: PostBDType | null = await this.findPost(bodyID)
-
-        if (!findOnePost) {
-            return null
-        }
-
-        let myUserStatus: MyLikeStatus = MyLikeStatus.None
-        let allMapsUserLikesArray: NewestLikesType [] | [] = []
-
-        if (userId) {
-            const userObjectId: ObjectId = new ObjectId(userId)
-
-            const checked: null | LikesBDType = await LikeService.checkedLike(findOnePost._id, userObjectId)
-
-            if (checked) {
-                myUserStatus = checked.user.myStatus
-            }
-        }
-
-        const threeUserLikesArray: LikesBDType [] | null =  await LikeService.threeUserLikesArray(findOnePost._id)
-
-        if (threeUserLikesArray) {
-
-            allMapsUserLikesArray = threeUserLikesArray.map((fieldUserLikes: LikesBDType) => {
-
-                return {    
-                            addedAt: fieldUserLikes.addedAt,
-                            userId: fieldUserLikes.user.userId,
-                            login: fieldUserLikes.user.login
-                        }
-                    
-                }
-            );
-        }
-
-        return {
-                    id: findOnePost._id,
-                    title: findOnePost.title,
-                    shortDescription: findOnePost.shortDescription,
-                    content: findOnePost.content,
-                    blogId: findOnePost.blogId,
-                    blogName: findOnePost.blogName,
-                    createdAt: findOnePost.createdAt,
-                    extendedLikesInfo: {
-                        likesCount: findOnePost.extendedLikesInfo.likesCount,
-                        dislikesCount: findOnePost.extendedLikesInfo.dislikesCount,
-                        myStatus: myUserStatus,
-                        newestLikes: allMapsUserLikesArray
-                }
-        }
-    }
-
     public async createPost(
         body: PostReqType
-    ):Promise<PostObjectResultType>{
-        const blogId: ObjectId = new ObjectId(body.blogId)
+    ):Promise<string>{
+        const findBlogName: string | null = await CheckedService.findBlog(body.blogId.toString())
 
-        let blogName: string = ''
-
-        const postNewId: ObjectId = new ObjectId()
-
-        const blogFind: null | BlogBDType = await BlogService.findBlogById(blogId)
-
-        if (blogFind) {
-            blogName = blogFind.name
-        }
-
-        const nowDate = new Date().toISOString()
-
-        
-
-        await POSTS.insertOne({
-                                _id: postNewId,
-                                title: body.title,
-                                shortDescription: body.shortDescription,
-                                content: body.content,
-                                blogId: blogId,
-                                blogName: blogName,
-                                createdAt: nowDate,
-                                extendedLikesInfo: {
-                                    likesCount: 0,
-                                    dislikesCount: 0,
-                                    myStatus: MyLikeStatus.None,
-                                    newestLikes: []
-                                }
-                            })
-
-
-        return {
-                id: postNewId,
-                title: body.title,
-                shortDescription: body.shortDescription,
-                content: body.content,
-                blogId: blogId,
-                blogName: blogName,
-                createdAt: nowDate,
-                extendedLikesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
-                    myStatus: MyLikeStatus.None,
-                    newestLikes: []
-                }
-            }
+        return await PostRepository.createPost(body, findBlogName!) //наличие блога проверяется на уровне Middleware
     }
 
     public async updatePost(
-        postURIId: string,
+        postId: string,
         body: PostReqType
     ):Promise<boolean>{
-        const bodyID: ObjectId = new ObjectId(postURIId)
-
-        const blogId: ObjectId = new ObjectId(body.blogId)
-
-        let blogName: string = ''
-
-        const findPost: null | PostBDType = await this.findPost(bodyID)
+        const findPost: PostBDType | null = await PostRepository.findOne(postId)
 
         if (!findPost) {
             return false
         }
 
-        const blogFind: null | BlogBDType = await BlogService.findBlogById(blogId)
+        const findBlogName: string | null = await CheckedService.findBlog(body.blogId.toString())
 
-        if (blogFind) {
-            blogName = blogFind.name
+        if (!findBlogName){
+            return false
         }
 
-        await POSTS.updateOne({_id: bodyID}, {
-                                                $set: {
-                                                    title: body.title,
-                                                    shortDescription: body.shortDescription,
-                                                    content: body.content,
-                                                    blogId: blogId,
-                                                    blogName: blogName
-                                                }
-                                            })
-
+        await PostRepository.updatePost(postId, body, findBlogName)
         return true
     }
 
     public async postLike(
         likeStatus: string,
-        postURIId: string,
+        postId: string,
         user: UserBDType
     ):Promise<boolean>{
-        const bodyID: ObjectId = new ObjectId(postURIId)
-
-        const findPost: null | PostBDType = await this.findPost(bodyID)
+        const findPost: PostBDType | null = await PostRepository.findOne(postId)
 
         if (!findPost) {
             return false
@@ -194,80 +59,35 @@ class PostService {
 
         const newObjectLikes: LikesCounterType = await LikeService.counterLike(likeStatus, countObject, user)
 
-        await POSTS.updateOne({_id: bodyID}, {
-                                                $set: {
-                                                    "extendedLikesInfo.likesCount": newObjectLikes.likesCount,
-                                                    "extendedLikesInfo.dislikesCount": newObjectLikes.dislikesCount,
-                                                }
-                                            })
-
+        await PostRepository.updateLikesCount(postId, newObjectLikes)
         return true
     }
 
     public async deletePost(
-        postURIId: string
+        postId: string
     ):Promise<boolean>{
-        const bodyID: ObjectId = new ObjectId(postURIId)
-
-        const findPost: null | PostBDType = await this.findPost(bodyID)
+        const findPost: PostBDType | null = await PostRepository.findOne(postId)
 
         if (!findPost) {
             return false
         }
 
-        await POSTS.deleteOne({_id: bodyID})
-
+        await PostRepository.deletePost(postId)
         return true
     }
 
-    public async createOnePostOfBlog(
-        blogURIId: string,
-        body: PostOfBlogReqType
-    ):Promise<null | PostObjectResultType>{
-        let blogName: string = ''
+    public async createCommentOfPost(
+        postId: string,
+        body: PostOfBlogReqType,
+        objectUser: UserBDType
+    ):Promise<string | null>{
+        const findPost: PostBDType | null = await PostRepository.findOne(postId)
 
-        const postNewId: ObjectId = new ObjectId()
-
-        const bodyID: ObjectId = new ObjectId(blogURIId)
-
-        const nowDate = new Date().toISOString()
-
-        const blogFind: null | BlogBDType = await BlogService.findBlogById(bodyID)
-
-        if (blogFind) {
-            blogName = blogFind.name
+        if (!findPost) {
+            return null
         }
 
-        await POSTS.insertOne({
-                                _id: postNewId,
-                                title: body.title,
-                                shortDescription: body.shortDescription,
-                                content: body.content,
-                                blogId: bodyID,
-                                blogName: blogName,
-                                createdAt: nowDate,
-                                extendedLikesInfo: {
-                                                    likesCount: 0,
-                                                    dislikesCount: 0,
-                                                    myStatus: MyLikeStatus.None,
-                                                    newestLikes: []
-                                                    }
-                                })
-        return {
-                id: postNewId,
-                title: body.title,
-                shortDescription: body.shortDescription,
-                content: body.content,
-                blogId: bodyID,
-                blogName: blogName,
-                createdAt: nowDate,
-                extendedLikesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
-                    myStatus: MyLikeStatus.None,
-                    newestLikes: []
-                }
-        }                                        
+        return await CommentRepository.createComment(postId, body, objectUser)
     }
 }
 

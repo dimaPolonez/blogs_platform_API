@@ -13,6 +13,7 @@ import {add} from "date-fns";
 import SessionsService from "../sessions/application/sessions.service";
 import ActiveCodeApp from "../../adapters/codeActive.adapter";
 import MailerApp from "../../adapters/mailer.adapter";
+import UserRepository from "../../public/users/repository/user.repository";
 
 
 class AuthService {
@@ -92,7 +93,7 @@ class AuthService {
 
         const hushPass: string = await BcryptApp.saltGenerate(body.password)
 
-        await AuthRepository.createUser(body, authParams, hushPass)
+        await UserRepository.createUser(body, authParams, hushPass)
 
         await MailerApp.sendMailCode(body.email, authParams.codeActivated)
     }
