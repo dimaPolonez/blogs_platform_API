@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import CheckedService from "../services/checked.service";
+import CheckedService from "../helpers/checked.service";
 
 export const usersValidator = [
     body('login')

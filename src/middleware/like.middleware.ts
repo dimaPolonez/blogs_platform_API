@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {body} from "express-validator";
-import JwtApp from "../application/jwt.application";
-import {myLikeStatus} from "../models/likes.models";
+import JwtApp from "../adapters/jwt.adapter";
 import {ObjectId} from "mongodb";
+import {MyLikeStatus} from "../core/models";
 
 
 export const likeValidator = [
@@ -15,7 +15,7 @@ export const likeValidator = [
         .bail()
         .withMessage('Field likeStatus incorrect')
         .custom((value) => {
-            if (Object.values(myLikeStatus).includes(value)) {
+            if (Object.values(MyLikeStatus).includes(value)) {
                 return true
             }
             throw new Error('Field likeStatus incorrect')
