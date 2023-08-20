@@ -1,18 +1,14 @@
 import {Request, Response} from 'express';
-import MailerApp from '../adapters/mailer.adapter';
 import {ERRORS_CODE} from '../core/db.data';
 import AuthService from './application/auth.service';
-import UserService from '../public/users/application/user.service';
-import ActiveCodeApp from "../adapters/codeActive.adapter";
 import GuardService from './sessions/application/sessions.service';
-import BcryptApp from '../adapters/bcrypt.adapter';
 import {
     AuthMeType,
     AuthParamsType,
     AuthReqType,
     BodyReqType,
     DeviceInfoObjectType, TokensObjectFullType,
-    UserBDType, UserObjectResultType, UserReqType
+    UserReqType
 } from "../core/models";
 
 const optionsCookie: object = {
@@ -38,7 +34,8 @@ class AuthController {
                 title: req.headers["user-agent"]!
             }
 
-            const authValid: TokensObjectFullType | null = await AuthService.authUser(req.body, deviceInfo)
+            const authValid: TokensObjectFullType | null = await
+                AuthService.authUser(req.body, deviceInfo)
 
             if (!authValid) {
                 res.sendStatus(ERRORS_CODE.UNAUTHORIZED_401)
@@ -47,7 +44,7 @@ class AuthController {
 
             res.status(ERRORS_CODE.OK_200)
                 .cookie('refreshToken', authValid.refreshToken, optionsCookie)
-                .json({acessToken: authValid.accessToken})
+                .json({accessToken: authValid.accessToken})
 
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
@@ -121,11 +118,7 @@ class AuthController {
         res: Response
     ){
         try {
-            const authParams: AuthParamsType = await ActiveCodeApp.createCode()
-
-            const createdUser: UserObjectResultType = await UserService.createUser(req.body, authParams)
-
-            await MailerApp.sendMailCode(createdUser.email, authParams.codeActivated)
+            await AuthService.createNewUser(req.body)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -139,15 +132,7 @@ class AuthController {
         res: Response
     ){
         try {
-            const findUser: null | UserBDType = await AuthService.findOneUserToEmail(req.body.email)
-
-            if (findUser) {
-                const authParams: AuthParamsType = await ActiveCodeApp.createCode()
-
-                await AuthService.confirmUserEmail(findUser, authParams)
-
-                await MailerApp.sendMailCode(req.body.email, authParams.codeActivated)
-            }
+            await AuthService.resendingEmail(req.body.email)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 

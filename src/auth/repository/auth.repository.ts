@@ -1,5 +1,5 @@
 import {USERS} from "../../core/db.data";
-import {AuthParamsType, UserBDType} from "../../core/models";
+import {AuthParamsType, UserBDType, UserReqType} from "../../core/models";
 import {ObjectId} from "mongodb";
 
 class AuthRepository {
@@ -54,6 +54,29 @@ class AuthRepository {
                     codeActivated: authParams.codeActivated,
                     lifeTimeCode: authParams.lifeTimeCode
                 }
+            }
+        })
+    }
+
+    async createUser(
+        body: UserReqType,
+        authParams: AuthParamsType,
+        hushPass: string
+    ){
+        await USERS.insertOne({
+            _id: new ObjectId(),
+            infUser: {
+                login: body.login,
+                email: body.email,
+                createdAt: new Date().toISOString()
+            },
+            activeUser: {
+                codeActivated: authParams.codeActivated,
+                lifeTimeCode: authParams.lifeTimeCode
+            },
+            authUser: {
+                confirm: authParams.confirm,
+                hushPass: hushPass
             }
         })
     }

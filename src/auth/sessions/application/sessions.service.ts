@@ -1,7 +1,8 @@
 import {isAfter} from "date-fns";
 import {ObjectId} from "mongodb";
 import {ACTIVE_DEVICE, ERRORS_CODE} from "../../../core/db.data";
-import {ActiveDeviceBDType, DeviceInfoObjectType, ReturnActiveDeviceType, UserBDType} from "../../../core/models";
+import {ActiveDeviceBDType, DeviceInfoObjectType} from "../../../core/models";
+import SessionsRepository from "../repository/sessions.repository";
 
 
 class SessionsService {
@@ -25,23 +26,6 @@ class SessionsService {
                                     })
 
         return newGenerateId
-    }
-
-    public async allActiveSessions(
-        userID: ObjectId
-    ):Promise<ReturnActiveDeviceType[]>{
-        const allActiveDevice: ActiveDeviceBDType [] = await ACTIVE_DEVICE.find({userId: userID}).toArray()
-
-        const returnObject: ReturnActiveDeviceType [] = allActiveDevice.map((fieldDevice: ActiveDeviceBDType) => {
-            return {
-                deviceId: fieldDevice._id,
-                ip: fieldDevice.ip,
-                lastActiveDate: fieldDevice.lastActiveDate,
-                title: fieldDevice.title
-            }
-        })
-
-        return returnObject
     }
 
     async checkedActiveSession(
@@ -84,17 +68,10 @@ class SessionsService {
     }
 
     public async killAllSessions(
-        reqID: ObjectId,
-        userObject: UserBDType
+        sessionId: ObjectId,
+        userId: ObjectId
     ){
-        const sessionId: ObjectId = new ObjectId(reqID)
-
-        await ACTIVE_DEVICE.deleteMany({
-                                            $and: [
-                                                {_id: {$ne: sessionId}},
-                                                {userId: userObject._id}
-                                            ]
-                                        })
+        await SessionsRepository.deleteAllSessions(sessionId, userId)
     }
 
     public async killOneSessionLogout(
@@ -106,26 +83,23 @@ class SessionsService {
     }
 
     public async killOneSession(
-        sessionURIId: string,
-        userObject: UserBDType
+        sessionId: string,
+        userId: ObjectId
     ):Promise<number>{
-        const sessionId: ObjectId = new ObjectId(sessionURIId)
 
-        const findActiveSession: null | ActiveDeviceBDType = await ACTIVE_DEVICE.findOne({_id: sessionId})
+        const findActiveSession: ActiveDeviceBDType | null = await SessionsRepository.findOne(new ObjectId(sessionId))
 
         if (!findActiveSession) {
             return ERRORS_CODE.NOT_FOUND_404
         }
 
-        if (!(findActiveSession.userId.toString() === userObject._id.toString())) {
-            return ERRORS_CODE.NOT_YOUR_OWN_403            
+        if (findActiveSession.userId.toString() !== userId.toString()) {
+            return ERRORS_CODE.NOT_YOUR_OWN_403
         }
 
-        await ACTIVE_DEVICE.deleteOne({_id: sessionId})
+        await SessionsRepository.deleteOne(new ObjectId(sessionId))
 
         return ERRORS_CODE.NO_CONTENT_204
     }
-
 }
-
 export default new SessionsService()

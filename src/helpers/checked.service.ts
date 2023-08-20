@@ -1,7 +1,7 @@
 import {USERS} from "../core/db.data";
 import {isAfter} from "date-fns";
-import AuthService from "../auth/application/auth.service";
 import {UserBDType} from "../core/models";
+import AuthRepository from "../auth/repository/auth.repository";
 
 class CheckedService {
 
@@ -50,7 +50,7 @@ class CheckedService {
     public async emailToBase(
         value: string
     ):Promise<boolean>{
-        const findUser: null | UserBDType = await AuthService.findOneUserToEmail(value)
+        const findUser: null | UserBDType = await AuthRepository.findOneUserLoginOrEmail(value)
 
         if (!findUser) {
             throw new Error('Email is not registration')

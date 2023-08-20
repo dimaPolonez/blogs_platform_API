@@ -1,7 +1,8 @@
 import {Request, Response} from 'express';
 import {ERRORS_CODE} from "../../core/db.data";
-import GuardService from './application/sessions.service';
 import {ParamsIdType, ParamsReqType, ReturnActiveDeviceType} from "../../core/models";
+import SessionsQueryRepository from "./repository/sessions.query-repository";
+import SessionsService from "./application/sessions.service";
 
 class SessionsController {
 
@@ -10,11 +11,10 @@ class SessionsController {
         res: Response
     ){
         try {
-            const activeDevice: ReturnActiveDeviceType[] = await GuardService.allActiveSessions(req.user._id)
+            const activeDevice: ReturnActiveDeviceType[] = await
+                SessionsQueryRepository.getAllSessions(req.user._id)
 
             res.status(ERRORS_CODE.OK_200).json(activeDevice)
-            return
-            
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }
@@ -25,7 +25,7 @@ class SessionsController {
         res: Response
     ){
         try {
-            await GuardService.killAllSessions(req.sessionId, req.user)
+            await SessionsService.killAllSessions(req.sessionId, req.user._id)
 
             res.sendStatus(ERRORS_CODE.NO_CONTENT_204)
 
@@ -39,7 +39,8 @@ class SessionsController {
         res: Response
     ){
         try {
-            const killedSession: number = await GuardService.killOneSession(req.params.id, req.user)
+            const killedSession: number = await
+                SessionsService.killOneSession(req.params.id, req.user._id)
 
             switch (killedSession) {
                 case (204):
@@ -49,7 +50,6 @@ class SessionsController {
                 case (404):
                     return res.sendStatus(ERRORS_CODE.NOT_FOUND_404)
             }
-
         } catch (e) {
             res.status(ERRORS_CODE.INTERNAL_SERVER_ERROR_500).json(e)
         }

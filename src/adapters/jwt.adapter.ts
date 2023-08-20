@@ -1,7 +1,6 @@
 import {settings} from "../core/db.data";
 import {ObjectId} from "mongodb";
-import {add} from 'date-fns';
-import {DeviceInfoObjectType, ReturnRefreshObjectType, TokensObjectType, UserBDType} from "../core/models";
+import {ReturnRefreshObjectType} from "../core/models";
 import SessionsService from "../auth/sessions/application/sessions.service";
 import jwt from "jsonwebtoken";
 

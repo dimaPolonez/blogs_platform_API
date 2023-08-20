@@ -5,15 +5,13 @@ import {
     AuthReqType,
     DeviceInfoObjectType,
     TokensObjectFullType,
-    TokensObjectType,
-    UserBDType
+    UserBDType, UserReqType
 } from "../../core/models";
 import AuthRepository from "../repository/auth.repository";
 import JwtApp from "../../adapters/jwt.adapter";
 import {add} from "date-fns";
 import SessionsService from "../sessions/application/sessions.service";
 import ActiveCodeApp from "../../adapters/codeActive.adapter";
-import UserService from "../../public/users/application/user.service";
 import MailerApp from "../../adapters/mailer.adapter";
 
 
@@ -85,6 +83,32 @@ class AuthService {
         const hushPass: string = await BcryptApp.saltGenerate(newPassword)
 
         await AuthRepository.updateUserPass(findUser._id, authParams, hushPass)
+    }
+
+    public async createNewUser(
+        body: UserReqType
+    ){
+        const authParams: AuthParamsType = await ActiveCodeApp.createCode()
+
+        const hushPass: string = await BcryptApp.saltGenerate(body.password)
+
+        await AuthRepository.createUser(body, authParams, hushPass)
+
+        await MailerApp.sendMailCode(body.email, authParams.codeActivated)
+    }
+
+    public async resendingEmail(
+        email: string
+    ){
+        const findUser: UserBDType | null = await AuthRepository.findOneUserLoginOrEmail(email)
+
+        if (findUser) {
+            const authParams: AuthParamsType = await ActiveCodeApp.createCode()
+
+            await AuthRepository.updateConfirmUser(findUser._id,findUser.authUser.hushPass, authParams)
+
+            await MailerApp.sendMailCode(email, authParams.codeActivated)
+        }
     }
 
     public async updateRefreshToken(
